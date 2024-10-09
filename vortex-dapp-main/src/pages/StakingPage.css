@@ -1,0 +1,146 @@
+h5 {
+  text-align: center;
+  color: white;
+  margin-bottom: 10px; /* Adjusted for better spacing */
+  font-size: 16px;
+}
+
+.texthome2 {
+  font-size: 16px;
+  font-weight: 200;
+  color: white;
+  text-align: center;
+}
+
+.staking-container {
+  max-width: 600px;
+
+  padding: 20px; /* Reduced padding */
+  margin: 50px auto; /* Center horizontally */
+  border: 1px solid #cccccc81;
+  border-radius: 30px;
+  background-color: #0000006c;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Vertically center */
+  align-items: center; /* Horizontally center */
+  text-align: center;
+}
+
+.vortex-title {
+  margin-bottom: 5px; /* Reduced margin to decrease distance */
+}
+.apy-title {
+  margin-top: 10; /* Remove top margin to decrease distance */
+}
+.info-container {
+  max-width: 600px; /* Match the staking container */
+  padding: 20px; /* Match the staking container padding */
+  margin: 20px auto; /* Center horizontally */
+  margin-top: -30px;
+  border: 1px solid #cccccc81; /* Match the staking container border */
+  border-radius: 30px; /* Match the staking container border radius */
+  background-color: #000000; /* Match the staking container background color */
+  color: white; /* Changed to white for better visibility */
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Vertically center */
+  align-items: center; /* Horizontally center */
+  text-align: center; /* Center text */
+}
+
+.info-container:hover {
+  transform: translateY(-5px); /* Lift effect on hover */
+}
+.stats-row {
+  display: flex; /* Use flexbox for horizontal layout */
+  justify-content: space-between; /* Space between items */
+  width: 100%; /* Full width */
+}
+.stat-item {
+  flex: 1; /* Equal space for each item */
+  text-align: center; /* Center text within each item */
+}
+
+
+@media only screen and (max-width: 600px) {
+  .staking-container {
+    margin: 10px 10px 10px 10px; /* Add margin for mobile devices */
+    border: 0px solid #ffffff00;
+    border-radius: 30px;
+    background-color: #00000000;
+  }
+
+  .connected-wallet {
+    font-size: 10px;
+  }
+
+  .titlestake {
+    margin-bottom: 10px;
+    text-align: center;
+    color: white;
+    font-size: 23px;
+  }
+
+  .titlestake {
+    text-align: center;
+    color: white;
+    font-size: 18px;
+  }
+
+  .texthome2 {
+    text-align: center;
+    color: white;
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+
+  .center2-container {
+    margin-top: 10px;
+  }
+
+  .button-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .button-container button {
+    flex: 1 1 45%;
+    margin: 5px;
+  }
+
+  .info-container {
+    margin-top: 30px; /* Add margin-top for mobile version */
+  } 
+}
+
+button.stake-button, button.unstake-button, button.claim-button {
+  width: 120px; /* Fixed width */
+  padding: 7px 20px;
+  margin-top: 20px;
+  margin-left: 5px;
+  margin-right: 5px;
+  font-size: 16px;
+  border-radius: 30px;
+  /* Gradient background */
+  background: linear-gradient(38deg, #ef10ffe1, /* purple */ #00CDFFF6); /* Replace #FF5733 with your desired color */
+  border: 1px solid rgba(255, 255, 255, 0.519);
+  color: #ffffff;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-style: normal;
+  font-weight: 400;
+  text-align: center;
+}
+
+button.stake-button:hover, button.unstake-button:hover, button.claim-button:hover {
+  background-color: #ffffff;
+}
+
+.titlestake {
+  margin-bottom: 20px;
+  text-align: center;
+  color: white;
+}

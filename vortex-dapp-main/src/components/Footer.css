@@ -1,0 +1,44 @@
+/* Footer.css */
+.footer {
+    padding: 20px;
+    text-align: center;
+   
+}
+
+.footer-content p {
+    margin: 6px 0;
+    color: #ffffff;
+    font-size: 14px;
+}
+
+.footer a {
+    color: #ffffff;
+    text-decoration: none;
+}
+
+
+.icon-link {
+    margin-right: 10px; 
+    margin-left:10px;/* Adjust space between icons */
+    display: inline-block; /* Ensures margin applies correctly */
+    vertical-align: middle; /* Aligns icons nicely if text is also in line */
+  }
+  
+  .icon {
+    font-size: 22px; /* Adjusts the size of the icons */
+    color: #ffffff; /* Example to set the color, adjust as needed */
+    margin-top:15px;
+  }
+  
+  /* Specific styles for each icon type can be added if needed */
+  .twitter {
+    color: #ffffff; /* Twitter's brand color, adjust as needed */
+  }
+  
+  .telegram {
+    color: #ffffff; /* Telegram's brand color, adjust as needed */
+  }
+  
+  .mail {
+    color: #ffffff; /* Mail icon color, adjust as needed */
+  }

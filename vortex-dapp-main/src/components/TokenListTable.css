@@ -1,0 +1,444 @@
+/* TokenList.css */
+.tokens-container {
+    padding: 20px;
+}
+
+.deployedtokenstitle {
+    font-size: 34px;
+    margin-bottom: 10px;
+    color: white; /* Set title text to white */
+}
+
+.subtitletokens {
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: white; /* Set subtitle text to white */
+}
+
+.sort-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+    margin-top:-30px;
+}
+
+.tokens-table {
+    width: 100%;
+    
+  
+}
+
+
+.tokens-grid{border-radius: 60px;}
+
+.tokens-table th, .tokens-table td {
+    border: 1px solid #ffffff00;
+   
+    padding: 8px;
+    text-align: left;
+    color: white; /* Set table text to white */
+}
+
+.tokens-table th {
+    background-color: #000000;
+    font-weight: bold;
+    color: white; /* Set table header text to white */
+    
+   
+}
+
+.icon2 {
+    font-size: 18px;
+    margin-right: 5px;
+    color: white; /* Set icon text to white */
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background-image: url('https://i.imgur.com/EeSiiMV.jpeg'); /* Background image */
+    background-size: cover;
+    background-attachment: fixed;
+}
+
+
+.token_address_message {
+    color: white;
+}
+
+.token_address_message a {
+    color: white;
+}
+
+.factory-container {
+    max-width: 600px;
+    padding: 70px 70px 100px 70px;
+    border: 1px solid #cccccc81;
+    border-radius: 30px;
+    margin-top: 100px;
+    background-color: #0000006c;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Vertically center */
+    align-items: center; /* Horizontally center */
+    height: 50%; /* Ensure the container takes the full height of the viewport */
+    text-align: center;
+}
+
+.center-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+@media only screen and (max-width: 600px) {
+    .factory-container {
+        margin: 10px 10px 10px 10px; /* Add margin for mobile devices */
+        height: 60%;
+        padding: 30px;
+    }
+
+    .center2-container {
+        margin: 0px;
+    }
+
+    .titlefactory {
+        font-size: 23px;
+        text-align: center;
+        color: white;
+        padding-right: 15px;
+        padding-left: 15px;
+    }
+
+    .createerc {
+        font-size: 18px;
+    }
+
+    .subtitlefactory {
+        font-size: 15px;
+        margin-top: 10px;
+        margin-right: 20px;
+        margin-left: 10px;
+        font-weight: 300;
+        color: white; /* Set mobile subtitle factory text to white */
+    }
+}
+
+.token-form label {
+    display: block;
+    margin-bottom: 10px;
+    color: white; /* Set label text to white */
+}
+
+input[type="text"],
+input[type="number"] {
+    width: 100%;
+    padding: 8px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 30px;
+    box-sizing: border-box;
+    font-family: "Space Grotesk", sans-serif;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus {
+    outline: none;
+    border-color: #007bff;
+}
+
+.input {
+    margin-bottom: 13px;
+}
+
+button.deploy-button {
+    padding: 7px 20px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    font-size: 16px;
+    border-radius: 30px;
+    /* Gradient background */
+    background: linear-gradient(38deg, #ef10ffe1, /* purple */ #00CDFFF6); /* Replace #FF5733 with your desired color */
+    border: 1px solid rgba(255, 255, 255, 0.519);
+    color: #ffffff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-style: normal;
+    font-family: "Space Grotesk", sans-serif;
+    font-weight: 600;
+    margin-bottom: 20px; /* Add space below the button */
+}
+
+button.deploy-button:hover {
+    background-color: #ffffff;
+    font-style: normal;
+    font-size: 16px;
+    font-family: "Space Grotesk", sans-serif;
+    font-weight: 600;
+}
+
+.contract-address {
+    margin-top: 20px;
+    font-size: 16px;
+    font-style: italic;
+    color: white; /* Set contract address text to white */
+}
+
+.center2-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+h3 {
+    text-align: center;
+    color: white;
+    margin-bottom: -60px;
+    font-size: 16px;
+}
+
+.start-button {
+    padding: 7px 20px;
+    margin-top: 10px;
+    font-size: 16px;
+    border-radius: 30px;
+    /* Gradient background */
+    background: linear-gradient(38deg, #ef10ffe1, /* purple */ #00CDFFF6); /* Replace #FF5733 with your desired color */
+    border: 1px solid rgba(255, 255, 255, 0.519);
+    color: #ffffff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-style: normal;
+    font-weight: 400;
+    text-decoration: none;
+    font-family: 'Comfortaa', sans-serif; /* Updated font-family */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    margin-bottom: 20px; /* Add space below the button */
+}
+
+.start-button:hover {
+    background-color: #0056b3;
+}
+
+.custom-file-input {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+    cursor: pointer;
+    padding: 7px 25px;
+    background-color: #00000027;
+    border: 1px solid #ccc;
+    border-radius: 30px;
+    font-size: 16px;
+    margin-bottom: 20px;
+    color: white; /* Set custom file input text to white */
+}
+
+.custom-file-input input[type="file"] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.custom-file-input span {
+    display: inline-block;
+    pointer-events: none;
+}
+
+.connected-wallet {
+    font-size: 14px;
+    text-align: center;
+    margin-top: -10px;
+    margin-bottom: 20px;
+    color: white; /* Set connected wallet text to white */
+}
+
+.error-message {
+    font-size: 12px; /* Smaller font size */
+    color: #ffffff; /* Typical error message color */
+}
+
+.token_address_message {
+    margin-top: 20px;
+    font-size: 0.9rem; /* Adjust the size as needed */
+    color: #ffffff; /* Example color */
+}
+
+.filter-container {
+  position: relative;
+  display: inline-block;
+}
+
+.filter-options {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  font-size: 10px;
+  background-color: rgb(0, 0, 0);
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+.filter-options button {
+  padding: 5px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  text-align: left;
+  margin-bottom:-2px;
+  margin-top:0px;
+}
+
+.filter-options button:hover {
+  background-color: #ddd;
+}
+
+.trade-button-cell {
+    display: table-cell; /* Ensure it behaves like a table cell */
+    vertical-align: middle; /* Vertically center the content within the cell */
+    text-align: center; /* Horizontally center the content */
+    padding: 0; /* Remove padding to prevent it from affecting centering */
+    height: 100%; /* Ensure the cell takes up full height */
+  }
+  
+  .trade-button {
+    display: inline-block; /* Make the button behave like an inline element to center it */
+    padding: 7px 20px; /* Adjust padding for button size */
+    font-size: 12px;
+    border-radius: 30px;
+    background: linear-gradient(38deg, #ef10ffe1, #00CDFFF6);
+    border: 1px solid rgba(255, 255, 255, 0.519);
+    color: #ffffff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-style: normal;
+    font-family: "Space Grotesk", sans-serif;
+    font-weight: 600;
+  }
+  
+
+
+.trade-button:hover {
+  background-color: #ffffff;
+}
+
+.token-image {
+  width: 12px;
+  height: 12px;
+ 
+}
+
+.address-cell{
+    font-size: 12px;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    font-size: 16px;
+  }
+  
+  .page-button {
+    background: none;
+    border: none;
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 16px;
+    margin: 0 10px;
+  }
+  
+ 
+  .page-button:disabled {
+    color: #ccc;
+    cursor: not-allowed;
+  }
+  
+  .page-info {
+    font-size: 16px;
+  }
+  
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Adjust as needed */
+}
+
+.filter-button,
+.sort-button {
+    padding: 10px 20px; /* Adjust padding for button size */
+    font-size: 12px; /* Font size */
+    border-radius: 30px; /* Rounded corners */
+    background: linear-gradient(38deg, #ef10ffe1, #00CDFFF6); /* Gradient background */
+    border: 1px solid rgba(255, 255, 255, 0.519); /* Border style */
+    color: #ffffff; /* Text color */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s ease; /* Smooth transition */
+    margin: 0 5px; /* Margin between buttons */
+}
+
+.filter-button:hover,
+.sort-button:hover {
+    background-color: #ffffff; /* Change background on hover */
+    color: #000000; /* Change text color on hover */
+}
+
+.filter-button:disabled,
+.sort-button:disabled {
+    background-color: #ccc; /* Disabled background color */
+    color: #666; /* Disabled text color */
+    cursor: not-allowed; /* Not allowed cursor */
+}
+
+.copy-button {
+   margin-top:10px;
+    padding: 6px 12px; /* Adjust padding for a more comfortable size */
+    font-size: 11px; /* Slightly larger font size for better readability */
+    border-radius: 20px; /* More rounded corners for a modern look */
+    background: linear-gradient(38deg, #ef10ffe1, #00CDFFF6); /* Gradient background */
+    border: none; /* Remove border for a cleaner look */
+    color: #ffffff; /* Text color */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth transition for background and transform */
+    margin-left: px; /* Space between address and button */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+}
+
+.copy-button:hover {
+    background-color: #ffffff; /* Change background on hover */
+    color: #000000; /* Change text color on hover */
+    transform: scale(1.05); /* Slightly enlarge the button on hover */
+}
+
+.copy-button:active {
+    transform: scale(0.95); /* Slightly shrink the button when clicked */
+}
+
+.chain-list {
+    font-size: 12px; /* Set font size to 11px */
+    padding: 5px 10px; /* Adjust padding for button size */
+    border-radius: 20px; /* Rounded corners */
+    background: linear-gradient(38deg, #ef10ffe1, #00CDFFF6); /* Gradient background */
+    border: none; /* Remove border for a cleaner look */
+    color: #ffffff; /* Text color */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth transition */
+    margin: 5 5px; /* Margin between buttons */
+}
+
+.chain-list:hover {
+    background-color: #ffffff; /* Change background on hover */
+    color: #000000; /* Change text color on hover */
+}

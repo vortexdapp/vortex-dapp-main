@@ -1,0 +1,111 @@
+
+.dashboard-container {
+    margin: 20px;
+    padding: 20px;
+    background-color: #0000006c;
+    border-radius: 10px;
+    text-align: center;
+  }
+
+
+  .subtitledashboard{
+    margin:20px;
+    color:white;
+  }
+ 
+  .success-message2{color:white;
+  margin-bottom:20px;}
+
+  .your-token{font-size:20px;
+    margin-top:10px;
+    margin-bottom:10px;}
+    
+  .connected-wallet{font-size:12px;}
+
+  .dashboard-container h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #fff;
+  }
+
+  .a{color:white;}
+
+  .white-text {
+    color: white;
+}
+
+.white-text a {color:white;}
+
+.subtitledashboard{margin-bottom:30px;
+  margin-top:10px;}
+
+  .titledashboard{padding:10px;
+margin-top:1px;
+}
+
+.main-dashboard-text{margin-bottom:10px;
+padding:10px;}
+
+  .token-image {
+    max-width: 100px; /* Set the maximum width to 100px or any size you prefer */
+    height: auto; /* Maintain the aspect ratio */
+    display: block; /* Make the image a block-level element */
+    margin: 0 auto; /* Center the image horizontally */
+    margin-bottom:20px;
+    padding: 10px 0; /* Optional: adds some space above and below the image */
+}
+  
+  .wallet-status {
+    margin-bottom: 20px;
+    margin-top:20px;
+  
+  }
+  
+  .wallet-status p {
+    font-size: 15px;
+  }
+  
+  .token-info p {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+  
+  .create-pair-button {
+    margin-top: 20px;
+  }
+  
+  .create-pair-button button {
+    background: linear-gradient(38deg, #ef10ffe1, /* purple */ #ff6f00f6);
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  .create-pair-button button:hover {
+    background-color: #0056b3;
+  }
+
+  .swap-container {margin-top:30px;
+  }
+  
+  .navigation-links {
+    margin-top: 20px;
+  }
+
+  p{color:#fff;}
+
+  .navigation-links a {
+    font-size: 16px;
+    color: #f4f4f4;
+    text-decoration: none;
+  }
+  
+  .navigation-links a:hover {
+    text-decoration: underline;
+  }
+  
+
+  

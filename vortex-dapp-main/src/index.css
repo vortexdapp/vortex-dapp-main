@@ -1,0 +1,9 @@
+body {
+  margin: 0;
+  font-family: "Space Grotesk", sans-serif;
+  font-optical-sizing: auto;
+  }
+
+code {
+  font-family: "Space Grotesk", sans-serif;/* Updated font-family */
+}

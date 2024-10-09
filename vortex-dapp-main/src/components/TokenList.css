@@ -1,0 +1,86 @@
+.tokens-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.tokens-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.icon-link2 {
+    margin-right: 10px; 
+    margin-left:10px;/* Adjust space between icons */
+    
+    display: inline-block; /* Ensures margin applies correctly */
+    vertical-align: middle; /* Aligns icons nicely if text is also in line */
+  }
+  
+  .icon2 {
+    font-size: 18 px; /* Adjusts the size of the icons */
+    color: #ffffff; /* Example to set the color, adjust as needed */
+    margin-top:15px;
+  }
+
+
+.deployedtokenstitle {
+  margin-bottom:10px;
+    font-size:24px;}
+
+    
+.subtitletokens{margin-top:10px;
+margin-bottom:50px;}
+
+
+.token-card {
+    background: #00000043;
+    border: 1px solid #ddd;
+    border-radius: 24px; /* Increased border radius for more rounded corners */
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centers children horizontally */
+    justify-content: center; /* Centers children vertically */
+    text-align: center; 
+}
+
+.token-image {
+    width: 150px;  /* Set width */
+    height: 150px; /* Set height equal to width to make it square */
+    object-fit: cover; /* Covers the area without stretching the image */
+    display: block; /* Removes any extra space below the image in an inline-block context */
+    margin-top: 15px; /* Centers the image horizontally if the parent container is wider */
+    border-radius:360px;
+}
+
+
+.trade-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.3s ease;
+  }
+
+
+.token-info {
+    padding: 15px;
+}
+
+.token-title {
+    margin: 10px 0 5px;
+    color: #ffffff;
+    font-size:18px;
+}
+
+.token-deployer {
+    font-size: 13px;
+    color: #ffffff;
+    font-weight: 200;
+}

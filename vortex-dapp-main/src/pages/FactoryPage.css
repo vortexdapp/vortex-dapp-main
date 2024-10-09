@@ -1,0 +1,271 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background-image: url('https://i.imgur.com/EeSiiMV.jpeg'); /* Background image */
+    background-size: cover;
+    background-attachment: fixed;
+}
+
+.titlefactory {font-size:30px;
+    text-align: center;
+    color: white;
+    padding-right:250px;    
+    padding-left:250px;
+   /* Add some top margin to the title */
+    }
+
+.subtitlefactory {font-size:18px;
+
+    margin-top:-20px;
+    font-weight: 300;
+    margin-bottom: 20px;
+}
+
+.token_address_message{   color: white;
+    margin-top: 30px; /* Increased top margin */
+    margin-bottom: 30px; /* Added bottom margin */
+    font-size: 0.9rem;
+}
+.token_address_message a{color:white;}
+.factory-container {
+
+    border: 1px solid #cccccc81;
+    border-radius: 30px;
+    background-color: #0000006c;
+    
+    padding-left: 50px;
+    padding-right: 50px;
+    color:white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Vertically center */
+    align-items: center; /* Horizontally center */
+    text-align: center;
+ margin-top:-150px;
+}
+
+
+
+.center-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+@media only screen and (max-width: 700px) {
+    .center-container {
+        align-items: flex-start;
+        padding-top: 0px;
+        min-height: 100vh;
+        box-sizing: border-box;
+    }
+
+    .factory-container {
+        padding: 0px 30px;
+        margin: -40px 0px 0px 10px;
+        width: 100%;
+        max-height: 100vh;
+        border: 0px solid #ffffff00;
+        border-radius: 30px;
+        background-color: #00000000;
+      
+    }
+
+    .createerc {padding-top:10px;}
+    .titlefactory {
+        font-size: 20px;
+        padding-right: 10px;
+        padding-left: 10px;
+        margin-top: 10px;
+    }
+
+    .subtitlefactory {
+        font-size: 14px;
+        margin-top: 10px;
+        margin-right: 10px;
+        margin-left: 10px;
+    }
+
+    .token_address_message {
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+
+    .custom-file-input {
+        margin-top: 10px;
+    }
+
+    .deploy-button {
+      
+        margin-bottom: 15px;
+    }
+}
+
+.token-form label {
+    display: block;
+    margin-bottom: 10px;
+}
+
+input[type="text"],
+input[type="number"] {
+    width: 100%;
+    padding: 8px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 30px;
+    box-sizing: border-box;
+    font-family: "Space Grotesk", sans-serif;
+
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus {
+    outline: none;
+    border-color: #007bff;
+}
+
+.input {
+
+    margin-bottom: 13px;
+}
+
+button.deploy-button {
+    padding: 7px 20px;
+    
+    margin-bottom:20px;
+    font-size: 16px;
+    border-radius: 30px;
+    /* Gradient background */
+    background: linear-gradient(38deg, #ef10ffe1, /* purple */ #00CDFFF6); /* Replace #FF5733 with your desired color */
+    border: 1px solid rgba(255, 255, 255, 0.519);
+    color: #ffffff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-style: normal;
+    font-family: "Space Grotesk", sans-serif;
+    font-weight: 600;
+}
+
+
+button.deploy-button:hover {
+    background-color: #ffffff;
+    font-style: normal;
+    font-size: 16px;
+    font-family: "Space Grotesk", sans-serif;
+    font-weight: 600;
+}
+
+
+.contract-address {
+    margin-top: 20px;
+    font-size: 16px;
+    font-style: italic;
+}
+
+
+
+  
+  h3 {
+    text-align: center;
+    color: white;
+    margin-bottom:-60px;
+    
+    font-size: 16px;
+    
+  }
+
+  
+.start-button {
+    padding: 7px 20px;
+    margin-top:10px;
+    font-size: 16px;
+    border-radius: 30px;
+    /* Gradient background */
+    background: linear-gradient(38deg, #ef10ffe1, /* purple */ #00CDFFF6); /* Replace #FF5733 with your desired color */
+    border: 1px solid rgba(255, 255, 255, 0.519);
+    color: #ffffff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-style: normal;
+    font-weight: 400;
+    text-decoration: none;
+    font-family: 'Comfortaa', sans-serif; /* Updated font-family */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+
+.start-button:hover {
+    background-color: #0056b3;
+}
+  
+.custom-file-input {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+    cursor: pointer;
+    padding: 7px 25px;
+    background-color: #00000027;
+    border: 1px solid #ccc;
+    border-radius: 30px;
+    font-size: 16px;
+    margin-bottom:20px;
+}
+
+.custom-file-input input[type="file"] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.custom-file-input span {
+    display: inline-block;
+    pointer-events: none;
+}
+
+.connected-wallet {
+    font-size: 14px;
+    text-align: center;
+    margin-top: -10px;
+    margin-bottom:20px;
+}
+
+.error-message {
+    font-size: 12px; /* Smaller font size */
+    color: #ffffff; /* Typical error message color */
+}
+
+/* Styling the paragraph */
+.token_address_message {
+    margin-top:20px;
+    font-size: 0.9rem; /* Adjust the size as needed */
+    color: #ffffff; /* Example color */
+}
+
+.info-footer {
+    margin-top: -50px; /* Space above the footer */
+    padding: 10px; /* Padding for the footer */
+    background-color: #0000006c; /* Semi-transparent background */
+    color: white; /* Text color */
+    border-radius: 10px; /* Rounded corners */
+    text-align: center; /* Center the text */
+    max-width: 1000px; /* Limit the width of the box */
+    margin-left: auto; /* Center horizontally */
+    margin-right: auto; /* Center horizontally */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+}
+
+.info-footer a {
+    color: #00CDFFF6; /* Link color */
+    text-decoration: underline; /* Underline links */
+}
+
+.info-footer a:hover {
+    color: #ffffff; /* Change link color on hover */
+}
