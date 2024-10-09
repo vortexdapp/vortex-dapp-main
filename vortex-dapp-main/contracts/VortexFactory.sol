@@ -25,7 +25,7 @@ contract MyFactory {
     ISwapRouter public swapRouter;
     IQuoterV2 public quoter;
     FactoryHelper public factoryHelper;
-    ILocker public locker;
+    ILiquidityLocker public locker;
     address public owner;
     address payable public stakingAddress;
     address public lockerAddress;
@@ -94,7 +94,7 @@ contract MyFactory {
         positionManager = INonfungiblePositionManager(_positionManager);
         uniswapFactory = IUniswapV3Factory(_uniswapFactory);
         swapRouter = ISwapRouter(_swapRouter);
-        locker = ILocker(_lockerAddress);
+        locker = ILiquidityLocker(_lockerAddress);
         nftAddress = _positionManager;
         weth = _weth;
         owner = msg.sender;  
@@ -292,15 +292,16 @@ function swapTokensForWETH(uint256 amountIn, address tokenAddress) internal retu
     }
 
         // Call addLiquidityHelper and add lp
-        (poolAddress, tokenId) = factoryHelper.addLiquidityHelper(token0, token1, token0amount, token1amount);
+        //(poolAddress, tokenId) = factoryHelper.addLiquidityHelper(token0, token1, token0amount, token1amount);
 
-        // Approve the locker contract to manage the liquidity NFT
+        /* // Approve the locker contract to manage the liquidity NFT
         IERC721(address(positionManager)).approve(lockerAddress, tokenId);
 
         uint256 duration = lockTime1; 
 
         // Lock the liquidity NFT
-        uint256 lockID = ILocker(lockerAddress).lockLiquidity(address(positionManager), tokenId, duration, address(this));
+        uint256 lockID = ILiquidityLocker(lockerAddress).lockLiquidity(address(positionManager), tokenId, duration, address(this)); */
+        uint256 lockID = 0;
 
     // Store the token details in the array
     allTokens.push(TokenDetails({
@@ -384,7 +385,7 @@ function resetNoFeeDays(uint256 tokenId) internal {
         uint256 index = tokenIndex[tokenId]; 
 
             // Collect fees from the locker
-            (uint256 amount0, uint256 amount1) = ILocker(lockerAddress).collectFees(tokenId, address(this));
+            (uint256 amount0, uint256 amount1) = ILiquidityLocker(lockerAddress).collectFees(tokenId, address(this));
             emit FeesCollected(tokenId, amount0, amount1);
 
             // Determine token0 and token1
@@ -507,14 +508,14 @@ function relock(uint256 _tokenId, uint256 _lockID) external onlyAuth returns(uin
     uint256 index = tokenIndex[_tokenId];
 
     // Unlock first
-    ILocker(lockerAddress).unlockLiquidity( _lockID, address(this));
+    ILiquidityLocker(lockerAddress).unlockLiquidity( _lockID, address(this));
 
     // Approve the locker to manage the NFT
     approveNFT(_tokenId, lockerAddress);
 
     uint256 _duration = lockTime2;
     
-    lockID = ILocker(lockerAddress).lockLiquidity(address(positionManager), _tokenId, _duration, address(this));
+    lockID = ILiquidityLocker(lockerAddress).lockLiquidity(address(positionManager), _tokenId, _duration, address(this));
 
     allTokens[index].lockId = lockID;
     allTokens[index].isLocked = true;
@@ -576,7 +577,7 @@ function sqrt(uint256 y) internal pure returns (uint256 z) {
         require(msg.sender == tokenOwner, "Caller is not the token creator");
 
         // If 7 days have passed since launch unlock the liquidity
-        ILocker lockerContract = ILocker(lockerAddress);
+        ILiquidityLocker lockerContract = ILiquidityLocker(lockerAddress);
         lockerContract.unlockLiquidity(lockId, address(this));
 
         storeLockID(tokenId, lockId, false, 0);
@@ -597,7 +598,7 @@ function sqrt(uint256 y) internal pure returns (uint256 z) {
     function removeInitialLiquidity(uint256 tokenId, uint256 lockId) external onlyAuth {
 
         // If 7 days have passed since launch unlock the liquidity
-        ILocker lockerContract = ILocker(lockerAddress);
+        ILiquidityLocker lockerContract = ILiquidityLocker(lockerAddress);
         lockerContract.unlockLiquidity(lockId, address(this));
 
         uint256 wethAmountToRemove = wethProvided; 
@@ -655,7 +656,7 @@ function sqrt(uint256 y) internal pure returns (uint256 z) {
     function removeDeadLiquidity(uint256 tokenId, uint256 lockId) external onlyOwner {
 
         // Unlock the liquidity
-        ILocker lockercontract = ILocker(lockerAddress);
+        ILiquidityLocker lockercontract = ILiquidityLocker(lockerAddress);
         lockercontract.unlockLiquidity(lockId, address(this));
 
         // Fetch the position details

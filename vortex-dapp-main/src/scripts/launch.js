@@ -42,9 +42,9 @@ async function main() {
   const tokenSupply = "100";
 
   // Replace this with the address of the deployed factory contract
-  const factoryAddress = "0x61f4B3b8376DE24c0c6BAa6E1c4091D28A82EC31";
+  const factoryAddress = "0x159453adC8e55676B6791ec8599e4807cFDF5393";
 
-  const lockerAddress = "0x0cee69A58395926498741e226F057574204884D0";
+  const lockerAddress = "0x9e3d25d38013b4a86e9B6F4bA867d7f2bF75DD9f";
 
   // Connect to the factory contract using its ABI and address
   const Factory = await ethers.getContractFactory("MyFactory");
@@ -54,7 +54,7 @@ async function main() {
   const locker = await LiquidityLocker.attach(lockerAddress);
 
   // Amount of ETH to swap
-  const amountIn = ethers.parseUnits("0.0000001", 18);
+  const amountIn = ethers.parseUnits("0.0000000", 18);
 
   const liquidityAmount = ethers.parseUnits("0.0000012", 18);
 

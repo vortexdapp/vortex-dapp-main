@@ -19,7 +19,7 @@ contract FactoryHelper {
     ISwapRouter public swapRouter;
     IQuoterV2 public quoter;
     FactoryHelper public factoryHelper;
-    ILocker public locker;
+    ILiquidityLocker public locker;
     address public owner;
     address public nftAddress;
     address public lockerAddress;
@@ -32,7 +32,7 @@ contract FactoryHelper {
         positionManager = INonfungiblePositionManager(_positionManager);
         uniswapFactory = IUniswapV3Factory(_uniswapFactory);
         swapRouter = ISwapRouter(_swapRouter);
-        locker = ILocker(_lockerAddress);
+        locker = ILiquidityLocker(_lockerAddress);
         nftAddress = _positionManager;
         weth = _weth;
         owner = msg.sender;  
@@ -197,7 +197,7 @@ interface ISwapRouter {
 }
 
 
-interface ILocker {
+interface ILiquidityLocker {
     function lockLiquidity(address _nftAddress, uint256 _tokenId, uint256 _duration, address factory) external returns (uint256 lockId);
     function unlockLiquidity(uint256 _lockId, address factory) external;
     function collectFees(uint256 tokenId, address factory) external returns(uint256 amount0, uint256 amount1);
