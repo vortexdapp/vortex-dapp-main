@@ -3,40 +3,35 @@ const { ethers } = require("hardhat");
 async function main() {
   //Setting contract addresses
   const uniswapV3Factory_address = process.env.SEPOLIA_UNISWAP_FACTORY;
-  //
   const positionManager_address = process.env.SEPOLIA_POSITION_MANAGER;
-
   const swap_router = process.env.SEPOLIA_SWAP_ROUTER;
-  //
   const WETH_address = process.env.SEPOLIA_WETH;
-  //
-  const teamWallet = "0x25038e5ED41aEE965f3B229238dAd5Cd2234b193";
-
-  //const teamWallet= "0x78516acac245f7ef9aa8f91c65f206268d3aeb4d"; - gnosis base
+  const teamWallet = process.env.TEAM_WALLET;
+  const quoter = process.env.SEPOLIA_QUOTER;
 
   const [deployer] = await ethers.getSigners();
 
   console.log("Deploying contracts with the account:", deployer.address);
 
   const MyLocker = await ethers.getContractFactory("LiquidityLocker");
+  const MyLockerDeployment = await MyLocker.deploy(positionManager_address);
 
-  let MyLockerDeployment;
-  try {
-    MyLockerDeployment = await MyLocker.deploy(positionManager_address);
-    console.log("MyLocker address:", MyLockerDeployment.target);
-  } catch (error) {
-    console.error("Error deploying MyLocker:", error);
-    return; // Exit if deployment fails
-  }
-
+  console.log("MyLocker address:", MyLockerDeployment.target);
   const lockerAddress = MyLockerDeployment.target;
 
-  console.log("Position Manager Address:", positionManager_address);
-  console.log("WETH Address:", WETH_address);
-  console.log("Uniswap V3 Factory Address:", uniswapV3Factory_address);
-  console.log("Swap Router Address:", swap_router);
-  console.log("Locker Address:", lockerAddress);
-  console.log("Team Wallet Address:", teamWallet);
+  const MyHelper = await ethers.getContractFactory("FactoryHelper");
+  const MyHelperDeployment = await MyHelper.deploy(
+    positionManager_address,
+    WETH_address,
+    uniswapV3Factory_address,
+    swap_router,
+    lockerAddress,
+    teamWallet,
+    quoter
+  );
+
+  console.log("MyHelper address:", MyHelperDeployment.target);
+  const helperAddress = MyHelperDeployment.target;
 
   const MyFactory = await ethers.getContractFactory("MyFactory");
   const myFactory = await MyFactory.deploy(
@@ -45,26 +40,12 @@ async function main() {
     uniswapV3Factory_address,
     swap_router,
     lockerAddress,
-    teamWallet
+    teamWallet,
+    quoter,
+    helperAddress
   );
   const factoryAddress = myFactory.target;
   console.log("MyFactory address:", myFactory.target);
-
-  /* // Wait a few seconds for the contract to be propagated
-  await new Promise((r) => setTimeout(r, 60000));
-
-  // Verify the contract
-  await hre.run("verify:verify", {
-    address: factoryAddress,
-    constructorArguments: [
-      positionManager_address,
-      WETH_address,
-      uniswapV3Factory_address,
-      swap_router,
-      lockerAddress,
-      teamWallet,
-    ], // Add constructor arguments if any
-  }); */
 
   // Deploy the SimpleStaking contract
   const SimpleStaking = await ethers.getContractFactory("SimpleStaking");
@@ -99,14 +80,10 @@ async function main() {
   console.log("Done!");
 
   // Amount of WETH to send (in Wei)
-  const amountInWei = ethers.parseUnits("0.00001", 18);
-
-  /* const txx = await factory.transferWETHToFactory(amountInWei);
-  await txx.wait();
-  console.log("WETH sent to the factory."); */
+  const amountInWei = ethers.parseUnits("0.00002", 18);
 
   // WETH ABI
-  const WETHAbi = require("../contracts/WETHabi.json");
+  const WETHAbi = require("./WETHabi.json");
 
   // Get the WETH contract instance
   const WETH = new ethers.Contract(WETH_address, WETHAbi, deployer);
