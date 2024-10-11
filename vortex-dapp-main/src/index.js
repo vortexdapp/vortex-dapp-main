@@ -1,13 +1,18 @@
+// src/index.js
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
-import App from "./App";
 import reportWebVitals from "./reportWebVitals";
+
+const MainApp =
+  process.env.REACT_APP_ENV === "telegram"
+    ? require("./TelegramApp").default
+    : require("./App").default;
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <App />
+    <MainApp />
   </React.StrictMode>
 );
 

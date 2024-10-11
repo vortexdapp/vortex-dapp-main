@@ -1,0 +1,104 @@
+/* General Dashboard Styling */
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 100vh;
+  background-color: #151515;
+  color: #e9e9e9;
+  padding: 20px;
+  padding-top: 40px; /* Padding at the top for the balance section */
+  text-align: center;
+}
+
+/* Balance Section */
+.balance {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 80%;
+  margin-bottom: 10px;
+}
+
+.balance-item {
+  display: flex;
+  align-items: center;
+  font-size: 1.2rem;
+  color: #f8f8f8;
+}
+
+.icon {
+  width: 24px;
+  height: 24px;
+  margin-right: 8px;
+}
+
+.image {
+  width: 300px;
+  margin-top: 20px;
+}
+
+/* Level Container */
+.level-container {
+  width: 80%;
+  margin: 10px auto 10px auto; /* Reduced margin-top for closer positioning to balance section */
+  text-align: center;
+}
+
+.level-text {
+  font-size: 1.2rem;
+  color: #f8f8f8;
+}
+
+/* Progress Bar Styling */
+.progress-bar {
+  width: 100%;
+  height: 20px;
+  background-color: #333;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(45deg, #007bff, #9b59b6);
+  transition: width 0.3s ease-in-out;
+  border-radius: 10px 0 0 10px;
+}
+
+/* Footer Menu Styling */
+.footer-menu {
+  display: flex;
+  justify-content: space-around;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 90%;
+  margin: 0 auto;
+  background-color: #1c1c1c;
+  padding: 15px 0;
+  border-radius: 10px;
+}
+
+.menu-item {
+  flex: 1;
+  text-align: center;
+  color: #e9e9e9;
+  font-size: 1rem;
+  text-decoration: none;
+  font-weight: bold;
+  padding: 10px;
+  transition: color 0.3s ease, background-color 0.3s ease;
+}
+
+.menu-item:hover {
+  color: #fff;
+  background-color: #007bff;
+}
+
+.menu-item:active {
+  background-color: #0056b3;
+}
