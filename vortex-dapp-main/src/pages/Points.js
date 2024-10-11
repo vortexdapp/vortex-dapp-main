@@ -34,6 +34,8 @@ const PointsPage = () => {
         <h3 className="subtitlefactory">
           Check your points and share your referral link
         </h3>
+        <h5 className="subtitlefactory">
+          Coming soon </h5>
       </div>
       <div className="center-container">
         <div className="points-page-container">
