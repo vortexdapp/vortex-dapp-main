@@ -4,7 +4,6 @@
   "private": true,
   "dependencies": {
     "@openzeppelin/contracts": "^5.0.2",
-    "@supabase/supabase-js": "^2.45.4",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -29,12 +28,16 @@
     "react-router-dom": "^6.23.0",
     "react-scripts": "5.0.1",
     "stream-http": "^3.2.0",
+    "telegraf": "^4.16.3",
+    "telegraph": "^0.8.22",
     "web-vitals": "^2.1.4",
     "xml2js": "^0.6.2"
   },
   "scripts": {
     "start": "react-scripts start",
+    "start-telegram": "cross-env REACT_APP_ENV=telegram react-scripts start",
     "build": "react-scripts build",
+    "build-telegram": "cross-env REACT_APP_ENV=telegram react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -58,6 +61,7 @@
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "cross-env": "^7.0.3",
     "hardhat": "^2.22.3"
   }
 }

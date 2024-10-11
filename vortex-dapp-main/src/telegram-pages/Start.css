@@ -1,0 +1,97 @@
+/* General Page Styling */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #151515; /* Light, subtle background color */
+  color: #e9e9e9; /* Dark text for better contrast */
+}
+
+/* Centered Content Container */
+.centered-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  text-align: center;
+  padding: 20px;
+}
+
+/* Logo Styling */
+.logo2 {
+  width: 120px; /* Adjust size as needed */
+  height: auto;
+  margin-bottom: 20px;
+}
+
+/* Title and Subtitle */
+.titlehome {
+  font-size: 2.5rem;
+  color: #f8f8f8; /* Vivid blue for branding */
+  margin: 0;
+  margin-bottom: 10px;
+}
+
+.subtitlehome {
+  font-size: 1rem;
+  color: #d5d5d5;
+  margin-top: 10px;
+  margin-bottom: 30px;
+}
+
+.home-button {
+  background: linear-gradient(
+    45deg,
+    #007bff,
+    #9b59b6
+  ); /* Starting gradient from blue to purple */
+  background-size: 200% 200%;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 30px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  animation: gradientAnimation 3s ease infinite; /* Animation for gradient */
+  transition: transform 0.3s ease;
+}
+
+/* Hover Effect */
+.home-button:hover {
+  transform: translateY(-3px); /* Lift effect on hover */
+}
+
+/* Active Effect */
+.home-button:active {
+  transform: translateY(0);
+}
+
+/* Gradient Animation */
+@keyframes gradientAnimation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Responsive Design for Mobile */
+@media (max-width: 768px) {
+  .titlehome {
+    font-size: 1.8rem;
+  }
+
+  .subtitlehome {
+    font-size: 1rem;
+  }
+
+  .home-button {
+    padding: 10px 25px;
+    font-size: 0.9rem;
+  }
+}

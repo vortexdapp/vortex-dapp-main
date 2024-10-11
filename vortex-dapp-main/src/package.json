@@ -1,0 +1,11 @@
+{
+  "scripts": {
+  "start": "react-scripts start",
+  "start-telegram": "REACT_APP_APP_ENV=telegram react-scripts start",
+  "build": "react-scripts build",
+  "build-telegram": "REACT_APP_APP_ENV=telegram react-scripts build",
+  "test": "react-scripts test",
+  "eject": "react-scripts eject"
+}
+
+}
