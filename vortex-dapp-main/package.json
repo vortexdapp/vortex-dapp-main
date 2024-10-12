@@ -37,8 +37,8 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "start-telegram": "react-scripts start --config index-telegram.js",
-    "build-telegram": "react-scripts build --config index-telegram.js"
+    "start-telegram": "react-scripts start index-telegram.js",
+    "build-telegram": "react-scripts build index-telegram.js"
   },
   "eslintConfig": {
     "extends": [
