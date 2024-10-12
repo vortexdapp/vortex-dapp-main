@@ -1,0 +1,66 @@
+/* General styling for the launch page */
+.launch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  text-align: center;
+  color: #fff; /* Adjust as needed */
+}
+
+/* Launch form styling */
+.launch-form {
+  display: flex;
+  flex-direction: column;
+  width: 80%;
+  max-width: 400px;
+  margin-top: 20px;
+}
+
+.launch-form label {
+  margin-bottom: 15px;
+  text-align: left;
+}
+
+.launch-form input {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.launch-button {
+  margin-top: 20px;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 5px;
+  color: #fff;
+  background-image: linear-gradient(90deg, #007bff, #0056b3);
+  cursor: pointer;
+  font-weight: bold;
+  transition: transform 0.3s ease;
+}
+
+.launch-button:hover {
+  transform: translateY(-3px);
+}
+
+/* Footer menu styling (reuse from Dashboard) */
+.footer-menu {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 30px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.menu-item {
+  color: #fff;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.menu-item:hover {
+  color: #aaa;
+}

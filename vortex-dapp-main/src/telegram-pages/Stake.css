@@ -1,0 +1,107 @@
+/* General styling for the stake page */
+.stake {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  width: 90%;
+  max-width: 600px;
+  text-align: center;
+  color: #000000; /* Softer white for better readability */
+}
+
+.stakee {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* Stake form styling */
+.stake-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 90%;
+  max-width: 400px;
+  margin-top: 20px;
+  padding: 15px;
+  border-radius: 10px;
+  color: #ff9800;
+  background-color: #282828; /* Darker background for the form */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+}
+
+.stake-form label {
+  width: 100%;
+  margin-bottom: 10px;
+  font-weight: bold;
+  color: #ffffff; /* Accent color for labels */
+}
+
+.stake-form input {
+  width: 100%;
+  max-width: 300px;
+  padding: 10px;
+  margin-top: 5px;
+  border-radius: 5px;
+  align-items: center;
+  border: 1px solid #555; /* Subtle border */
+  background-color: #1c1c1c; /* Darker input background */
+  color: #fff; /* White text */
+}
+
+/* Button group for actions */
+.button-group {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.action-button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 5px;
+  color: #fff;
+  background-image: linear-gradient(
+    90deg,
+    #ff9800,
+    #ff5722
+  ); /* Gradient from orange to red */
+  cursor: pointer;
+  font-weight: bold;
+  flex: 1;
+  margin: 0 5px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.action-button:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(255, 87, 34, 0.3); /* Orange shadow */
+}
+
+.action-button:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+/* Footer menu styling */
+.footer-menu {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 30px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.menu-item {
+  color: #ffffff; /* Orange for footer links */
+  text-decoration: none;
+  font-weight: bold;
+  transition: color 0.3s ease;
+}
+
+.menu-item:hover {
+  color: #ffffff; /* Darker orange on hover */
+}

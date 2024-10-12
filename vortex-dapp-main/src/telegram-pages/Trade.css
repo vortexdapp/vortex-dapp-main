@@ -1,0 +1,51 @@
+/* Trade.css */
+.trade-page {
+  padding: 20px;
+  text-align: center;
+  color: #f0f0f0;
+}
+
+.token-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+}
+
+.token-box {
+  width: 200px;
+  padding: 15px;
+  background-color: #1a1a1a;
+  border-radius: 10px;
+  border: 1px solid #333;
+  text-align: center;
+}
+
+.token-box h3 {
+  color: #ff9800;
+}
+
+.trade-container {
+  padding: 20px;
+  background-color: #1a1a1a;
+  border-radius: 10px;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.trade-button,
+.back-button {
+  margin-top: 15px;
+  padding: 8px;
+  border: none;
+  border-radius: 5px;
+  background: linear-gradient(135deg, #ff9800, #ff5722);
+  color: #fff;
+  cursor: pointer;
+}
+
+.footer-menu {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 20px;
+}
