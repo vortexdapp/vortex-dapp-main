@@ -52,18 +52,6 @@ bot.start((ctx) => {
   });
 });
 
-/* // Handle web_app_data (optional)
-bot.on("web_app_data", async (ctx) => {
-  const data = JSON.parse(ctx.message.web_app_data.data);
-  if (data.action === "createToken") {
-    const { tokenAddress } = data;
-    ctx.reply(
-      `Your token has been created successfully! Address: ${tokenAddress}`
-    );
-  }
-  // Handle other actions similarly
-}); */
-
 // Start the Bot
 bot
   .launch()

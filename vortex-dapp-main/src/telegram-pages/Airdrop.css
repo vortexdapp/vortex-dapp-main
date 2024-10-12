@@ -1,0 +1,72 @@
+.airdrop {
+  text-align: center;
+  padding: 20px;
+  color: #f0f0f0;
+}
+
+.task {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background-color: #1a1a1a;
+  padding: 20px;
+  border-radius: 8px;
+  margin-top: 15px;
+  text-decoration: none;
+  color: inherit;
+  transition: background-color 0.3s;
+}
+
+.task:hover {
+  background-color: #292929;
+}
+
+.task span {
+  flex-grow: 1;
+  text-align: left;
+}
+
+.task button {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #007bff;
+  color: #fff;
+  cursor: pointer;
+}
+
+.task button[disabled] {
+  background-color: #28a745;
+  cursor: default;
+}
+
+.footer-menu {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 30px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.menu-item {
+  color: #ff9800;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.menu-item:hover {
+  color: #ff5722;
+}
+
+.background-img {
+  background-image: url("../assets/background1.png"); /* Update with your image path */
+  background-size: cover; /* Ensures the image covers the entire container */
+  background-position: center; /* Centers the image */
+  background-repeat: no-repeat; /* Prevents the image from repeating */
+  min-height: 100vh; /* Ensures it covers the full viewport height */
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
