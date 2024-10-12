@@ -11,21 +11,23 @@ const Trade = ({ tokenList }) => {
   };
 
   return (
-    <div className="trade-page">
-      <h2>Available Tokens for Trading</h2>
-      <div className="token-list">
-        {tokenList.map((token) => (
-          <div className="token-box" key={token.address}>
-            <h3>{token.name}</h3>
-            <p>{token.symbol}</p>
-            <button
-              className="trade-button"
-              onClick={() => handleTradeClick(token)}
-            >
-              Trade
-            </button>
-          </div>
-        ))}
+    <div className="background-img">
+      <div className="trade-page">
+        <h2>Available Tokens for Trading</h2>
+        <div className="token-list">
+          {tokenList.map((token) => (
+            <div className="token-box" key={token.address}>
+              <h3>{token.name}</h3>
+              <p>{token.symbol}</p>
+              <button
+                className="trade-button"
+                onClick={() => handleTradeClick(token)}
+              >
+                Trade
+              </button>
+            </div>
+          ))}
+        </div>
       </div>
       <div className="footer-menu">
         <Link to="/launch" className="menu-item">

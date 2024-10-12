@@ -140,48 +140,50 @@ const Dashboard = () => {
   }, [userAddress]);
 
   return (
-    <div className="dashboard">
-      <div className="balance">
-        <div className="balance-item">
-          <img src={coinIcon} alt="Coins" className="icon" />
-          <span>{coinBalance}</span>
+    <div className="background-image">
+      <div className="dashboard">
+        <div className="balance">
+          <div className="balance-item">
+            <img src={coinIcon} alt="Coins" className="icon" />
+            <span>{coinBalance}</span>
+          </div>
+          <div className="balance-item">
+            <img src={gemIcon} alt="Gems" className="icon" />
+            <span>{gemBalance}</span>
+          </div>
         </div>
-        <div className="balance-item">
-          <img src={gemIcon} alt="Gems" className="icon" />
-          <span>{gemBalance}</span>
+
+        {userAddress && <p>Connected: {userAddress}</p>}
+        <p>Current Chain: {connectedChain}</p>
+
+        <div className="level-container">
+          <span className="level-text">Level {level}</span>
+          <div className="progress-bar">
+            <div
+              className="progress-fill"
+              style={{ width: `${progress}%` }}
+            ></div>
+          </div>
         </div>
+
+        {userAddress ? (
+          <button className="connect-button" onClick={disconnectWallet}>
+            Disconnect Wallet
+          </button>
+        ) : (
+          <button className="connect-button" onClick={connectMetaMask}>
+            Connect MetaMask
+          </button>
+        )}
+
+        <select onChange={handleNetworkChange} value={selectedNetwork}>
+          {networkOptions.map((network) => (
+            <option key={network.chainId} value={network.chainId}>
+              {network.name}
+            </option>
+          ))}
+        </select>
       </div>
-
-      {userAddress && <p>Connected: {userAddress}</p>}
-      <p>Current Chain: {connectedChain}</p>
-
-      <div className="level-container">
-        <span className="level-text">Level {level}</span>
-        <div className="progress-bar">
-          <div
-            className="progress-fill"
-            style={{ width: `${progress}%` }}
-          ></div>
-        </div>
-      </div>
-
-      {userAddress ? (
-        <button className="connect-button" onClick={disconnectWallet}>
-          Disconnect Wallet
-        </button>
-      ) : (
-        <button className="connect-button" onClick={connectMetaMask}>
-          Connect MetaMask
-        </button>
-      )}
-
-      <select onChange={handleNetworkChange} value={selectedNetwork}>
-        {networkOptions.map((network) => (
-          <option key={network.chainId} value={network.chainId}>
-            {network.name}
-          </option>
-        ))}
-      </select>
 
       <div className="footer-menu">
         <Link to="/Dashboard" className="menu-item">

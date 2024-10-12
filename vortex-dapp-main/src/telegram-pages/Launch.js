@@ -5,28 +5,30 @@ import "./Launch.css";
 
 const Launch = () => {
   return (
-    <div className="launch">
-      <h2>Token Launch Platform</h2>
-      <p>
-        Welcome to the Vortex Token Launch platform. Here you can create and
-        launch your own token!
-      </p>
+    <div className="background-img">
+      <div className="launch">
+        <h2>Token Launch Platform</h2>
+        <p>
+          Welcome to the Vortex Token Launch platform. Here you can create and
+          launch your own token!
+        </p>
 
-      {/* Token Launch Form */}
-      <div className="launch-form">
-        <label>
-          Token Name:
-          <input type="text" placeholder="Enter token name" />
-        </label>
-        <label>
-          Token Symbol:
-          <input type="text" placeholder="Enter token symbol" />
-        </label>
-        <label>
-          Total Supply:
-          <input type="number" placeholder="Enter total supply" />
-        </label>
-        <button className="launch-button">Create Token</button>
+        {/* Token Launch Form */}
+        <div className="launch-form">
+          <label>
+            Token Name:
+            <input type="text" placeholder="Enter token name" />
+          </label>
+          <label>
+            Token Symbol:
+            <input type="text" placeholder="Enter token symbol" />
+          </label>
+          <label>
+            Total Supply:
+            <input type="number" placeholder="Enter total supply" />
+          </label>
+          <button className="launch-button">Create Token</button>
+        </div>
       </div>
 
       {/* Footer Menu */}

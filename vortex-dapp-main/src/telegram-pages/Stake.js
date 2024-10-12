@@ -5,7 +5,7 @@ import "./Stake.css";
 
 const Stake = () => {
   return (
-    <div className="stakee">
+    <div className="background-img">
       <div className="stake">
         <h2>Stake Your Tokens</h2>
         <p>Earn rewards by staking your Vortex tokens!</p>

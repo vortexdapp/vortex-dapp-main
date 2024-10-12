@@ -11,40 +11,42 @@ const Airdrop = () => {
   const handleTelegramVerify = () => setTelegramVerified(true);
 
   return (
-    <div className="airdrop">
-      <h2>Airdrop Tasks</h2>
-      <p>Complete tasks to earn gems:</p>
+    <div className="background-img">
+      <div className="airdrop">
+        <h2>Airdrop Tasks</h2>
+        <p>Complete tasks to earn gems:</p>
 
-      <Link to="/daily-checkin" className="task">
-        <span>Daily Check-In</span>
-        <button>Go to Check-In</button>
-      </Link>
+        <Link to="/daily-checkin" className="task">
+          <span>Daily Check-In</span>
+          <button>Go to Check-In</button>
+        </Link>
 
-      <a
-        href="https://twitter.com/YOUR_TWITTER"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="task"
-        onClick={handleTwitterVerify}
-      >
-        <span>Follow us on Twitter</span>
-        <button disabled={twitterVerified}>
-          {twitterVerified ? "Verified ✓" : "Verify"}
-        </button>
-      </a>
+        <a
+          href="https://twitter.com/YOUR_TWITTER"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="task"
+          onClick={handleTwitterVerify}
+        >
+          <span>Follow us on Twitter</span>
+          <button disabled={twitterVerified}>
+            {twitterVerified ? "Verified ✓" : "Verify"}
+          </button>
+        </a>
 
-      <a
-        href="https://t.me/YOUR_TELEGRAM_GROUP"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="task"
-        onClick={handleTelegramVerify}
-      >
-        <span>Join our Telegram group</span>
-        <button disabled={telegramVerified}>
-          {telegramVerified ? "Verified ✓" : "Verify"}
-        </button>
-      </a>
+        <a
+          href="https://t.me/YOUR_TELEGRAM_GROUP"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="task"
+          onClick={handleTelegramVerify}
+        >
+          <span>Join our Telegram group</span>
+          <button disabled={telegramVerified}>
+            {telegramVerified ? "Verified ✓" : "Verify"}
+          </button>
+        </a>
+      </div>
 
       <div className="footer-menu">
         <Link to="/launch" className="menu-item">
