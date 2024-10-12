@@ -17,6 +17,7 @@ contract SimpleStaking is ReentrancyGuard {
     uint256 public lastRewardTime;
     uint256 public constant REWARD_INTERVAL = 7 days;
     uint256 public rewardRate; // Rewards distributed per second
+uint256 public constant MIN_UNSTAKE_AMOUNT = 1e15; // 0.001 ETH in wei
 
     event Stake(address indexed user, uint256 amount);
     event Unstake(address indexed user, uint256 amount);
@@ -56,7 +57,8 @@ contract SimpleStaking is ReentrancyGuard {
     }
 
     function stake() external payable nonReentrant {
-        require(msg.value > 0, "Cannot stake 0 ETH");
+         require(msg.value >= MIN_UNSTAKE_AMOUNT, "Please stake at least 0.001 ETH");
+        
         updatePool();
 
         IWETH(weth).deposit{value: msg.value}();
@@ -121,6 +123,13 @@ contract SimpleStaking is ReentrancyGuard {
     }
 
     function requestUnstake(uint256 amount) public nonReentrant {
+
+         // Check that the unstake amount is at least the minimum required
+    require(amount >= MIN_UNSTAKE_AMOUNT, "Unstake amount too low");
+
+        updatePool();
+
+
         require(stakes[msg.sender] >= amount, "Insufficient staked balance");
 
         uint256 wethBalance = IWETH(weth).balanceOf(address(this));
@@ -180,28 +189,24 @@ contract SimpleStaking is ReentrancyGuard {
         lastRewardTime = block.timestamp;
     }
 
-    function addRewards() external payable onlyAuth {
-        require(msg.value > 0, "No rewards to add");
+  function addRewards() external payable onlyAuth {
+    require(msg.value > 0, "No rewards to add");
 
-        // Deposit ETH to WETH
-        IWETH(weth).deposit{value: msg.value}();
+    // Update the pool to ensure all accrued rewards are distributed before adding new ones
+    updatePool();
 
-        // First, update the pool to process any pending rewards
-        updatePool();
+    // Deposit ETH into WETH
+    IWETH(weth).deposit{value: msg.value}();
 
-        // Add the newly deposited rewards to totalRewards
-        totalRewards += msg.value;
-        emit TotalRewardsUpdated(totalRewards);
+    uint256 leftoverTime = (block.timestamp - lastRewardTime) % REWARD_INTERVAL;
+    totalRewards += msg.value;
+    rewardRate = (totalRewards / REWARD_INTERVAL) * (leftoverTime / REWARD_INTERVAL);
+    lastRewardTime = block.timestamp;
 
-        // Recalculate rewardRate based on the updated totalRewards and REWARD_INTERVAL
-        rewardRate = totalRewards / REWARD_INTERVAL;
+    emit RewardsAdded(msg.value);
+}
 
-        // Update lastRewardTime to the current block timestamp
-        lastRewardTime = block.timestamp;
 
-        // Emit event indicating new rewards have been added
-        emit RewardsAdded(msg.value);
-    }
 
     function pendingReward(address _user) external view returns (uint256) {
         uint256 _accRewardPerShare = accRewardPerShare;
