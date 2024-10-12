@@ -22,7 +22,7 @@ const Airdrop = () => {
         </Link>
 
         <a
-          href="https://twitter.com/YOUR_TWITTER"
+          href="https://twitter.com/vortexdapp"
           target="_blank"
           rel="noopener noreferrer"
           className="task"
@@ -35,7 +35,7 @@ const Airdrop = () => {
         </a>
 
         <a
-          href="https://t.me/YOUR_TELEGRAM_GROUP"
+          href="https://t.me/vortexdapp"
           target="_blank"
           rel="noopener noreferrer"
           className="task"

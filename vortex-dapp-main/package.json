@@ -36,11 +36,9 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "start-telegram": "cross-env REACT_APP_ENV=telegram react-scripts start",
     "build": "react-scripts build",
-    "build-telegram": "cross-env REACT_APP_ENV=telegram react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start-telegram": "react-scripts start --config index-telegram.js",
+    "build-telegram": "react-scripts build --config index-telegram.js"
   },
   "eslintConfig": {
     "extends": [
