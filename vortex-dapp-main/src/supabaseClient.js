@@ -2,8 +2,8 @@
 import { createClient } from "@supabase/supabase-js";
 
 // Retrieve environment variables
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
+const supabaseUrl = "https://yqlzxpdtjkhqjiddbbko.supabase.co";
+const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlxbHp4cGR0amtocWppZGRiYmtvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mjg0MjMzNzMsImV4cCI6MjA0Mzk5OTM3M30.pIj-0AKNry6hbbK5bi4jvX1JTuMo1BdMv_crVGci15g";
 
 // Validate environment variables
 if (!supabaseUrl || !supabaseAnonKey) {
