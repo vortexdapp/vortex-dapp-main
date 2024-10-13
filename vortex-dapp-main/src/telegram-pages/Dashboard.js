@@ -17,15 +17,17 @@ const Dashboard = () => {
   // Function to connect to Telegram Wallet
   const connectTelegramWallet = () => {
     if (window.Telegram && window.Telegram.WebApp) {
-      const { user } = window.Telegram.WebApp.initDataUnsafe || {};
-      if (user && user.id) {
-        setUserAddress(user.id);
-        console.log("Connected to Telegram Wallet with user ID:", user.id);
-      } else {
-        alert(
-          "User data not available. Ensure that you are in the Telegram app."
-        );
-      }
+      window.Telegram.WebApp.ready(() => {
+        const { user } = window.Telegram.WebApp.initDataUnsafe || {};
+        if (user && user.id) {
+          setUserAddress(user.id);
+          console.log("Connected to Telegram Wallet with user ID:", user.id);
+        } else {
+          alert(
+            "User data not available. Ensure that you are in the Telegram app."
+          );
+        }
+      });
     } else {
       alert(
         "Telegram WebApp is not available. Please try within the Telegram app."
