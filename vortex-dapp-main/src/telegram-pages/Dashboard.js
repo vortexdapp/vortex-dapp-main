@@ -20,7 +20,10 @@ const Dashboard = () => {
       const walletAddress = window.Telegram.WebApp.initDataUnsafe?.user?.id;
       if (walletAddress) {
         setUserAddress(walletAddress);
-        console.log("Connected to Telegram with address:", walletAddress);
+        console.log(
+          "Connected to Telegram Wallet with address:",
+          walletAddress
+        );
       } else {
         console.error("Telegram Wallet not found.");
       }
