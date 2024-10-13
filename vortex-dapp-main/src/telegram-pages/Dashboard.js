@@ -15,20 +15,21 @@ const Dashboard = () => {
   const progress = ((totalPoints % levelUpThreshold) / levelUpThreshold) * 100;
 
   // Function to connect to Telegram Wallet
-  const connectTelegramWallet = async () => {
+  const connectTelegramWallet = () => {
     if (window.Telegram && window.Telegram.WebApp) {
-      const walletAddress = window.Telegram.WebApp.initDataUnsafe?.user?.id;
-      if (walletAddress) {
-        setUserAddress(walletAddress);
-        console.log(
-          "Connected to Telegram Wallet with address:",
-          walletAddress
-        );
+      const { user } = window.Telegram.WebApp.initDataUnsafe || {};
+      if (user && user.id) {
+        setUserAddress(user.id);
+        console.log("Connected to Telegram Wallet with user ID:", user.id);
       } else {
-        console.error("Telegram Wallet not found.");
+        alert(
+          "User data not available. Ensure that you are in the Telegram app."
+        );
       }
     } else {
-      console.error("Telegram WebApp is not available.");
+      alert(
+        "Telegram WebApp is not available. Please try within the Telegram app."
+      );
     }
   };
 
