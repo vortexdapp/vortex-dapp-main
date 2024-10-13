@@ -13,7 +13,7 @@
 
 /* Styling for background image */
 .background-image {
-  background-image: url("../assets/background1.png"); /* Update with your image path */
+  background-image: url("../assets/background0.png"); /* Update with your image path */
   background-size: cover; /* Ensures the image covers the entire container */
   background-position: center; /* Centers the image */
   background-repeat: no-repeat; /* Prevents the image from repeating */
