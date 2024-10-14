@@ -11,16 +11,16 @@ const Trade = ({ tokenList }) => {
   };
 
   return (
-    <div>
+    <div className="settings">
       <div className="trade-page">
-        <h2>Available Tokens for Trading</h2>
+        <h2>Available Tokens</h2>
         <div className="token-list">
           {tokenList.map((token) => (
             <div className="token-box" key={token.address}>
               <h3>{token.name}</h3>
               <p>{token.symbol}</p>
               <button
-                className="trade-button"
+                className="launch-button"
                 onClick={() => handleTradeClick(token)}
               >
                 Trade

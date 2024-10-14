@@ -6,7 +6,7 @@ import "./Stake.css";
 const Stake = () => {
   return (
     <div>
-      <div className="staking">
+      <div className="settings">
         <h2>Stake Your Tokens</h2>
         <p>Earn rewards by staking your Vortex tokens!</p>
 
@@ -23,7 +23,6 @@ const Stake = () => {
         </div>
       </div>
 
-      {/* Footer Menu */}
       <div className="footer-menu">
         <Link to="/dashboard" className="menu-item">
           Dashboard

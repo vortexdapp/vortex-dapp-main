@@ -3,12 +3,11 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  min-height: 100vh;
-  color: #e9e9e9;
+  justify-content: center;
+  max-width: 600px; /* Set a maximum width */
+  margin: 0 auto;
   padding: 20px;
-  padding-top: 40px; /* Padding at the top for the balance section */
-  text-align: center;
+  background-color: #1b1b1b; /* Ensures the main background is uniform */
 }
 
 /* Balance Section */
@@ -65,34 +64,4 @@
   background: linear-gradient(45deg, #007bff, #9b59b6);
   transition: width 0.3s ease-in-out;
   border-radius: 10px 0 0 10px;
-}
-
-/* Footer Menu Styling */
-.footer-menu {
-  display: flex;
-  justify-content: space-around;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  width: 90%;
-  margin: 0 auto;
-  background-color: #1c1c1c;
-  padding: 15px 0;
-  border-radius: 10px;
-}
-
-.menu-item {
-  flex: 1;
-  text-align: center;
-  color: #e9e9e9;
-  font-size: 1rem;
-  text-decoration: none;
-  font-weight: bold;
-  padding: 10px;
-  transition: color 0.3s ease, background-color 0.3s ease;
-}
-
-.menu-item:hover {
-  color: #fff;
 }

@@ -11,8 +11,8 @@ const Airdrop = () => {
   const handleTelegramVerify = () => setTelegramVerified(true);
 
   return (
-    <div>
-      <div className="airdrop">
+    <div className="settings">
+      <div>
         <h2>Airdrop Tasks</h2>
         <p>Complete tasks to earn gems:</p>
 

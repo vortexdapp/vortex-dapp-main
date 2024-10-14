@@ -109,59 +109,57 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="background-image">
-      <div className="dashboard">
-        <div className="balance">
-          <div className="balance-item">
-            <img src={coinIcon} alt="Coins" className="icon" />
-            <span>{coinBalance}</span>
-          </div>
-          <div className="balance-item">
-            <img src={gemIcon} alt="Gems" className="icon" />
-            <span>{gemBalance}</span>
-          </div>
+    <div className="settings">
+      <div className="balance">
+        <div className="balance-item">
+          <img src={coinIcon} alt="Coins" className="icon" />
+          <span>{coinBalance}</span>
         </div>
-
-        <p>Connected: {wallet?.address || "No wallet connected"}</p>
-        <div className="level-container">
-          <span className="level-text">Level {level}</span>
-          <div className="progress-bar">
-            <div
-              className="progress-fill"
-              style={{ width: `${progress}%` }}
-            ></div>
-          </div>
+        <div className="balance-item">
+          <img src={gemIcon} alt="Gems" className="icon" />
+          <span>{gemBalance}</span>
         </div>
+      </div>
 
-        <select value={selectedNetwork.chainId} onChange={handleNetworkChange}>
-          {networkOptions.map((option) => (
-            <option key={option.chainId} value={option.chainId}>
-              {option.name}
-            </option>
-          ))}
-        </select>
-
-        <button onClick={sendTransaction} className="connect-button">
-          Send 0.01 ETH
-        </button>
-
-        <div className="footer-menu">
-          <Link to="/dashboard" className="menu-item">
-            Dashboard
-          </Link>
-          <Link to="/launch" className="menu-item">
-            Launch
-          </Link>
-          <Link to="/stake" className="menu-item">
-            Stake
-          </Link>
-          <Link to="/trade" className="menu-item">
-            Trade
-          </Link>
-          <Link to="/airdrop" className="menu-item">
-            Airdrop
-          </Link>
+      <p>Connected: {wallet?.address || "No wallet connected"}</p>
+      <div className="level-container">
+        <span className="level-text">Level {level}</span>
+        <div className="progress-bar">
+          <div
+            className="progress-fill"
+            style={{ width: `${progress}%` }}
+          ></div>
         </div>
+      </div>
+
+      <select value={selectedNetwork.chainId} onChange={handleNetworkChange}>
+        {networkOptions.map((option) => (
+          <option key={option.chainId} value={option.chainId}>
+            {option.name}
+          </option>
+        ))}
+      </select>
+
+      <button onClick={sendTransaction} className="button">
+        Send 0.01 ETH
+      </button>
+
+      <div className="footer-menu">
+        <Link to="/dashboard" className="menu-item">
+          Dashboard
+        </Link>
+        <Link to="/launch" className="menu-item">
+          Launch
+        </Link>
+        <Link to="/stake" className="menu-item">
+          Stake
+        </Link>
+        <Link to="/trade" className="menu-item">
+          Trade
+        </Link>
+        <Link to="/airdrop" className="menu-item">
+          Airdrop
+        </Link>
       </div>
     </div>
   );

@@ -16,10 +16,10 @@
   margin-top: 30px;
 }
 
-.dashboard button {
+.button {
   padding: 12px 25px;
   font-size: 18px;
-  background-color: #28a745; /* Friendly green color */
+  background-color: #3e63f9; /* Friendly green color */
   color: white;
   border: none;
   border-radius: 8px; /* Rounded corners */
@@ -128,4 +128,50 @@
 .stake button:hover,
 .trade button:hover {
   background-color: #0056b3;
+}
+
+/* Improved Footer Menu Styling */
+.footer-menu {
+  display: flex;
+  justify-content: center;
+  padding: 15px 0;
+  background-color: #1b1b1b;
+  border-top: 2px solid #333;
+  position: fixed;
+  width: 100%;
+  bottom: 0;
+  left: 0;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.menu-item {
+  color: #bbbbbb;
+  text-decoration: none;
+  margin: 0 20px;
+  font-size: 18px;
+  transition: color 0.3s, transform 0.3s;
+}
+
+.menu-item:hover {
+  color: #ffffff;
+  transform: scale(1.1);
+}
+
+.menu-item:active {
+  color: #ff6600;
+}
+
+.settings {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 360px; /* Max width to fit within typical mobile screen */
+  margin: 0 auto;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 100px;
+  background-color: #000000; /* Ensures the main background is uniform */
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
 }

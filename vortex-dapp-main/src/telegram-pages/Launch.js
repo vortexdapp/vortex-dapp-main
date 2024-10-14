@@ -5,13 +5,10 @@ import "./Launch.css";
 
 const Launch = () => {
   return (
-    <div>
+    <div className="settings">
       <div className="launch">
-        <h2>Token Launch Platform</h2>
-        <p>
-          Welcome to the Vortex Token Launch platform. Here you can create and
-          launch your own token fast!
-        </p>
+        <h2>Token Launch</h2>
+        <p>Borrow initial LP and launch your token</p>
 
         {/* Token Launch Form */}
         <div className="launch-form">
