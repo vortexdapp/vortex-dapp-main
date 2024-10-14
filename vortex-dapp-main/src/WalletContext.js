@@ -7,28 +7,18 @@ const WalletContext = createContext();
 export const useWallet = () => useContext(WalletContext);
 
 export const WalletProvider = ({ children }) => {
-  const [wallet, setWallet] = useState({
-    address: null,
-    signer: null,
-    mnemonic: "",
-  });
+  const [wallet, setWallet] = useState(null);
 
   const createWallet = () => {
-    const newWallet = ethers.Wallet.createRandom(); // Using ethers.js
+    const newWallet = ethers.Wallet.createRandom();
     setWallet({
       address: newWallet.address,
-      signer: newWallet.connect(new ethers.BrowserProvider(window.ethereum)), // connecting the wallet
+      privateKey: newWallet.privateKey,
       mnemonic: newWallet.mnemonic.phrase,
     });
   };
 
-  const disconnectWallet = () => {
-    setWallet({
-      address: null,
-      signer: null,
-      mnemonic: "",
-    });
-  };
+  const disconnectWallet = () => setWallet(null);
 
   return (
     <WalletContext.Provider value={{ wallet, createWallet, disconnectWallet }}>
