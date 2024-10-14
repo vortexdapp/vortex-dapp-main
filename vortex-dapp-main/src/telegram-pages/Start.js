@@ -1,25 +1,39 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
-import "./Start.css"; // Import the CSS file for styling
-//import Footer from "../components/Footer.js";    <Footer />
+import { useWallet } from "../WalletContext"; // Ensure this path is correct
+import "./Start.css"; // Ensure this path is correct
 
 function StartPage() {
-  return (
+  const { wallet, createWallet } = useWallet(); // Use the wallet from the WalletContext
+
+  const showWalletInfo = () => (
     <div>
-      <div className="centered-content">
-        <img src="logo512.png" alt="Logo" className="logo2" />
+      <p>Your Wallet Address: {wallet.address}</p>
+      <p>
+        Recovery Phrase: <em>{wallet.mnemonic}</em>
+      </p>{" "}
+      <Link to="/dashboard">
+        <button className="home-button">Enter Dashboard</button>
+      </Link>
+    </div>
+  );
 
-        <h1 className="titlehome">
-          Launch, stake and trade <br />
-        </h1>
-        <h4 className="subtitlehome">A gamified defi experience</h4>
+  return (
+    <div className="centered-content">
+      <img src="logo512.png" alt="Logo" className="logo2" />
 
-        <div>
-          <Link to="/dashboard">
-            <button className="home-button">Launch</button>
-          </Link>
-        </div>
-      </div>
+      <h1 className="titlehome">
+        Launch, stake and trade <br />
+      </h1>
+      <h4 className="subtitlehome">A gamified defi experience</h4>
+
+      {!wallet.address ? (
+        <button className="home-button" onClick={createWallet}>
+          Create Wallet
+        </button>
+      ) : (
+        showWalletInfo()
+      )}
     </div>
   );
 }

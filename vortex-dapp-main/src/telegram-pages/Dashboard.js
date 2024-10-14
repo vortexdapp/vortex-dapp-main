@@ -1,43 +1,37 @@
 // telegram-web-app/src/telegram-pages/Dashboard.js
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { useWallet } from "../WalletContext"; // Import the wallet context hook
 import "./Dashboard.css";
 import coinIcon from "../assets/coin.png";
 import gemIcon from "../assets/gem.png";
+import { ethers } from "ethers";
 
 const Dashboard = () => {
+  const { wallet, disconnectWallet } = useWallet(); // Use wallet from context
   const [coinBalance, setCoinBalance] = useState(1000);
   const [gemBalance, setGemBalance] = useState(250);
   const [level, setLevel] = useState(1);
-  const [userAddress, setUserAddress] = useState(null);
   const levelUpThreshold = 1000;
   const totalPoints = coinBalance + gemBalance;
-  const progress = ((totalPoints % levelUpThreshold) / levelUpThreshold) * 100;
+  const progress = ((totalPoints % levelUpThreshold) / levelUpThreshold) * 100; // Correctly defined progress
 
-  // Function to connect to Telegram Wallet
-  const connectTelegramWallet = () => {
-    if (window.Telegram && window.Telegram.WebApp) {
-      window.Telegram.WebApp.ready(() => {
-        const { user } = window.Telegram.WebApp.initDataUnsafe || {};
-        if (user && user.id) {
-          setUserAddress(user.id);
-          console.log("Connected to Telegram Wallet with user ID:", user.id);
-        } else {
-          alert(
-            "User data not available. Ensure that you are in the Telegram app."
-          );
-        }
-      });
-    } else {
-      alert(
-        "Telegram WebApp is not available. Please try within the Telegram app."
-      );
+  const sendTransaction = async () => {
+    if (!wallet || !wallet.signer) {
+      alert("Wallet not connected or signer not available");
+      return;
     }
-  };
-
-  const disconnectWallet = () => {
-    setUserAddress(null);
-    console.log("Wallet disconnected.");
+    try {
+      const txResponse = await wallet.signer.sendTransaction({
+        to: "0xf11D21eB5447549E3E815c6E357e3D0779FeC838", // Specify the receiver's address here
+        value: ethers.parseEther("0.01"), // Sending 0.01 ETH
+      });
+      console.log("Transaction hash:", txResponse.hash);
+      alert("Transaction sent! Hash: " + txResponse.hash);
+    } catch (error) {
+      console.error("Transaction error:", error);
+      alert("Failed to send transaction: " + error.message);
+    }
   };
 
   return (
@@ -54,7 +48,13 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {userAddress && <p>Connected: {userAddress}</p>}
+        {wallet && wallet.address ? (
+          <div>
+            <p>Connected: {wallet.address}</p>
+          </div>
+        ) : (
+          <p>No wallet connected</p>
+        )}
 
         <div className="level-container">
           <span className="level-text">Level {level}</span>
@@ -66,15 +66,9 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {userAddress ? (
-          <button className="connect-button" onClick={disconnectWallet}>
-            Disconnect Wallet
-          </button>
-        ) : (
-          <button className="connect-button" onClick={connectTelegramWallet}>
-            Connect Telegram Wallet
-          </button>
-        )}
+        <button onClick={sendTransaction} className="connect-button">
+          Send 0.01 ETH
+        </button>
 
         <div className="footer-menu">
           <Link to="/dashboard" className="menu-item">

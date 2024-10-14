@@ -1,39 +1,38 @@
-// telegram-web-app/src/contexts/WalletContext.js
-import React, { createContext, useState, useContext } from "react";
+// src/WalletContext.js
+import React, { createContext, useContext, useState } from "react";
+import { ethers } from "ethers";
 
 const WalletContext = createContext();
 
-export const WalletProvider = ({ children }) => {
-  const [userAddress, setUserAddress] = useState(null);
+export const useWallet = () => useContext(WalletContext);
 
-  const connectWallet = async () => {
-    if (window.ethereum) {
-      try {
-        const accounts = await window.ethereum.request({
-          method: "eth_requestAccounts",
-        });
-        setUserAddress(accounts[0]);
-        console.log("Connected Wallet Address:", accounts[0]);
-      } catch (error) {
-        console.error("Failed to connect wallet:", error);
-      }
-    } else {
-      console.error("MetaMask not found. Please install MetaMask.");
-    }
+export const WalletProvider = ({ children }) => {
+  const [wallet, setWallet] = useState({
+    address: null,
+    signer: null,
+    mnemonic: "",
+  });
+
+  const createWallet = () => {
+    const newWallet = ethers.Wallet.createRandom(); // Using ethers.js
+    setWallet({
+      address: newWallet.address,
+      signer: newWallet.connect(new ethers.BrowserProvider(window.ethereum)), // connecting the wallet
+      mnemonic: newWallet.mnemonic.phrase,
+    });
   };
 
   const disconnectWallet = () => {
-    setUserAddress(null);
-    console.log("Wallet disconnected.");
+    setWallet({
+      address: null,
+      signer: null,
+      mnemonic: "",
+    });
   };
 
   return (
-    <WalletContext.Provider
-      value={{ userAddress, connectWallet, disconnectWallet }}
-    >
+    <WalletContext.Provider value={{ wallet, createWallet, disconnectWallet }}>
       {children}
     </WalletContext.Provider>
   );
 };
-
-export const useWallet = () => useContext(WalletContext);
