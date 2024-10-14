@@ -44,12 +44,6 @@
   cursor: pointer;
 }
 
-.footer-menu {
-  display: flex;
-  justify-content: space-around;
-  margin-top: 20px;
-}
-
 .background-img {
   background-image: url("../assets/background1.png"); /* Update with your image path */
   background-size: cover; /* Ensures the image covers the entire container */

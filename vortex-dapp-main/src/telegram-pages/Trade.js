@@ -11,7 +11,7 @@ const Trade = ({ tokenList }) => {
   };
 
   return (
-    <div className="background-img">
+    <div>
       <div className="trade-page">
         <h2>Available Tokens for Trading</h2>
         <div className="token-list">
@@ -30,6 +30,9 @@ const Trade = ({ tokenList }) => {
         </div>
       </div>
       <div className="footer-menu">
+        <Link to="/dashboard" className="menu-item">
+          Dashboard
+        </Link>
         <Link to="/launch" className="menu-item">
           Launch
         </Link>

@@ -11,7 +11,7 @@ const Airdrop = () => {
   const handleTelegramVerify = () => setTelegramVerified(true);
 
   return (
-    <div className="background-img">
+    <div>
       <div className="airdrop">
         <h2>Airdrop Tasks</h2>
         <p>Complete tasks to earn gems:</p>
@@ -49,6 +49,9 @@ const Airdrop = () => {
       </div>
 
       <div className="footer-menu">
+        <Link to="/dashboard" className="menu-item">
+          Dashboard
+        </Link>
         <Link to="/launch" className="menu-item">
           Launch
         </Link>

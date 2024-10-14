@@ -5,15 +5,14 @@ import "./Stake.css";
 
 const Stake = () => {
   return (
-    <div className="background-img">
-      <div className="stake">
+    <div>
+      <div className="staking">
         <h2>Stake Your Tokens</h2>
         <p>Earn rewards by staking your Vortex tokens!</p>
 
         {/* Staking Form */}
         <div className="stake-form">
           <label>
-            Amount to Stake:
             <input type="number" placeholder="Enter amount" />
           </label>
           <div className="button-group">
@@ -26,7 +25,7 @@ const Stake = () => {
 
       {/* Footer Menu */}
       <div className="footer-menu">
-        <Link to="/Dashboard" className="menu-item">
+        <Link to="/dashboard" className="menu-item">
           Dashboard
         </Link>
         <Link to="/launch" className="menu-item">

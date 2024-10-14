@@ -47,22 +47,3 @@
 .launch-button:hover {
   transform: translateY(-3px);
 }
-
-/* Footer menu styling (reuse from Dashboard) */
-.footer-menu {
-  display: flex;
-  justify-content: space-around;
-  margin-top: 30px;
-  width: 100%;
-  max-width: 400px;
-}
-
-.menu-item {
-  color: #fff;
-  text-decoration: none;
-  font-weight: bold;
-}
-
-.menu-item:hover {
-  color: #aaa;
-}

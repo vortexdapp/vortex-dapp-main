@@ -95,9 +95,4 @@
 
 .menu-item:hover {
   color: #fff;
-  background-color: #007bff;
-}
-
-.menu-item:active {
-  background-color: #0056b3;
 }
