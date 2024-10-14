@@ -10,7 +10,7 @@ const Launch = () => {
         <h2>Token Launch Platform</h2>
         <p>
           Welcome to the Vortex Token Launch platform. Here you can create and
-          launch your own token!
+          launch your own token easily and fast!
         </p>
 
         {/* Token Launch Form */}
