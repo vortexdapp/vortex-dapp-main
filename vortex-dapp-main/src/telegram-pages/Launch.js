@@ -5,7 +5,7 @@ import "./Launch.css";
 
 const Launch = () => {
   return (
-    <div className="background-img">
+    <div>
       <div className="launch">
         <h2>Token Launch Platform</h2>
         <p>
