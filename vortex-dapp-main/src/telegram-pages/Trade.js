@@ -1,10 +1,16 @@
 // telegram-web-app/src/telegram-pages/Trade.js
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import "./Launch.css";
+import coinIcon from "../assets/coin.png";
+import gemIcon from "../assets/gem.png";
+import walletIcon from "../assets/wallet.png";
 import { Link, useNavigate } from "react-router-dom";
 import "./Trade.css";
 
 const Trade = ({ tokenList }) => {
   const navigate = useNavigate();
+  const [coinBalance, setCoinBalance] = useState(1000);
+  const [gemBalance, setGemBalance] = useState(250);
 
   const handleTradeClick = (token) => {
     navigate(`/token/${token.symbol}`);
@@ -12,6 +18,22 @@ const Trade = ({ tokenList }) => {
 
   return (
     <div className="settings">
+      <div className="balance">
+        <div className="balance-item">
+          <img src={coinIcon} alt="Coins" className="icon" />
+          <span>{coinBalance}</span>
+        </div>
+        <div className="balance-item">
+          <img src={gemIcon} alt="Gems" className="icon" />
+          <span>{gemBalance}</span>
+        </div>
+        <div className="balance-item">
+          <Link to="/wallet">
+            <img src={walletIcon} alt="Wallet" className="wallet-icon" />
+          </Link>
+        </div>
+      </div>
+
       <div className="trade-page">
         <h2>Available Tokens</h2>
         <div className="token-list">

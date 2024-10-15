@@ -2,6 +2,9 @@
 import React, { useState } from "react";
 import "./Airdrop.css";
 import { Link } from "react-router-dom";
+import coinIcon from "../assets/coin.png";
+import gemIcon from "../assets/gem.png";
+import walletIcon from "../assets/wallet.png";
 
 const Airdrop = () => {
   const [twitterVerified, setTwitterVerified] = useState(false);
@@ -9,9 +12,27 @@ const Airdrop = () => {
 
   const handleTwitterVerify = () => setTwitterVerified(true);
   const handleTelegramVerify = () => setTelegramVerified(true);
+  const [coinBalance, setCoinBalance] = useState(1000);
+  const [gemBalance, setGemBalance] = useState(250);
 
   return (
     <div className="settings">
+      <div className="balance">
+        <div className="balance-item">
+          <img src={coinIcon} alt="Coins" className="icon" />
+          <span>{coinBalance}</span>
+        </div>
+        <div className="balance-item">
+          <img src={gemIcon} alt="Gems" className="icon" />
+          <span>{gemBalance}</span>
+        </div>
+        <div className="balance-item">
+          <Link to="/wallet">
+            <img src={walletIcon} alt="Wallet" className="wallet-icon" />
+          </Link>
+        </div>
+      </div>
+
       <div>
         <h2>Airdrop Tasks</h2>
         <p>Complete tasks to earn gems:</p>

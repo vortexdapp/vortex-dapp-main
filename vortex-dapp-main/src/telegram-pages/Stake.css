@@ -1,7 +1,6 @@
 /* telegram-web-app/src/telegram-pages/Stake.css */
 
 body {
-  margin: 0;
   font-family: Arial, sans-serif;
   color: #ffffff;
   background-color: #000000;
@@ -83,18 +82,4 @@ body {
 
 .action-button:hover {
   background-color: #ababab;
-}
-
-/* Improved Footer Menu Styling */
-.footer-menu {
-  display: flex;
-  justify-content: center;
-  padding: 15px 0;
-  background-color: #1b1b1b;
-  border-top: 2px solid #333;
-  position: fixed;
-  width: 100%;
-  bottom: 0;
-  left: 0;
-  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.5);
 }

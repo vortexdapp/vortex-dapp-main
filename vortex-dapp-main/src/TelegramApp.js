@@ -9,6 +9,7 @@ import Airdrop from "./telegram-pages/Airdrop";
 import StartPage from "./telegram-pages/Start";
 import CheckIn from "./telegram-pages/DailyCheckIn";
 import Token from "./telegram-pages/Token";
+import Wallet from "./telegram-pages/Wallet";
 import { WalletProvider } from "./WalletContext";
 import "./TelegramApp.css";
 
@@ -49,6 +50,7 @@ const TelegramApp = () => {
           <Route path="/trade" element={<Trade tokenList={tokenList} />} />
           <Route path="/airdrop" element={<Airdrop />} />
           <Route path="/daily-checkin" element={<CheckIn />} />
+          <Route path="/wallet" element={<Wallet />} />
           <Route
             path="/token/:symbol"
             element={<Token tokenList={tokenList} />}

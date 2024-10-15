@@ -1,0 +1,23 @@
+/* telegram-web-app/src/telegram-pages/Wallet.css */
+.wallet-page {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  text-align: center;
+  background-color: #1b1b1b;
+  color: #ffffff;
+}
+
+.wallet-page h2 {
+  margin-bottom: 20px;
+}
+
+.wallet-page select {
+  margin-top: 15px;
+  padding: 5px;
+}
+
+.wallet-page p {
+  font-size: 1.2rem;
+  margin: 10px 0;
+}

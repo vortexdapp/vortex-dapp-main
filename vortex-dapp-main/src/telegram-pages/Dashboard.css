@@ -39,10 +39,16 @@
 /* Balance Section */
 .balance {
   display: flex;
+  position: fixed;
+  top: 0; /* Fixes the section to the top */
   justify-content: space-between;
   align-items: center;
-  width: 80%;
-  margin-bottom: 10px;
+  width: 20%; /* Full width of the viewport */
+  padding: 10px 20px; /* Adds padding for spacing */
+  background-color: #1b1b1b; /* Background color to make it stand out */
+  color: #f8f8f8; /* Text color */
+  z-index: 1000; /* Ensures it stays on top of other elements */
+  border-radius: 10px;
 }
 
 .balance-item {
@@ -53,8 +59,8 @@
 }
 
 .icon {
-  width: 24px;
-  height: 24px;
+  width: 36px;
+  height: 36px;
   margin-right: 8px;
 }
 
@@ -85,6 +91,18 @@
   background: linear-gradient(45deg, #007bff, #9b59b6);
   transition: width 0.3s ease-in-out;
   border-radius: 10px 0 0 10px;
+}
+
+.wallet-icon {
+  width: 36px; /* Adjust size as needed */
+  height: 36px;
+  margin-left: 8px; /* Space between gems balance and wallet icon */
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+}
+
+.wallet-icon:hover {
+  transform: scale(1.1); /* Slight zoom on hover */
 }
 
 /* Responsive Design for Mobile */

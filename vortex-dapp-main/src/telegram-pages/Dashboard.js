@@ -5,6 +5,7 @@ import { useWallet } from "../WalletContext";
 import "./Dashboard.css";
 import coinIcon from "../assets/coin.png";
 import gemIcon from "../assets/gem.png";
+import walletIcon from "../assets/wallet.png";
 import { ethers } from "ethers";
 
 const networkOptions = [
@@ -27,7 +28,6 @@ const Dashboard = () => {
   const [provider, setProvider] = useState(null);
   const [signer, setSigner] = useState(null);
   const [selectedNetwork, setSelectedNetwork] = useState(networkOptions[0]);
-  const [userData, setUserData] = useState({});
 
   const [coinBalance, setCoinBalance] = useState(1000);
   const [gemBalance, setGemBalance] = useState(250);
@@ -51,26 +51,6 @@ const Dashboard = () => {
       } catch (error) {
         console.error("Failed to create signer with private key:", error);
       }
-    }
-
-    // Safely check for Telegram WebApp Data
-    if (window.Telegram && window.Telegram.WebApp) {
-      const { username, photo_url } =
-        window.Telegram.WebApp.initDataUnsafe.user || {};
-      if (username && photo_url) {
-        setUserData({ username, photo_url });
-        console.log("User data loaded:", { username, photo_url });
-      } else {
-        console.warn("User data not available in Telegram WebApp.");
-        setUserData({
-          username: "No username found",
-          photo_url: "", // Default placeholder if needed
-        });
-      }
-    } else {
-      console.warn(
-        "Telegram WebApp is not available. Ensure this is running within the Telegram environment."
-      );
     }
   }, [wallet, selectedNetwork]);
 
@@ -112,15 +92,6 @@ const Dashboard = () => {
 
   return (
     <div className="settings">
-      <div className="user-info">
-        {userData.photo_url ? (
-          <img src={userData.photo_url} alt="User Avatar" className="avatar" />
-        ) : (
-          <div className="avatar-placeholder"></div>
-        )}
-        <p>{userData.username}</p>
-      </div>
-
       <div className="balance">
         <div className="balance-item">
           <img src={coinIcon} alt="Coins" className="icon" />
@@ -129,6 +100,11 @@ const Dashboard = () => {
         <div className="balance-item">
           <img src={gemIcon} alt="Gems" className="icon" />
           <span>{gemBalance}</span>
+        </div>
+        <div className="balance-item">
+          <Link to="/wallet">
+            <img src={walletIcon} alt="Wallet" className="wallet-icon" />
+          </Link>
         </div>
       </div>
 

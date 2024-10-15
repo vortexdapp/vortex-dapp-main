@@ -1,11 +1,32 @@
 // telegram-web-app/src/telegram-pages/Launch.js
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "./Launch.css";
+import coinIcon from "../assets/coin.png";
+import gemIcon from "../assets/gem.png";
+import walletIcon from "../assets/wallet.png";
 
 const Launch = () => {
+  const [coinBalance, setCoinBalance] = useState(1000);
+  const [gemBalance, setGemBalance] = useState(250);
   return (
     <div className="settings">
+      <div className="balance">
+        <div className="balance-item">
+          <img src={coinIcon} alt="Coins" className="icon" />
+          <span>{coinBalance}</span>
+        </div>
+        <div className="balance-item">
+          <img src={gemIcon} alt="Gems" className="icon" />
+          <span>{gemBalance}</span>
+        </div>
+        <div className="balance-item">
+          <Link to="/wallet">
+            <img src={walletIcon} alt="Wallet" className="wallet-icon" />
+          </Link>
+        </div>
+      </div>
+
       <div className="launch">
         <h2>Token Launch</h2>
         <p>Borrow initial LP and launch your token</p>
