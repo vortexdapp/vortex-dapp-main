@@ -9,6 +9,10 @@ import walletIcon from "../assets/wallet.png";
 const Stake = () => {
   const [coinBalance, setCoinBalance] = useState(1000);
   const [gemBalance, setGemBalance] = useState(250);
+  const [level, setLevel] = useState(1);
+  const levelUpThreshold = 1000;
+  const totalPoints = coinBalance + gemBalance;
+  const progress = ((totalPoints % levelUpThreshold) / levelUpThreshold) * 100;
   return (
     <div>
       <div className="settings">
@@ -25,6 +29,16 @@ const Stake = () => {
             <Link to="/wallet">
               <img src={walletIcon} alt="Wallet" className="wallet-icon" />
             </Link>
+          </div>
+        </div>
+
+        <div className="level-container">
+          <span className="level-text">Level {level}</span>
+          <div className="progress-bar">
+            <div
+              className="progress-fill"
+              style={{ width: `${progress}%` }}
+            ></div>
           </div>
         </div>
 

@@ -1,57 +1,69 @@
-/* Trade.css */
+/* General Trade Page Styling */
 .trade-page {
-  padding: 20px;
+  width: 90%;
+  max-width: 900px;
+  padding: 30px;
+  background-color: #1b1b1b;
+  align-items: center;
   text-align: center;
-  color: #f0f0f0;
-}
-
-.token-list {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 20px;
-}
-
-.token-box {
-  width: 200px;
-  padding: 15px;
-  background-color: #1a1a1a;
   border-radius: 10px;
-  border: 1px solid #333;
-  text-align: center;
-}
-
-.token-box h3 {
   color: #ffffff;
 }
 
-.trade-container {
-  padding: 20px;
-  background-color: #1a1a1a;
-  border-radius: 10px;
-  max-width: 400px;
-  margin: 0 auto;
+h2 {
+  text-align: center;
+  color: #ffffff;
+  margin-bottom: 20px;
 }
 
-.trade-button,
-.back-button {
-  margin-top: 15px;
-  padding: 8px;
-  border: none;
-  border-radius: 5px;
-  background: linear-gradient(135deg, #ff9800, #ff5722);
-  color: #fff;
-  cursor: pointer;
-}
-
-.background-img {
-  background-image: url("../assets/background1.png"); /* Update with your image path */
-  background-size: cover; /* Ensures the image covers the entire container */
-  background-position: center; /* Centers the image */
-  background-repeat: no-repeat; /* Prevents the image from repeating */
-  min-height: 100vh; /* Ensures it covers the full viewport height */
-  width: 100%;
+.token-list {
+  align-items: center;
+  text-align: center;
   display: flex;
   flex-direction: column;
+  gap: 10px;
+}
+
+.token-box {
+  background-color: #262626;
+  border-radius: 10px;
+  padding: 20px;
+  display: flex;
   align-items: center;
+  text-align: center;
+  justify-content: space-between;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.token-box h3,
+.token-box p {
+  margin: 0;
+  color: #ffffff;
+}
+
+.token-box h3 {
+  font-size: 1rem;
+  margin-right: 5px;
+}
+
+.token-box p {
+  font-size: 0.9rem;
+  color: #88d1a8; /* Green color for symbols */
+  margin-right: 5px;
+}
+
+.trade-button {
+  background-color: #007bff;
+  align-items: center;
+  text-align: center;
+  color: #ffffff;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.launch-button:hover {
+  background-color: #0056b3;
 }

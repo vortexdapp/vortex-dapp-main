@@ -32,7 +32,7 @@ const DailyCheckIn = () => {
   };
 
   return (
-    <div className="daily-checkin">
+    <div className="settings">
       <h2>Daily Check-In</h2>
       <p>
         Check in each day to earn more gems. Miss a day and your progress
@@ -55,6 +55,9 @@ const DailyCheckIn = () => {
       <p>Gems Earned: {reward}</p>
 
       <div className="footer-menu">
+        <Link to="/dashboard" className="menu-item">
+          Dashboard
+        </Link>
         <Link to="/launch" className="menu-item">
           Launch
         </Link>

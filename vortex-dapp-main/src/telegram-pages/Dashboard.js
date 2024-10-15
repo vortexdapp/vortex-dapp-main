@@ -108,7 +108,6 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <p>Connected: {wallet?.address || "No wallet connected"}</p>
       <div className="level-container">
         <span className="level-text">Level {level}</span>
         <div className="progress-bar">
@@ -118,6 +117,8 @@ const Dashboard = () => {
           ></div>
         </div>
       </div>
+
+      <p>Connected: {wallet?.address || "No wallet connected"}</p>
 
       <select value={selectedNetwork.chainId} onChange={handleNetworkChange}>
         {networkOptions.map((option) => (

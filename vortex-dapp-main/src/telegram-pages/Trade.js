@@ -11,6 +11,10 @@ const Trade = ({ tokenList }) => {
   const navigate = useNavigate();
   const [coinBalance, setCoinBalance] = useState(1000);
   const [gemBalance, setGemBalance] = useState(250);
+  const [level, setLevel] = useState(1);
+  const levelUpThreshold = 1000;
+  const totalPoints = coinBalance + gemBalance;
+  const progress = ((totalPoints % levelUpThreshold) / levelUpThreshold) * 100;
 
   const handleTradeClick = (token) => {
     navigate(`/token/${token.symbol}`);
@@ -34,6 +38,16 @@ const Trade = ({ tokenList }) => {
         </div>
       </div>
 
+      <div className="level-container">
+        <span className="level-text">Level {level}</span>
+        <div className="progress-bar">
+          <div
+            className="progress-fill"
+            style={{ width: `${progress}%` }}
+          ></div>
+        </div>
+      </div>
+
       <div className="trade-page">
         <h2>Available Tokens</h2>
         <div className="token-list">
@@ -42,7 +56,7 @@ const Trade = ({ tokenList }) => {
               <h3>{token.name}</h3>
               <p>{token.symbol}</p>
               <button
-                className="launch-button"
+                className="trade-button"
                 onClick={() => handleTradeClick(token)}
               >
                 Trade

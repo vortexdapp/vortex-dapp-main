@@ -22,6 +22,12 @@ const Wallet = () => {
   const { wallet } = useWallet();
   const [balance, setBalance] = useState("0.0");
   const [selectedNetwork, setSelectedNetwork] = useState(networkOptions[0]);
+  const [coinBalance, setCoinBalance] = useState(1000);
+  const [gemBalance, setGemBalance] = useState(250);
+  const [level, setLevel] = useState(1);
+  const levelUpThreshold = 1000;
+  const totalPoints = coinBalance + gemBalance;
+  const progress = ((totalPoints % levelUpThreshold) / levelUpThreshold) * 100;
 
   useEffect(() => {
     if (wallet && selectedNetwork) {
@@ -51,6 +57,17 @@ const Wallet = () => {
           </option>
         ))}
       </select>
+
+      <div className="level-container">
+        <span className="level-text">Level {level}</span>
+        <div className="progress-bar">
+          <div
+            className="progress-fill"
+            style={{ width: `${progress}%` }}
+          ></div>
+        </div>
+      </div>
+
       <div className="footer-menu">
         <Link to="/dashboard" className="menu-item">
           Dashboard
