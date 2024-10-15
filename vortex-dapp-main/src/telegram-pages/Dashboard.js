@@ -27,6 +27,7 @@ const Dashboard = () => {
   const [provider, setProvider] = useState(null);
   const [signer, setSigner] = useState(null);
   const [selectedNetwork, setSelectedNetwork] = useState(networkOptions[0]);
+  const [userData, setUserData] = useState({});
 
   const [coinBalance, setCoinBalance] = useState(1000);
   const [gemBalance, setGemBalance] = useState(250);
@@ -51,6 +52,26 @@ const Dashboard = () => {
         console.error("Failed to create signer with private key:", error);
       }
     }
+
+    // Safely check for Telegram WebApp Data
+    if (window.Telegram && window.Telegram.WebApp) {
+      const { username, photo_url } =
+        window.Telegram.WebApp.initDataUnsafe.user || {};
+      if (username && photo_url) {
+        setUserData({ username, photo_url });
+        console.log("User data loaded:", { username, photo_url });
+      } else {
+        console.warn("User data not available in Telegram WebApp.");
+        setUserData({
+          username: "No username found",
+          photo_url: "", // Default placeholder if needed
+        });
+      }
+    } else {
+      console.warn(
+        "Telegram WebApp is not available. Ensure this is running within the Telegram environment."
+      );
+    }
   }, [wallet, selectedNetwork]);
 
   const handleNetworkChange = async (event) => {
@@ -68,26 +89,7 @@ const Dashboard = () => {
         params: [{ chainId: network.chainId }],
       });
     } catch (error) {
-      if (error.code === 4902) {
-        try {
-          await window.ethereum.request({
-            method: "wallet_addEthereumChain",
-            params: [
-              {
-                chainId: network.chainId,
-                chainName: network.name,
-                rpcUrls: [network.rpcUrl],
-                nativeCurrency: { name: "ETH", symbol: "ETH", decimals: 18 },
-                blockExplorerUrls: [network.explorerUrl],
-              },
-            ],
-          });
-        } catch (addError) {
-          console.error("Failed to add network:", addError);
-        }
-      } else {
-        console.error("Network switch error:", error);
-      }
+      console.error("Network switch error:", error);
     }
   };
 
@@ -110,6 +112,15 @@ const Dashboard = () => {
 
   return (
     <div className="settings">
+      <div className="user-info">
+        {userData.photo_url ? (
+          <img src={userData.photo_url} alt="User Avatar" className="avatar" />
+        ) : (
+          <div className="avatar-placeholder"></div>
+        )}
+        <p>{userData.username}</p>
+      </div>
+
       <div className="balance">
         <div className="balance-item">
           <img src={coinIcon} alt="Coins" className="icon" />
