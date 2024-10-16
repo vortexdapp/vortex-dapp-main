@@ -3,8 +3,10 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
   text-align: center;
+  align-content: space-between;
+  padding: 20px;
+  margin-top: 90px;
   color: #fff; /* Adjust as needed */
 }
 
@@ -14,13 +16,15 @@
 .launch-form {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  text-align: center;
   width: 80%;
   max-width: 400px;
 }
 
 .launch-form label {
-  margin-bottom: 15px;
-  text-align: left;
+  text-align: center;
+  margin-bottom: 20px;
 }
 
 .launch-form input {
@@ -32,7 +36,6 @@
 }
 
 .launch-button {
-  margin-top: 20px;
   padding: 12px 20px;
   border: none;
   border-radius: 5px;

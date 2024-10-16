@@ -5,6 +5,8 @@ import "./Launch.css";
 import coinIcon from "../assets/coin.png";
 import gemIcon from "../assets/gem.png";
 import walletIcon from "../assets/wallet.png";
+import Header from "../telegram-components/Header";
+import Footer from "../telegram-components/Footer";
 
 const Launch = () => {
   const [coinBalance, setCoinBalance] = useState(1000);
@@ -15,35 +17,10 @@ const Launch = () => {
   const progress = ((totalPoints % levelUpThreshold) / levelUpThreshold) * 100;
   return (
     <div className="settings">
-      <div className="balance">
-        <div className="balance-item">
-          <img src={coinIcon} alt="Coins" className="icon" />
-          <span>{coinBalance}</span>
-        </div>
-        <div className="balance-item">
-          <img src={gemIcon} alt="Gems" className="icon" />
-          <span>{gemBalance}</span>
-        </div>
-        <div className="balance-item">
-          <Link to="/wallet">
-            <img src={walletIcon} alt="Wallet" className="wallet-icon" />
-          </Link>
-        </div>
-      </div>
-
-      <div className="level-container">
-        <span className="level-text">Level {level}</span>
-        <div className="progress-bar">
-          <div
-            className="progress-fill"
-            style={{ width: `${progress}%` }}
-          ></div>
-        </div>
-      </div>
-
+      <Header coinBalance={coinBalance} gemBalance={gemBalance} level={level} />
       <div className="launch">
         <h2>Token Launch</h2>
-        <p>Borrow initial LP and launch your token</p>
+        <p className="title">Borrow initial LP and launch your token</p>
 
         {/* Token Launch Form */}
         <div className="launch-form">
@@ -62,25 +39,8 @@ const Launch = () => {
           <button className="launch-button">Create Token</button>
         </div>
       </div>
-
       {/* Footer Menu */}
-      <div className="footer-menu">
-        <Link to="/Dashboard" className="menu-item">
-          Dashboard
-        </Link>
-        <Link to="/launch" className="menu-item">
-          Launch
-        </Link>
-        <Link to="/stake" className="menu-item">
-          Stake
-        </Link>
-        <Link to="/trade" className="menu-item">
-          Trade
-        </Link>
-        <Link to="/airdrop" className="menu-item">
-          Airdrop
-        </Link>
-      </div>
+      <Footer />
     </div>
   );
 };

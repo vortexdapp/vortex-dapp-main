@@ -2,6 +2,8 @@
   text-align: center;
   align-items: center;
   color: #f0f0f0;
+  position: fixed;
+  margin-top: 100px;
 }
 
 .task {
@@ -39,4 +41,10 @@
 .task button[disabled] {
   background-color: #28a745;
   cursor: default;
+}
+
+.gem-icon {
+  width: 24px;
+  height: 24px;
+  vertical-align: middle;
 }

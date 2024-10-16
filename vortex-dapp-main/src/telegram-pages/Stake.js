@@ -5,6 +5,8 @@ import "./Stake.css";
 import coinIcon from "../assets/coin.png";
 import gemIcon from "../assets/gem.png";
 import walletIcon from "../assets/wallet.png";
+import Header from "../telegram-components/Header";
+import Footer from "../telegram-components/Footer";
 
 const Stake = () => {
   const [coinBalance, setCoinBalance] = useState(1000);
@@ -14,38 +16,13 @@ const Stake = () => {
   const totalPoints = coinBalance + gemBalance;
   const progress = ((totalPoints % levelUpThreshold) / levelUpThreshold) * 100;
   return (
-    <div>
-      <div className="settings">
-        <div className="balance">
-          <div className="balance-item">
-            <img src={coinIcon} alt="Coins" className="icon" />
-            <span>{coinBalance}</span>
-          </div>
-          <div className="balance-item">
-            <img src={gemIcon} alt="Gems" className="icon" />
-            <span>{gemBalance}</span>
-          </div>
-          <div className="balance-item">
-            <Link to="/wallet">
-              <img src={walletIcon} alt="Wallet" className="wallet-icon" />
-            </Link>
-          </div>
-        </div>
-
-        <div className="level-container">
-          <span className="level-text">Level {level}</span>
-          <div className="progress-bar">
-            <div
-              className="progress-fill"
-              style={{ width: `${progress}%` }}
-            ></div>
-          </div>
-        </div>
-
+    <div className="settings">
+      <Header coinBalance={coinBalance} gemBalance={gemBalance} level={level} />
+      <div className="staking">
         <h2>Stake Your Tokens</h2>
         <p>Earn rewards by staking your Vortex tokens!</p>
-
         {/* Staking Form */}
+
         <div className="stake-form">
           <label>
             <input type="number" placeholder="Enter amount" />
@@ -56,25 +33,9 @@ const Stake = () => {
             <button className="action-button">Claim Rewards</button>
           </div>
         </div>
-
-        <div className="footer-menu">
-          <Link to="/dashboard" className="menu-item">
-            Dashboard
-          </Link>
-          <Link to="/launch" className="menu-item">
-            Launch
-          </Link>
-          <Link to="/stake" className="menu-item">
-            Stake
-          </Link>
-          <Link to="/trade" className="menu-item">
-            Trade
-          </Link>
-          <Link to="/airdrop" className="menu-item">
-            Airdrop
-          </Link>
-        </div>
       </div>
+      {/* Footer Menu */}
+      <Footer />
     </div>
   );
 };

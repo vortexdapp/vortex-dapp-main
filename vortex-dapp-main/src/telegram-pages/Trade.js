@@ -6,6 +6,8 @@ import gemIcon from "../assets/gem.png";
 import walletIcon from "../assets/wallet.png";
 import { Link, useNavigate } from "react-router-dom";
 import "./Trade.css";
+import Header from "../telegram-components/Header";
+import Footer from "../telegram-components/Footer";
 
 const Trade = ({ tokenList }) => {
   const navigate = useNavigate();
@@ -16,37 +18,23 @@ const Trade = ({ tokenList }) => {
   const totalPoints = coinBalance + gemBalance;
   const progress = ((totalPoints % levelUpThreshold) / levelUpThreshold) * 100;
 
+  useEffect(() => {
+    // Enable scrolling when the Trade page is mounted
+    document.body.style.overflow = "auto";
+
+    // Disable scrolling when the component is unmounted
+    return () => {
+      document.body.style.overflow = "hidden";
+    };
+  }, []);
+
   const handleTradeClick = (token) => {
     navigate(`/token/${token.symbol}`);
   };
 
   return (
     <div className="settings">
-      <div className="balance">
-        <div className="balance-item">
-          <img src={coinIcon} alt="Coins" className="icon" />
-          <span>{coinBalance}</span>
-        </div>
-        <div className="balance-item">
-          <img src={gemIcon} alt="Gems" className="icon" />
-          <span>{gemBalance}</span>
-        </div>
-        <div className="balance-item">
-          <Link to="/wallet">
-            <img src={walletIcon} alt="Wallet" className="wallet-icon" />
-          </Link>
-        </div>
-      </div>
-
-      <div className="level-container">
-        <span className="level-text">Level {level}</span>
-        <div className="progress-bar">
-          <div
-            className="progress-fill"
-            style={{ width: `${progress}%` }}
-          ></div>
-        </div>
-      </div>
+      <Header coinBalance={coinBalance} gemBalance={gemBalance} level={level} />
 
       <div className="trade-page">
         <h2>Available Tokens</h2>
@@ -65,23 +53,8 @@ const Trade = ({ tokenList }) => {
           ))}
         </div>
       </div>
-      <div className="footer-menu">
-        <Link to="/dashboard" className="menu-item">
-          Dashboard
-        </Link>
-        <Link to="/launch" className="menu-item">
-          Launch
-        </Link>
-        <Link to="/stake" className="menu-item">
-          Stake
-        </Link>
-        <Link to="/trade" className="menu-item">
-          Trade
-        </Link>
-        <Link to="/airdrop" className="menu-item">
-          Airdrop
-        </Link>
-      </div>
+      {/* Footer Menu */}
+      <Footer />
     </div>
   );
 };

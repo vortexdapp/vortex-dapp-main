@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "./DailyCheckIn.css";
+import Footer from "../telegram-components/Footer";
 
 const DailyCheckIn = () => {
   const [checkInDay, setCheckInDay] = useState(0);
@@ -54,23 +55,8 @@ const DailyCheckIn = () => {
       <p>Current Streak: {streak} days</p>
       <p>Gems Earned: {reward}</p>
 
-      <div className="footer-menu">
-        <Link to="/dashboard" className="menu-item">
-          Dashboard
-        </Link>
-        <Link to="/launch" className="menu-item">
-          Launch
-        </Link>
-        <Link to="/stake" className="menu-item">
-          Stake
-        </Link>
-        <Link to="/trade" className="menu-item">
-          Trade
-        </Link>
-        <Link to="/airdrop" className="menu-item">
-          Airdrop
-        </Link>
-      </div>
+      {/* Footer Menu */}
+      <Footer />
     </div>
   );
 };

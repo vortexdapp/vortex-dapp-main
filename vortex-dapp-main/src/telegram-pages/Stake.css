@@ -1,16 +1,8 @@
 /* telegram-web-app/src/telegram-pages/Stake.css */
 
-body {
-  font-family: Arial, sans-serif;
-  color: #ffffff;
-  background-color: #000000;
-}
-
 .staking {
-  max-width: 600px;
-  margin: 50px auto;
-  padding: 60px;
-  background-color: #000000;
+  max-width: 300px;
+  margin-top: 150px;
   border-radius: 10px;
   text-align: center;
   align-items: center;
@@ -19,13 +11,13 @@ body {
 .stake h2 {
   color: #ececec;
   font-size: 28px;
-  margin-bottom: 15px;
+  margin-bottom: 5px;
 }
 
 .stake p {
   color: #e2e2e2;
   font-size: 16px;
-  margin-bottom: 30px;
+  margin-bottom: 5px;
 }
 
 .stake-form {
@@ -47,8 +39,6 @@ body {
   border-radius: 5px;
   background-color: #2a2a2a;
   color: #ffffff;
-  margin-bottom: 20px;
-  margin-top: 10px;
   width: 80%;
   outline: none;
 }

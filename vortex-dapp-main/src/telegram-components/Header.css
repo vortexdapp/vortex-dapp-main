@@ -1,0 +1,99 @@
+/* src/components/Header.css */
+
+/* Centered and full-width Header styling */
+.header-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%; /* Full width of the container */
+  padding: 20px 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+}
+
+/* Balance Section */
+.balance {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  width: 50%; /* Spanning 90% to provide padding on the sides */
+  max-width: 300px; /* Limiting maximum width to prevent overflow on large screens */
+  margin-bottom: 10px;
+}
+
+.balance-item {
+  display: flex;
+  align-items: center;
+  font-size: 1.2rem;
+  color: #f8f8f8;
+}
+
+.icon {
+  width: 36px;
+  height: 36px;
+  margin-right: 8px;
+}
+
+/* Level Container */
+.level-container {
+  width: 90%; /* Same width as the balance section */
+  max-width: 600px;
+  text-align: center;
+}
+
+.level-text {
+  font-size: 1rem;
+  color: #f8f8f8;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background-color: #333;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 5px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(45deg, #007bff, #9b59b6);
+  transition: width 0.3s ease-in-out;
+  border-radius: 10px 0 0 10px;
+}
+
+.wallet-icon {
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+}
+
+.wallet-icon:hover {
+  transform: scale(1.1);
+}
+
+/* Responsive Styling */
+@media (max-width: 768px) {
+  .header-container {
+    padding: 15px 0;
+  }
+
+  .balance {
+    flex-direction: row;
+    justify-content: space-between;
+    width: 90%;
+  }
+
+  .level-container {
+    width: 90%;
+    margin-top: 10px;
+  }
+
+  .progress-bar {
+    height: 6px;
+  }
+}

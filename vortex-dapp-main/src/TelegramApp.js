@@ -35,6 +35,21 @@ const tokenList = [
     logo: "coin-logo.png",
     marketCap: 200000,
   },
+
+  {
+    symbol: "DINO",
+    address: "0x789",
+    name: "Dino Token",
+    logo: "coin-logo.png",
+    marketCap: 300000,
+  },
+  {
+    symbol: "BULL",
+    address: "0x789",
+    name: "Bullish Token",
+    logo: "coin-logo.png",
+    marketCap: 450000,
+  },
 ];
 
 const TelegramApp = () => {

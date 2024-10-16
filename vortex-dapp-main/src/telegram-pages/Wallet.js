@@ -58,7 +58,7 @@ const Wallet = () => {
         ))}
       </select>
 
-      <div className="level-container">
+      {/* <div className="level-container">
         <span className="level-text">Level {level}</span>
         <div className="progress-bar">
           <div
@@ -66,7 +66,7 @@ const Wallet = () => {
             style={{ width: `${progress}%` }}
           ></div>
         </div>
-      </div>
+      </div> */}
 
       <div className="footer-menu">
         <Link to="/dashboard" className="menu-item">

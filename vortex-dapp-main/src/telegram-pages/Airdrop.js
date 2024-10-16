@@ -1,105 +1,147 @@
 // telegram-web-app/src/telegram-pages/Airdrop.js
 import React, { useState } from "react";
 import "./Airdrop.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import coinIcon from "../assets/coin.png";
 import gemIcon from "../assets/gem.png";
 import walletIcon from "../assets/wallet.png";
+import Header from "../telegram-components/Header";
+import Footer from "../telegram-components/Footer";
+
+const baseLevelUpThreshold = 1000;
+const calculateLevelUpThreshold = (level) => baseLevelUpThreshold * level;
 
 const Airdrop = () => {
-  const [twitterVerified, setTwitterVerified] = useState(false);
-  const [telegramVerified, setTelegramVerified] = useState(false);
-
-  const handleTwitterVerify = () => setTwitterVerified(true);
-  const handleTelegramVerify = () => setTelegramVerified(true);
-  const [coinBalance, setCoinBalance] = useState(1000);
+  const navigate = useNavigate();
+  const [twitterStatus, setTwitterStatus] = useState("Start");
+  const [telegramStatus, setTelegramStatus] = useState("Start");
+  const [likeStatus, setLikeStatus] = useState("Start");
+  const [retweetStatus, setRetweetStatus] = useState("Start");
+  const [dailyCheckinStatus, setDailyCheckinStatus] = useState("Start");
   const [gemBalance, setGemBalance] = useState(250);
+  const [coinBalance, setCoinBalance] = useState(1000);
   const [level, setLevel] = useState(1);
   const levelUpThreshold = 1000;
-  const totalPoints = coinBalance + gemBalance;
-  const progress = ((totalPoints % levelUpThreshold) / levelUpThreshold) * 100;
+
+  const tasks = [
+    {
+      name: "Daily Check-In",
+      reward: 50,
+      status: dailyCheckinStatus,
+      action: () => handleTaskClick("dailyCheckin"),
+    },
+    {
+      name: "Follow us on Twitter",
+      reward: 100,
+      status: twitterStatus,
+      action: () => handleTaskClick("twitter"),
+    },
+    {
+      name: "Join our Telegram group",
+      reward: 2500000,
+      status: telegramStatus,
+      action: () => handleTaskClick("telegram"),
+    },
+    {
+      name: "Like our tweet",
+      reward: 5000,
+      status: likeStatus,
+      action: () => handleTaskClick("like"),
+    },
+    {
+      name: "Retweet our tweet",
+      reward: 3000,
+      status: retweetStatus,
+      action: () => handleTaskClick("retweet"),
+    },
+  ];
+
+  const handleTaskClick = (task) => {
+    if (task === "dailyCheckin" && dailyCheckinStatus === "Start") {
+      setDailyCheckinStatus("Claim");
+      navigate("/daily-checkin");
+    } else if (task === "dailyCheckin" && dailyCheckinStatus === "Claim") {
+      setDailyCheckinStatus("Verified ✓");
+      increaseGemBalance(50);
+    }
+
+    if (task === "twitter" && twitterStatus === "Start") {
+      setTwitterStatus("Claim");
+      window.open("https://twitter.com/vortexdapp", "_blank");
+    } else if (task === "twitter" && twitterStatus === "Claim") {
+      setTwitterStatus("Verified ✓");
+      increaseGemBalance(100);
+    }
+
+    if (task === "telegram" && telegramStatus === "Start") {
+      setTelegramStatus("Claim");
+      window.open("https://t.me/vortexdapp", "_blank");
+    } else if (task === "telegram" && telegramStatus === "Claim") {
+      setTelegramStatus("Verified ✓");
+      increaseGemBalance(100);
+    }
+
+    if (task === "like" && likeStatus === "Start") {
+      setLikeStatus("Claim");
+      window.open(
+        "https://x.com/vortexdapp/status/1830638870607941851",
+        "_blank"
+      );
+    } else if (task === "like" && likeStatus === "Claim") {
+      setLikeStatus("Verified ✓");
+      increaseGemBalance(100);
+    }
+
+    if (task === "retweet" && retweetStatus === "Start") {
+      setRetweetStatus("Claim");
+      window.open(
+        "https://x.com/vortexdapp/status/1830638870607941851",
+        "_blank"
+      );
+    } else if (task === "retweet" && retweetStatus === "Claim") {
+      setRetweetStatus("Verified ✓");
+      increaseGemBalance(100);
+    }
+  };
+
+  const increaseGemBalance = (amount) => {
+    const newGemBalance = gemBalance + amount;
+    setGemBalance(newGemBalance);
+
+    const totalPoints = coinBalance + newGemBalance;
+    const newLevel = Math.floor(totalPoints / levelUpThreshold) + 1;
+    setLevel(newLevel);
+  };
+
+  const progress =
+    (((coinBalance + gemBalance) % levelUpThreshold) / levelUpThreshold) * 100;
 
   return (
     <div className="settings">
-      <div className="balance">
-        <div className="balance-item">
-          <img src={coinIcon} alt="Coins" className="icon" />
-          <span>{coinBalance}</span>
-        </div>
-        <div className="balance-item">
-          <img src={gemIcon} alt="Gems" className="icon" />
-          <span>{gemBalance}</span>
-        </div>
-        <div className="balance-item">
-          <Link to="/wallet">
-            <img src={walletIcon} alt="Wallet" className="wallet-icon" />
-          </Link>
-        </div>
-      </div>
+      <Header coinBalance={coinBalance} gemBalance={gemBalance} level={level} />
 
-      <div className="level-container">
-        <span className="level-text">Level {level}</span>
-        <div className="progress-bar">
-          <div
-            className="progress-fill"
-            style={{ width: `${progress}%` }}
-          ></div>
-        </div>
-      </div>
-
-      <div>
+      <div className="airdrop">
         <h2>Airdrop Tasks</h2>
-        <p>Complete tasks to earn gems:</p>
-
-        <Link to="/daily-checkin" className="task">
-          <span>Daily Check-In</span>
-          <button>Go to Check-In</button>
-        </Link>
-
-        <a
-          href="https://twitter.com/vortexdapp"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="task"
-          onClick={handleTwitterVerify}
-        >
-          <span>Follow us on Twitter</span>
-          <button disabled={twitterVerified}>
-            {twitterVerified ? "Verified ✓" : "Verify"}
-          </button>
-        </a>
-
-        <a
-          href="https://t.me/vortexdapp"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="task"
-          onClick={handleTelegramVerify}
-        >
-          <span>Join our Telegram group</span>
-          <button disabled={telegramVerified}>
-            {telegramVerified ? "Verified ✓" : "Verify"}
-          </button>
-        </a>
+        <p>Complete tasks to earn rewards:</p>
+        {tasks.map((task, index) => (
+          <div key={index} className="task">
+            <span>
+              {" "}
+              {task.name} {"+"} {task.reward}
+              <img src={gemIcon} alt="Gems" className="gem-icon" />
+            </span>
+            <button
+              onClick={task.action}
+              disabled={task.status === "Verified ✓"}
+            >
+              {task.status}
+            </button>
+          </div>
+        ))}
       </div>
 
-      <div className="footer-menu">
-        <Link to="/dashboard" className="menu-item">
-          Dashboard
-        </Link>
-        <Link to="/launch" className="menu-item">
-          Launch
-        </Link>
-        <Link to="/stake" className="menu-item">
-          Stake
-        </Link>
-        <Link to="/trade" className="menu-item">
-          Trade
-        </Link>
-        <Link to="/airdrop" className="menu-item">
-          Airdrop
-        </Link>
-      </div>
+      {/* Footer Menu */}
+      <Footer />
     </div>
   );
 };
