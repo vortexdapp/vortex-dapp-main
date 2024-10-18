@@ -2,8 +2,9 @@
 import { createClient } from "@supabase/supabase-js";
 
 // Retrieve environment variables
-const supabaseUrl = "https://yqlzxpdtjkhqjiddbbko.supabase.co";
-const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlxbHp4cGR0amtocWppZGRiYmtvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mjg0MjMzNzMsImV4cCI6MjA0Mzk5OTM3M30.pIj-0AKNry6hbbK5bi4jvX1JTuMo1BdMv_crVGci15g";
+const supabaseUrl = "https://mivxbkbqlpwfkrlgcvqt.supabase.co";
+const supabaseAnonKey =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pdnhia2JxbHB3ZmtybGdjdnF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjkxNzkxMjMsImV4cCI6MjA0NDc1NTEyM30.LuOK6Z0p4I3RAS-_HprsoHcsRZaXc-sW2Em9A_Mxg5I";
 
 // Validate environment variables
 if (!supabaseUrl || !supabaseAnonKey) {
@@ -11,6 +12,4 @@ if (!supabaseUrl || !supabaseAnonKey) {
 }
 
 // Create a single supabase client instance
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
-
-export default supabase;
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);

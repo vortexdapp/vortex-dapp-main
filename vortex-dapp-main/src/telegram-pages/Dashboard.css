@@ -1,4 +1,7 @@
-/* User Info Section for Improved Visibility */
+.send-funds {
+  margin-top: 150px;
+}
+
 .user-info {
   display: flex;
   align-items: center;

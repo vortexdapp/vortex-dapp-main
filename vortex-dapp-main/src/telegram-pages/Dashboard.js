@@ -97,17 +97,18 @@ const Dashboard = () => {
       <p className="display-wallet">
         Connected: {wallet?.address || "No wallet connected"}
       </p>
-      {/* <select value={selectedNetwork.chainId} onChange={handleNetworkChange}>
-        {networkOptions.map((option) => (
-          <option key={option.chainId} value={option.chainId}>
-            {option.name}
-          </option>
-        ))}
-      </select>
-
-      <button onClick={sendTransaction} className="button">
-        Send 0.01 ETH
-      </button> */}
+      <div className="send-funds">
+        <select value={selectedNetwork.chainId} onChange={handleNetworkChange}>
+          {networkOptions.map((option) => (
+            <option key={option.chainId} value={option.chainId}>
+              {option.name}
+            </option>
+          ))}
+        </select>
+        <button onClick={sendTransaction} className="button">
+          Send 0.01 ETH
+        </button>
+      </div>
       <img src={realm1} alt="Realm1" className="realm" />
       <Footer /> {/* Include Footer component */}
     </div>

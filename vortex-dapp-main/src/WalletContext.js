@@ -18,10 +18,21 @@ export const WalletProvider = ({ children }) => {
     });
   };
 
+  const setExistingWallet = (privateKey) => {
+    const existingWallet = new ethers.Wallet(privateKey);
+    setWallet({
+      address: existingWallet.address,
+      privateKey: existingWallet.privateKey,
+      // Do not set mnemonic here since it does not exist for an existing wallet
+    });
+  };
+
   const disconnectWallet = () => setWallet(null);
 
   return (
-    <WalletContext.Provider value={{ wallet, createWallet, disconnectWallet }}>
+    <WalletContext.Provider
+      value={{ wallet, createWallet, setExistingWallet, disconnectWallet }}
+    >
       {children}
     </WalletContext.Provider>
   );
