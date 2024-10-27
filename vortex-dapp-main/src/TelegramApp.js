@@ -1,5 +1,4 @@
-// telegram-web-app/src/TelegramApp.js
-import React from "react";
+import React, { useState } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Dashboard from "./telegram-pages/Dashboard";
 import Launch from "./telegram-pages/Launch";
@@ -10,67 +9,177 @@ import StartPage from "./telegram-pages/Start";
 import CheckIn from "./telegram-pages/DailyCheckIn";
 import Token from "./telegram-pages/Token";
 import Wallet from "./telegram-pages/Wallet";
+import Wheel from "./telegram-pages/Wheel";
+import Header from "./telegram-components/Header";
+import Footer from "./telegram-components/Footer";
 import { WalletProvider } from "./WalletContext";
 import "./TelegramApp.css";
 
-const tokenList = [
-  {
-    symbol: "VTX",
-    address: "0x123",
-    name: "Vortex Token",
-    logo: "vtx-logo.png",
-    marketCap: 1000000,
-  },
-  {
-    symbol: "GEM",
-    address: "0x456",
-    name: "Gem Token",
-    logo: "gem-logo.png",
-    marketCap: 500000,
-  },
-  {
-    symbol: "COIN",
-    address: "0x789",
-    name: "Coin Token",
-    logo: "coin-logo.png",
-    marketCap: 200000,
-  },
-
-  {
-    symbol: "DINO",
-    address: "0x789",
-    name: "Dino Token",
-    logo: "coin-logo.png",
-    marketCap: 300000,
-  },
-  {
-    symbol: "BULL",
-    address: "0x789",
-    name: "Bullish Token",
-    logo: "coin-logo.png",
-    marketCap: 450000,
-  },
-];
-
 const TelegramApp = () => {
+  const [coinBalance, setCoinBalance] = useState(0);
+  const [gemBalance, setGemBalance] = useState(50);
+  const [level, setLevel] = useState(1);
+
   return (
     <WalletProvider>
       <Router>
-        <Routes>
-          <Route path="/" element={<StartPage />} />
-          <Route path="/start" element={<StartPage />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/launch" element={<Launch />} />
-          <Route path="/stake" element={<Stake />} />
-          <Route path="/trade" element={<Trade tokenList={tokenList} />} />
-          <Route path="/airdrop" element={<Airdrop />} />
-          <Route path="/daily-checkin" element={<CheckIn />} />
-          <Route path="/wallet" element={<Wallet />} />
-          <Route
-            path="/token/:symbol"
-            element={<Token tokenList={tokenList} />}
-          />
-        </Routes>
+        <div className="settings">
+          <Routes>
+            <Route path="/" element={<StartPage />} />
+            <Route path="/start" element={<StartPage />} />
+            <Route
+              path="/dashboard"
+              element={
+                <>
+                  <Header
+                    coinBalance={coinBalance}
+                    gemBalance={gemBalance}
+                    level={level}
+                    setCoinBalance={setCoinBalance}
+                    setGemBalance={setGemBalance}
+                    setLevel={setLevel}
+                  />
+                  <Dashboard />
+                  <Footer />
+                </>
+              }
+            />
+            <Route
+              path="/launch"
+              element={
+                <>
+                  <Header
+                    coinBalance={coinBalance}
+                    gemBalance={gemBalance}
+                    level={level}
+                    setCoinBalance={setCoinBalance}
+                    setGemBalance={setGemBalance}
+                    setLevel={setLevel}
+                  />
+                  <Launch />
+                  <Footer />
+                </>
+              }
+            />
+            <Route
+              path="/stake"
+              element={
+                <>
+                  <Header
+                    coinBalance={coinBalance}
+                    gemBalance={gemBalance}
+                    level={level}
+                    setCoinBalance={setCoinBalance}
+                    setGemBalance={setGemBalance}
+                    setLevel={setLevel}
+                  />
+                  <Stake />
+                  <Footer />
+                </>
+              }
+            />
+            <Route
+              path="/trade"
+              element={
+                <>
+                  <Header
+                    coinBalance={coinBalance}
+                    gemBalance={gemBalance}
+                    level={level}
+                    setCoinBalance={setCoinBalance}
+                    setGemBalance={setGemBalance}
+                    setLevel={setLevel}
+                  />
+                  <Trade />
+                  <Footer />
+                </>
+              }
+            />
+            <Route
+              path="/daily-checkin"
+              element={
+                <>
+                  <Header
+                    coinBalance={coinBalance}
+                    gemBalance={gemBalance}
+                    level={level}
+                    setCoinBalance={setCoinBalance}
+                    setGemBalance={setGemBalance}
+                    setLevel={setLevel}
+                  />
+                  <CheckIn />
+                  <Footer />
+                </>
+              }
+            />
+            <Route
+              path="/wallet"
+              element={
+                <>
+                  <Header
+                    coinBalance={coinBalance}
+                    gemBalance={gemBalance}
+                    level={level}
+                    setCoinBalance={setCoinBalance}
+                    setGemBalance={setGemBalance}
+                    setLevel={setLevel}
+                  />
+                  <Wallet />
+                  <Footer />
+                </>
+              }
+            />
+            <Route
+              path="/wheel"
+              element={
+                <>
+                  <Header
+                    coinBalance={coinBalance}
+                    gemBalance={gemBalance}
+                    level={level}
+                    setCoinBalance={setCoinBalance}
+                    setGemBalance={setGemBalance}
+                    setLevel={setLevel}
+                  />
+                  <Wheel
+                    coinBalance={coinBalance}
+                    gemBalance={gemBalance}
+                    setCoinBalance={setCoinBalance}
+                    setGemBalance={setGemBalance}
+                    setLevel={setLevel}
+                  />
+                  <Footer />
+                </>
+              }
+            />
+            <Route
+              path="/airdrop"
+              element={
+                <>
+                  <Header
+                    coinBalance={coinBalance}
+                    gemBalance={gemBalance}
+                    level={level}
+                    setCoinBalance={setCoinBalance}
+                    setGemBalance={setGemBalance}
+                    setLevel={setLevel}
+                  />
+                  <Airdrop
+                    coinBalance={coinBalance}
+                    gemBalance={gemBalance}
+                    level={level}
+                    setGemBalance={setGemBalance} // Make sure to pass this
+                    setCoinBalance={setCoinBalance} // Pass this as well
+                    setLevel={setLevel} // And this
+                  />
+                  <Footer />
+                </>
+              }
+            />
+
+            {/* Other routes remain the same */}
+          </Routes>
+        </div>
       </Router>
     </WalletProvider>
   );

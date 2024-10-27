@@ -19,8 +19,22 @@ async function main() {
   console.log("MyLocker address:", MyLockerDeployment.target);
   const lockerAddress = MyLockerDeployment.target;
 
+  const MyFactory = await ethers.getContractFactory("MyFactory");
+  const myFactory = await MyFactory.deploy(
+    positionManager_address,
+    WETH_address,
+    uniswapV3Factory_address,
+    swap_router,
+    lockerAddress,
+    teamWallet,
+    quoter
+  );
+  const factoryAddress = myFactory.target;
+  console.log("MyFactory address:", myFactory.target);
+
   const MyHelper = await ethers.getContractFactory("FactoryHelper");
   const MyHelperDeployment = await MyHelper.deploy(
+    factoryAddress,
     positionManager_address,
     WETH_address,
     uniswapV3Factory_address,
@@ -32,20 +46,6 @@ async function main() {
 
   console.log("MyHelper address:", MyHelperDeployment.target);
   const helperAddress = MyHelperDeployment.target;
-
-  const MyFactory = await ethers.getContractFactory("MyFactory");
-  const myFactory = await MyFactory.deploy(
-    positionManager_address,
-    WETH_address,
-    uniswapV3Factory_address,
-    swap_router,
-    lockerAddress,
-    teamWallet,
-    quoter,
-    helperAddress
-  );
-  const factoryAddress = myFactory.target;
-  console.log("MyFactory address:", myFactory.target);
 
   // Deploy the SimpleStaking contract
   const SimpleStaking = await ethers.getContractFactory("SimpleStaking");
@@ -69,7 +69,8 @@ async function main() {
   );
   tx3 = await factory.setStakingAndTreasuryAddress(
     stakingAddress,
-    treasuryAddress
+    treasuryAddress,
+    helperAddress
   );
   await tx3.wait();
   console.log("Done!");

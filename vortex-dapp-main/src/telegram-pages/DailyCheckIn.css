@@ -1,7 +1,12 @@
 .daily-checkin {
   text-align: center;
+  justify-content: center;
   padding: 20px;
   color: #f0f0f0;
+}
+
+.next-check {
+  margin-top: 5px;
 }
 
 .week-container {

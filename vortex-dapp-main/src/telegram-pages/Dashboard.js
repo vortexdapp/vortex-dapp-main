@@ -1,16 +1,10 @@
-// telegram-web-app/src/telegram-pages/Dashboard.js
-
 import { ethers } from "ethers";
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import { useWallet } from "../WalletContext";
+import WalletRestorer from "../telegram-components/WalletRestorer"; // Keep WalletRestorer
 import "./Dashboard.css";
 import "../TelegramApp.css";
-import coinIcon from "../assets/coin.png";
-import gemIcon from "../assets/gem.png";
-import walletIcon from "../assets/wallet.png";
 import realm1 from "../assets/realm1.png";
-import Header from "../telegram-components/Header";
 import Footer from "../telegram-components/Footer";
 
 const networkOptions = [
@@ -29,13 +23,12 @@ const networkOptions = [
 ];
 
 const Dashboard = () => {
-  const { wallet, disconnectWallet } = useWallet();
+  const { wallet } = useWallet(); // Access wallet from context
   const [provider, setProvider] = useState(null);
   const [signer, setSigner] = useState(null);
   const [selectedNetwork, setSelectedNetwork] = useState(networkOptions[0]);
-  const [coinBalance, setCoinBalance] = useState(1000);
-  const [gemBalance, setGemBalance] = useState(250);
-  const [level, setLevel] = useState(1);
+  const username = localStorage.getItem("username");
+  console.log("Username: ", username);
 
   useEffect(() => {
     if (wallet && selectedNetwork) {
@@ -93,7 +86,7 @@ const Dashboard = () => {
 
   return (
     <div className="settings">
-      <Header coinBalance={coinBalance} gemBalance={gemBalance} level={level} />
+      <WalletRestorer username={username} /> {/* Add the wallet restorer */}
       <p className="display-wallet">
         Connected: {wallet?.address || "No wallet connected"}
       </p>
@@ -110,7 +103,6 @@ const Dashboard = () => {
         </button>
       </div>
       <img src={realm1} alt="Realm1" className="realm" />
-      <Footer /> {/* Include Footer component */}
     </div>
   );
 };

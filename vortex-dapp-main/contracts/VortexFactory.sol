@@ -34,13 +34,14 @@ contract MyFactory {
     address teamWallet;
     uint256 rewardAmount;
     address treasuryAddress;
+    address helperAddress;
     uint256 wethProvided = 0.00001 ether;
     uint256 priceToLaunch = 0.00002 ether;
     uint256 public lockTime1 = 5; //7 days; 
     uint256 public lockTime2 = 5; //30 days; 
     uint256 public maxZeroFeeDays = 2; 
 
-    // Struct where each token's details are saved
+    // Struct with each token's details 
     struct TokenDetails {
         address tokenAddress;
         address poolAddress;
@@ -90,7 +91,7 @@ contract MyFactory {
         _;
     }
 
-    constructor(address _positionManager, address _weth, address _uniswapFactory, address _swapRouter, address _lockerAddress, address _teamWallet, address _quoterAddress, address _factoryHelper) {
+    constructor(address _positionManager, address _weth, address _uniswapFactory, address _swapRouter, address _lockerAddress, address _teamWallet, address _quoterAddress) {
         positionManager = INonfungiblePositionManager(_positionManager);
         uniswapFactory = IUniswapV3Factory(_uniswapFactory);
         swapRouter = ISwapRouter(_swapRouter);
@@ -101,7 +102,6 @@ contract MyFactory {
         lockerAddress = _lockerAddress;
         teamWallet = _teamWallet;
         quoter = IQuoterV2(_quoterAddress);
-        factoryHelper = FactoryHelper(_factoryHelper);
     }
 
 
@@ -177,19 +177,21 @@ contract MyFactory {
     }
 
     // Function to approve another contract or address to manage a specific token
-    function approveToken(address token, address spender, uint256 amount) internal onlyAuth {
+    function approveToken(address token, address spender, uint256 amount) internal {
     require(IERC20(token).approve(spender, amount), "Approval failed");
 }
 
     // Function to approve another contract or address to manage a specific NFT
-    function approveNFT(uint256 tokenId, address spender) internal onlyAuth {
+    function approveNFT(uint256 tokenId, address spender) internal {
         IERC721(nftAddress).approve(spender, tokenId);
     }
 
     // Set Staking and Treasury addresses in the factory
-    function setStakingAndTreasuryAddress(address payable _stakingAddress, address _treasuryAddress) external onlyOwner {
+    function setStakingAndTreasuryAddress(address payable _stakingAddress, address _treasuryAddress, address _helperAddress) external onlyOwner {
         stakingAddress = _stakingAddress;
         treasuryAddress = _treasuryAddress;
+        helperAddress = _helperAddress;
+        factoryHelper = FactoryHelper(_helperAddress);
         
     }
 
@@ -216,11 +218,27 @@ contract MyFactory {
 }
 
     
-    function swapETHforTokens(uint256 amountIn, address tokenAddress) public payable returns (uint256) {
+    function swapETHforTokens(uint256 amountIn, address tokenAddress) internal returns (uint256 amountOut) {
+        // Wrap ETH to WETH
+
     uint256 estimatedAmountOut = getEstimatedAmountOut(weth, tokenAddress, amountIn);
     uint256 amountOutMinimum = estimatedAmountOut * 95 / 100; // 5% slippage tolerance
     approveToken(weth, address(swapRouter), amountIn);
-    return factoryHelper.executeSwap(weth, tokenAddress, amountIn, amountOutMinimum, msg.sender);
+    //approveToken(weth, address(factoryHelper), amountIn);
+    //return factoryHelper.executeSwap(weth, tokenAddress, amountIn, amountOutMinimum, msg.sender);
+    ISwapRouter.ExactInputSingleParams memory params = ISwapRouter.ExactInputSingleParams({
+            tokenIn: weth,
+            tokenOut: tokenAddress,
+            fee: 10000,
+            recipient: msg.sender,
+            amountIn: amountIn,
+            amountOutMinimum: amountOutMinimum,
+            sqrtPriceLimitX96: 0
+        });
+
+        amountOut = swapRouter.exactInputSingle{value: amountIn}(params);
+
+        return amountOut;
 }
 
 function swapTokensForWETH(uint256 amountIn, address tokenAddress) internal returns (uint256) {
@@ -291,17 +309,52 @@ function swapTokensForWETH(uint256 amountIn, address tokenAddress) internal retu
         token1amount = tokenBalance;
     }
 
+
+        // Approve the factoryHelper to spend the tokens
+        //approveToken(token0, helperAddress, token0amount);
+        //approveToken(token1, helperAddress, token1amount);
+
+        uint256 priceRatio = (token1amount * 1e18) / token0amount;
+    uint256 sqrtPriceRatio = sqrt(priceRatio);
+    uint160 sqrtPrice_X96 = uint160((sqrtPriceRatio * 2**96) / 1e9);
+
+    // Ensure the pool is created and initialized
+    poolAddress = factoryHelper.createAndInitializePoolIfNecessary(token0, token1, sqrtPrice_X96);
+
+    // Check and set approvals
+    TransferHelper.safeApprove(token0, address(positionManager), token0amount);
+    TransferHelper.safeApprove(token1, address(positionManager), token1amount);
+
+    // Adding initial liquidity
+    INonfungiblePositionManager.MintParams memory params = INonfungiblePositionManager.MintParams({
+        token0: token0,
+        token1: token1,
+        fee: 10000,
+        tickLower: -887200,
+        tickUpper: 887200,
+        amount0Desired: token0amount,
+        amount1Desired: token1amount,
+        amount0Min: 0,
+        amount1Min: 0,
+        recipient: address(this),
+        deadline: block.timestamp + 5 minutes
+    });
+
+    // Try minting liquidity and handle failure
+    
+        (tokenId, , , ) = positionManager.mint(params);
+
         // Call addLiquidityHelper and add lp
         //(poolAddress, tokenId) = factoryHelper.addLiquidityHelper(token0, token1, token0amount, token1amount);
 
-        /* // Approve the locker contract to manage the liquidity NFT
+        // Approve the locker contract to manage the liquidity NFT
         IERC721(address(positionManager)).approve(lockerAddress, tokenId);
 
-        uint256 duration = lockTime1; 
+        //uint256 duration = lockTime1; 
 
         // Lock the liquidity NFT
-        uint256 lockID = ILiquidityLocker(lockerAddress).lockLiquidity(address(positionManager), tokenId, duration, address(this)); */
-        uint256 lockID = 0;
+        uint256 lockID = ILiquidityLocker(lockerAddress).lockLiquidity(address(positionManager), tokenId, lockTime1, address(this));
+        //uint256 lockID = 0;
 
     // Store the token details in the array
     allTokens.push(TokenDetails({
@@ -342,7 +395,7 @@ function swapTokensForWETH(uint256 amountIn, address tokenAddress) internal retu
 
         payable(teamWallet).transfer(taxAmount);
 
-        swapETHforTokens(amountToSwap, tokenAddress);
+        uint256 amountOut = factoryHelper.swapETHforTokens(amountToSwap, tokenAddress);
 
         fee = amountToBuy * 1 / 100;
     }

@@ -73,7 +73,7 @@ export async function decryptWallet(encrypted, iv, password) {
   return new TextDecoder().decode(decrypted);
 }
 
-// Create and store an encrypted wallet in Supabase with a username
+// Function to create and store a wallet and return user_id
 export async function createAndStoreWallet(username, walletData, password) {
   try {
     const { encrypted, iv } = await encryptWallet(
@@ -81,22 +81,29 @@ export async function createAndStoreWallet(username, walletData, password) {
       password
     );
 
-    // Insert the username and encrypted wallet data into Supabase
-    const { error } = await supabase
+    // Insert the username, wallet data, and return the generated `user_id`
+    const { data, error } = await supabase
       .from("wallets")
       .insert([
-        { username, encrypted_wallet: JSON.stringify({ encrypted, iv }) },
-      ]);
+        {
+          username,
+          encrypted_wallet: JSON.stringify({ encrypted, iv }),
+          coin_balance: 0, // Default 0 coins
+          gem_balance: 50, // Default 50 gems
+          level: 1,
+        }, // Default level 1 },
+      ])
+      .select("user_id"); // Return the user_id from the inserted row
 
     if (error) {
       console.error("Error storing encrypted wallet:", error);
-      return false;
+      return null;
     }
 
-    return true;
+    return data[0].user_id; // Return the generated `user_id`
   } catch (error) {
     console.error("Error creating wallet:", error);
-    return false;
+    return null;
   }
 }
 
@@ -129,6 +136,128 @@ export async function fetchAndDecryptWallet(username, password) {
     }
   } catch (error) {
     console.error("Error fetching or decrypting wallet:", error);
+    return null;
+  }
+}
+
+// Function to restore the wallet from localStorage and prompt for password if needed
+export async function restoreWalletIfNeeded(wallet, setWallet, username) {
+  if (!wallet && username) {
+    const password = window.prompt(
+      "Please enter your password to restore your wallet:"
+    );
+    if (password) {
+      const restoredWallet = await fetchAndDecryptWallet(username, password);
+      if (restoredWallet) {
+        setWallet(restoredWallet);
+        return true; // Successfully restored
+      } else {
+        alert("Failed to restore wallet. Please try again.");
+        return false; // Failed to restore
+      }
+    }
+  }
+  return false; // No restoration needed
+}
+
+// Function to update user's check-in data
+export async function updateCheckInData(username, streak, lastCheckInTime) {
+  try {
+    console.log(
+      `Updating check-in for ${username}: streak=${streak}, time=${lastCheckInTime}`
+    );
+
+    const { data, error } = await supabase
+      .from("wallets")
+      .update({ streak, last_check_in_time: lastCheckInTime })
+      .eq("username", username);
+
+    console.log("Supabase response: ", { data, error });
+
+    if (error) {
+      console.error("Error updating check-in data:", error);
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error("Error updating check-in data:", error);
+    return false;
+  }
+}
+
+// Function to fetch user check-in data using username
+export async function fetchCheckInData(username) {
+  try {
+    const { data, error } = await supabase
+      .from("wallets")
+      .select("streak, last_check_in_time")
+      .eq("username", username)
+      .single();
+
+    console.log("Fetched data from Supabase: ", { data, error });
+
+    if (error) {
+      console.error("Error fetching check-in data:", error);
+      return null;
+    }
+
+    if (!data) {
+      console.error("No data found for the provided username.");
+      return null;
+    }
+
+    return data; // Return the fetched streak and last check-in time
+  } catch (error) {
+    console.error("Error fetching check-in data:", error);
+    return null;
+  }
+}
+
+export async function updateUserBalance(
+  username,
+  coinBalance,
+  gemBalance,
+  level
+) {
+  try {
+    const { error } = await supabase
+      .from("wallets")
+      .update({
+        coin_balance: coinBalance,
+        gem_balance: gemBalance,
+        level: level,
+      })
+      .eq("username", username);
+
+    if (error) {
+      console.error("Error updating balance in Supabase:", error);
+      return false;
+    }
+    return true;
+  } catch (error) {
+    console.error("Error updating balance:", error);
+    return false;
+  }
+}
+
+// Function to fetch user balance (coins, gems, and level)
+export async function fetchUserBalance(username) {
+  try {
+    const { data, error } = await supabase
+      .from("wallets")
+      .select("coin_balance, gem_balance, level")
+      .eq("username", username)
+      .single();
+
+    if (error || !data) {
+      console.error("Error fetching user balance:", error);
+      return null;
+    }
+
+    return data; // Return the fetched balance and level
+  } catch (error) {
+    console.error("Error fetching user balance:", error);
     return null;
   }
 }

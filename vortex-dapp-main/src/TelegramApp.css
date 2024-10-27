@@ -1,6 +1,9 @@
 /* General App Styles */
 
 .App {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-align: center;
   padding: 20px;
   font-family: Arial, sans-serif;

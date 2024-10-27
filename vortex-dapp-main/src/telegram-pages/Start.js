@@ -50,6 +50,7 @@ function StartPage() {
         password
       );
       if (success) {
+        localStorage.setItem("username", username);
         navigate("/dashboard"); // Redirect to dashboard upon success
       } else {
         setErrorMessage("Error storing wallet. Please try again.");
@@ -79,7 +80,7 @@ function StartPage() {
       );
       if (decryptedPrivateKey) {
         console.log("Private Key:", decryptedPrivateKey);
-
+        localStorage.setItem("username", username);
         // Automatically connect the wallet after successful login
         setExistingWallet(decryptedPrivateKey); // Set the existing wallet in context
         console.log("Connected Wallet:", wallet);

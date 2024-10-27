@@ -1,27 +1,26 @@
-// telegram-web-app/src/telegram-pages/Airdrop.js
 import React, { useState } from "react";
 import "./Airdrop.css";
-import { Link, useNavigate } from "react-router-dom";
-import coinIcon from "../assets/coin.png";
+import { useNavigate } from "react-router-dom";
+import { updateUserBalance } from "../WalletManager";
 import gemIcon from "../assets/gem.png";
-import walletIcon from "../assets/wallet.png";
-import Header from "../telegram-components/Header";
-import Footer from "../telegram-components/Footer";
+import WalletRestorer from "../telegram-components/WalletRestorer";
 
-const baseLevelUpThreshold = 1000;
-const calculateLevelUpThreshold = (level) => baseLevelUpThreshold * level;
-
-const Airdrop = () => {
+const Airdrop = ({
+  coinBalance,
+  gemBalance,
+  level,
+  setGemBalance,
+  setCoinBalance,
+  setLevel,
+  onBalanceUpdate,
+}) => {
   const navigate = useNavigate();
   const [twitterStatus, setTwitterStatus] = useState("Start");
   const [telegramStatus, setTelegramStatus] = useState("Start");
   const [likeStatus, setLikeStatus] = useState("Start");
   const [retweetStatus, setRetweetStatus] = useState("Start");
   const [dailyCheckinStatus, setDailyCheckinStatus] = useState("Start");
-  const [gemBalance, setGemBalance] = useState(250);
-  const [coinBalance, setCoinBalance] = useState(1000);
-  const [level, setLevel] = useState(1);
-  const levelUpThreshold = 1000;
+  const username = localStorage.getItem("username");
 
   const tasks = [
     {
@@ -38,31 +37,31 @@ const Airdrop = () => {
     },
     {
       name: "Join our Telegram group",
-      reward: 2500000,
+      reward: 100,
       status: telegramStatus,
       action: () => handleTaskClick("telegram"),
     },
     {
       name: "Like our tweet",
-      reward: 5000,
+      reward: 50,
       status: likeStatus,
       action: () => handleTaskClick("like"),
     },
     {
       name: "Retweet our tweet",
-      reward: 3000,
+      reward: 50,
       status: retweetStatus,
       action: () => handleTaskClick("retweet"),
     },
   ];
 
-  const handleTaskClick = (task) => {
+  const handleTaskClick = async (task) => {
     if (task === "dailyCheckin" && dailyCheckinStatus === "Start") {
       setDailyCheckinStatus("Claim");
       navigate("/daily-checkin");
     } else if (task === "dailyCheckin" && dailyCheckinStatus === "Claim") {
       setDailyCheckinStatus("Verified ✓");
-      increaseGemBalance(50);
+      await increaseGemBalance(50);
     }
 
     if (task === "twitter" && twitterStatus === "Start") {
@@ -70,7 +69,7 @@ const Airdrop = () => {
       window.open("https://twitter.com/vortexdapp", "_blank");
     } else if (task === "twitter" && twitterStatus === "Claim") {
       setTwitterStatus("Verified ✓");
-      increaseGemBalance(100);
+      await increaseGemBalance(100);
     }
 
     if (task === "telegram" && telegramStatus === "Start") {
@@ -78,7 +77,7 @@ const Airdrop = () => {
       window.open("https://t.me/vortexdapp", "_blank");
     } else if (task === "telegram" && telegramStatus === "Claim") {
       setTelegramStatus("Verified ✓");
-      increaseGemBalance(100);
+      await increaseGemBalance(100);
     }
 
     if (task === "like" && likeStatus === "Start") {
@@ -89,7 +88,7 @@ const Airdrop = () => {
       );
     } else if (task === "like" && likeStatus === "Claim") {
       setLikeStatus("Verified ✓");
-      increaseGemBalance(100);
+      await increaseGemBalance(50);
     }
 
     if (task === "retweet" && retweetStatus === "Start") {
@@ -100,34 +99,37 @@ const Airdrop = () => {
       );
     } else if (task === "retweet" && retweetStatus === "Claim") {
       setRetweetStatus("Verified ✓");
-      increaseGemBalance(100);
+      await increaseGemBalance(50);
     }
   };
 
-  const increaseGemBalance = (amount) => {
+  const increaseGemBalance = async (amount) => {
     const newGemBalance = gemBalance + amount;
-    setGemBalance(newGemBalance);
+    const username = localStorage.getItem("username"); // Assuming username is stored in local storage
 
-    const totalPoints = coinBalance + newGemBalance;
-    const newLevel = Math.floor(totalPoints / levelUpThreshold) + 1;
-    setLevel(newLevel);
+    if (username) {
+      // Update state immediately
+      setGemBalance(newGemBalance);
+
+      const totalPoints = coinBalance + newGemBalance;
+      const newLevel = Math.floor(totalPoints / 1000) + 1; // Example level-up logic
+      setLevel(newLevel);
+
+      // Call the function to update the balance in Supabase
+      await updateUserBalance(username, coinBalance, newGemBalance, newLevel);
+    }
   };
-
-  const progress =
-    (((coinBalance + gemBalance) % levelUpThreshold) / levelUpThreshold) * 100;
 
   return (
     <div className="settings">
-      <Header coinBalance={coinBalance} gemBalance={gemBalance} level={level} />
-
+      <WalletRestorer username={username} />{" "}
       <div className="airdrop">
         <h2>Airdrop Tasks</h2>
         <p>Complete tasks to earn rewards:</p>
         {tasks.map((task, index) => (
           <div key={index} className="task">
             <span>
-              {" "}
-              {task.name} {"+"} {task.reward}
+              {task.name} +{task.reward}
               <img src={gemIcon} alt="Gems" className="gem-icon" />
             </span>
             <button
@@ -139,9 +141,6 @@ const Airdrop = () => {
           </div>
         ))}
       </div>
-
-      {/* Footer Menu */}
-      <Footer />
     </div>
   );
 };

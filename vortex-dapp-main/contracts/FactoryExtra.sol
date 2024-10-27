@@ -21,6 +21,7 @@ contract FactoryHelper {
     FactoryHelper public factoryHelper;
     ILiquidityLocker public locker;
     address public owner;
+    address public factoryAddress;
     address public nftAddress;
     address public lockerAddress;
     address public teamWallet;
@@ -28,7 +29,7 @@ contract FactoryHelper {
     event LiquidityEvent(address indexed token, uint256 tokenId, string eventType, uint256 amount0, uint256 amount1);
     event TokensSwapped(uint256 amountOut);
 
-    constructor(address _positionManager, address _weth, address _uniswapFactory, address _swapRouter, address _lockerAddress, address _teamWallet, address _quoterAddress) {
+    constructor(address _factoryAddress, address _positionManager, address _weth, address _uniswapFactory, address _swapRouter, address _lockerAddress, address _teamWallet, address _quoterAddress) {
         positionManager = INonfungiblePositionManager(_positionManager);
         uniswapFactory = IUniswapV3Factory(_uniswapFactory);
         swapRouter = ISwapRouter(_swapRouter);
@@ -39,8 +40,53 @@ contract FactoryHelper {
         lockerAddress = _lockerAddress;
         teamWallet = _teamWallet;
         quoter = IQuoterV2(_quoterAddress);
+        factoryAddress = _factoryAddress;
 
     }
+
+    function getEstimatedAmountOut(
+    address tokenIn, 
+    address tokenOut, 
+    uint256 amountIn
+) public returns (uint256 amountOut) {
+
+    // Call quoteExactInputSingle from QuoterV2
+    IQuoterV2.QuoteExactInputSingleParams memory params = IQuoterV2.QuoteExactInputSingleParams({
+        tokenIn: tokenIn,
+        tokenOut: tokenOut,
+        amountIn: amountIn,
+        fee: 10000,
+        sqrtPriceLimitX96: 0
+    });
+
+    // Call the QuoterV2 to get the amountOut
+    (amountOut,,,) = quoter.quoteExactInputSingle(params);
+
+    return amountOut;
+}
+
+    
+    function swapETHforTokens(uint256 amountIn, address tokenAddress) external payable returns (uint256 amountOut) {
+        
+    uint256 estimatedAmountOut = getEstimatedAmountOut(weth, tokenAddress, amountIn);
+    uint256 amountOutMinimum = estimatedAmountOut * 95 / 100; // 5% slippage tolerance
+    
+    IERC20(weth).approve(address(swapRouter), amountIn);
+
+    ISwapRouter.ExactInputSingleParams memory params = ISwapRouter.ExactInputSingleParams({
+            tokenIn: weth,
+            tokenOut: tokenAddress,
+            fee: 10000,
+            recipient: msg.sender,
+            amountIn: amountIn,
+            amountOutMinimum: amountOutMinimum,
+            sqrtPriceLimitX96: 0
+        });
+
+        amountOut = swapRouter.exactInputSingle{value: amountIn}(params);
+
+        return amountOut;
+}
 
     // Function to execute swap
     function executeSwap(
@@ -49,7 +95,7 @@ contract FactoryHelper {
         uint256 amountIn, 
         uint256 amountOutMinimum, 
         address recipient
-    ) external returns (uint256 amountOut) {
+    ) external payable returns (uint256 amountOut) {
         ISwapRouter.ExactInputSingleParams memory params = ISwapRouter.ExactInputSingleParams({
             tokenIn: tokenIn,
             tokenOut: tokenOut,
@@ -109,47 +155,49 @@ function sqrt(uint256 y) internal pure returns (uint256 z) {
         address token0,
         address token1,
         uint160 sqrtPriceX96
-    ) internal returns (address pool) {
+    ) external returns (address pool) {
         pool = positionManager.createAndInitializePoolIfNecessary(token0, token1, 10000, sqrtPriceX96);
         return pool;
     }
 
 
-    function addLiquidityHelper(address token0, address token1, uint256 token0amount, uint256 token1amount) external returns (address poolAddress, uint256 tokenId)  {
-
-        // Calculate sqrtPriceX96 considering both tokens have 18 decimals 
+    /* function addLiquidityHelper(address token0, address token1, uint256 token0amount, uint256 token1amount) external returns (address poolAddress, uint256 tokenId) {
+    // Calculate sqrtPriceX96 considering both tokens have 18 decimals
     uint256 priceRatio = (token1amount * 1e18) / token0amount;
     uint256 sqrtPriceRatio = sqrt(priceRatio);
     uint160 sqrtPrice_X96 = uint160((sqrtPriceRatio * 2**96) / 1e9);
 
-    // Create and Initialize Pool
+    // Ensure the pool is created and initialized
     poolAddress = createAndInitializePoolIfNecessary(token0, token1, sqrtPrice_X96);
 
-    // Approve the position manager to spend tokens
+    // Check and set approvals
     TransferHelper.safeApprove(token0, address(positionManager), token0amount);
     TransferHelper.safeApprove(token1, address(positionManager), token1amount);
 
     // Adding initial liquidity
-    INonfungiblePositionManager.MintParams memory params =
-            INonfungiblePositionManager.MintParams({
-                token0: token0,
-                token1: token1,
-                fee: 10000,
-                tickLower: -887200,
-                tickUpper: 887200,
-                amount0Desired: token0amount,
-                amount1Desired: token1amount,
-                amount0Min: 0,
-                amount1Min: 0,
-                recipient: address(this),
-                deadline: block.timestamp + 5 minutes
-            });
+    INonfungiblePositionManager.MintParams memory params = INonfungiblePositionManager.MintParams({
+        token0: token0,
+        token1: token1,
+        fee: 10000,
+        tickLower: -887200,
+        tickUpper: 887200,
+        amount0Desired: token0amount,
+        amount1Desired: token1amount,
+        amount0Min: 0,
+        amount1Min: 0,
+        recipient: address(this),
+        deadline: block.timestamp + 5 minutes
+    });
+
+    // Try minting liquidity and handle failure
+    
+        (tokenId, , , ) = positionManager.mint(params);
+    
         
-        (tokenId,,,) = positionManager.mint(params);
 
-        return (poolAddress, tokenId);
+    return (poolAddress, tokenId);
+} */
 
-    }
 
 
     function getTWAPPrice(address poolAddress, uint32 twapInterval) public view returns (uint256 price) {

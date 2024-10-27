@@ -76,6 +76,21 @@
   transform: scale(1.1);
 }
 
+.logout-button {
+  background-color: #f44336;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 10px;
+}
+
+.logout-button:hover {
+  background-color: #d32f2f;
+}
+
 /* Responsive Styling */
 @media (max-width: 768px) {
   .header-container {
