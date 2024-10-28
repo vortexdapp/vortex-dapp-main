@@ -11,7 +11,7 @@ import {
 import { Link } from "react-router-dom";
 import Header from "../components/Header.js";
 import Footer from "../components/Footer.js";
-import supabase from "../supabaseClient";
+import {supabase} from "../supabaseClient"; 
 
 const networkConfig = {
   // Example Chain IDs for Base and Sepolia

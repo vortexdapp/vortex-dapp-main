@@ -7,7 +7,7 @@ import "./StakingPage.css";
 import Footer from "../components/Footer.js";
 import { ethers } from "ethers";
 import SimpleStakingJson from "../contracts/SimpleStaking.json";
-import supabase from "../supabaseClient";
+import {supabase} from "../supabaseClient";
 
 const CHAIN_NAMES = {
   56: "BSC",

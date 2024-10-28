@@ -8,7 +8,7 @@ import { Link, useParams } from "react-router-dom";
 import "./Dashboard.css";
 import Header from "../components/Header.js";
 import Footer from "../components/Footer.js";
-import supabase from "../supabaseClient";
+import {supabase} from "../supabaseClient";
 
 /* global BigInt */
 
