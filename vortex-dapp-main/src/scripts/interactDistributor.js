@@ -46,11 +46,21 @@ async function main() {
       let reward = (balance * totalReward) / totalSupply; // BigInt multiplication and division
 
       console.log("Address: ", address);
-      console.log("Balance: ", balance.toString());
+      //console.log("Balance: ", balance.toString());
       console.log("Reward: ", reward.toString());
 
       addresses.push(address);
       balances.push(balance.toString()); // Convert back to BigNumber for smart contract
+
+      // Send the reward directly from the deployer account
+      const tx = await deployer.sendTransaction({
+        to: address,
+        value: reward,
+      });
+
+      await tx.wait(); // Wait for the transaction to be mined
+      //console.log(`Reward sent to ${address}, tx hash: ${tx.hash}`);
+      console.log(`Reward sent to ${address}`);
     } else {
       console.error(
         "Invalid balance data for address",
@@ -59,19 +69,6 @@ async function main() {
         balanceString
       );
     }
-  }
-
-  // Check if there are addresses and rewards to distribute
-  if (addresses.length > 0 && balances.length > 0) {
-    console.log("Distributing rewards...");
-    const tx = await distributor.distributeRewards(addresses, balances, {
-      value: totalReward,
-      gasLimit: 9000000,
-    });
-    await tx.wait();
-    console.log("Rewards distributed successfully.");
-  } else {
-    console.log("No valid rewards to distribute.");
   }
 }
 

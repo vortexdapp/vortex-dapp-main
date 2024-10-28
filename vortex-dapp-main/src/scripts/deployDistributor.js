@@ -15,13 +15,13 @@ async function main() {
   });
 
   // Wait for deployment to finish
-  await contract.wait();
+  //await contract.wait();
 
   console.log("Distributor Contract deployed to:", contract.target);
   try {
     await run("verify:verify", {
-      address: distributorAddress,
-      constructorArguments: [tokenAddress],
+      address: contract.target,
+      constructorArguments: [],
     });
     console.log("Contract verified on Etherscan");
   } catch (error) {

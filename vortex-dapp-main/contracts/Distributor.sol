@@ -18,13 +18,16 @@ contract RewardDistributor {
         require(_holders.length == _balances.length, "Mismatch between holders and balances");
 
         uint256 totalRewards = msg.value;           // Total ETH available for distribution
+        uint256 i = 0;
 
-        for (uint i = 0; i < _holders.length; i++) {
-            uint256 reward = (totalRewards * (_balances[i])) / totalSupply; // Calculate reward based on balance
+        // Use a while loop instead of for
+        while (i < _holders.length) {
+            uint256 reward = (totalRewards * _balances[i]) / totalSupply;
             if (reward > 0) {
-                (bool success, ) = _holders[i].call{value: reward}("");
+                bool success = payable(_holders[i]).send(reward);
                 require(success, "Transfer failed");
             }
+            i++;
         }
     }
 }

@@ -40,7 +40,7 @@ module.exports = {
     },
   },
   etherscan: {
-    apiKey: "3T3M3QYV6JD3R6XCFGYZFAJTPBQAD5HUET",
+    apiKey: "A9ESUJ62PS5A5EVKWEA88RCUHS3I2C7BUB",
   },
   sourcify: {
     enabled: true,
