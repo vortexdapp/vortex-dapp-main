@@ -3,27 +3,36 @@ import {
   fetchCheckInData,
   updateCheckInData,
   fetchAndDecryptWallet,
-} from "../WalletManager"; // Adjust path as needed
+  updateUserBalance,
+} from "../WalletManager";
 import { useWallet } from "../WalletContext";
+import Modal from "../telegram-components/Modal";
 import "./DailyCheckIn.css";
 import Footer from "../telegram-components/Footer";
 
-const DailyCheckIn = () => {
-  const { wallet, setExistingWallet } = useWallet(); // Access and set the connected wallet
+const DailyCheckIn = ({
+  coinBalance,
+  gemBalance,
+  setGemBalance,
+  level,
+  setLevel,
+}) => {
+  const { wallet, setExistingWallet } = useWallet();
   const [checkInDay, setCheckInDay] = useState(0);
   const [streak, setStreak] = useState(0);
   const [reward, setReward] = useState(0);
   const [nextCheckInTime, setNextCheckInTime] = useState(null);
   const [passwordPrompted, setPasswordPrompted] = useState(false);
+  const [modalMessage, setModalMessage] = useState(""); // State for modal message
+  const [isModalOpen, setIsModalOpen] = useState(false); // State to control modal visibility
 
-  const REWARD_PER_DAY = 10; // Amount of gems for each day
-  const CHECK_IN_INTERVAL = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+  const REWARD_PER_DAY = 10;
+  const CHECK_IN_INTERVAL = 5 * 60 * 1000; // 5 minutes in milliseconds for testing
   const username = localStorage.getItem("username");
 
   useEffect(() => {
     const restoreWalletIfNeeded = async () => {
       if (!wallet && !passwordPrompted) {
-        // Prompt for the password only once
         setPasswordPrompted(true);
         const password = window.prompt(
           "Please enter your password to restore your wallet:"
@@ -36,7 +45,8 @@ const DailyCheckIn = () => {
           if (restoredWallet) {
             setExistingWallet(restoredWallet);
           } else {
-            alert("Failed to restore wallet. Please try again.");
+            setModalMessage("Failed to restore wallet. Please try again.");
+            setIsModalOpen(true);
             return;
           }
         }
@@ -46,39 +56,39 @@ const DailyCheckIn = () => {
     const fetchUserData = async () => {
       if (!username || !wallet) return;
 
-      // Fetch the user's check-in data from Supabase
       const userData = await fetchCheckInData(username);
 
       if (userData) {
         const savedStreak = userData.streak || 0;
         const lastCheckInTime = userData.last_check_in_time;
-
-        setStreak(savedStreak);
-        setReward(savedStreak * REWARD_PER_DAY);
+        const now = new Date();
 
         if (lastCheckInTime) {
           const lastCheckInDate = new Date(lastCheckInTime);
-          const now = new Date();
           const timeDifference = now - lastCheckInDate;
 
           if (timeDifference < CHECK_IN_INTERVAL) {
-            const timeLeft = CHECK_IN_INTERVAL - timeDifference;
-            setNextCheckInTime(timeLeft);
-
-            // Set the check-in day based on the streak
-            setCheckInDay(savedStreak % 7); // Assuming 7 days for the week
+            setStreak(savedStreak);
+            setReward(savedStreak * REWARD_PER_DAY);
+            setNextCheckInTime(CHECK_IN_INTERVAL - timeDifference);
+            setCheckInDay(savedStreak % 7);
+          } else if (timeDifference >= CHECK_IN_INTERVAL * 2) {
+            setStreak(0);
+            setReward(0);
+            await updateCheckInData(username, 0, now.toISOString());
           } else {
-            // If 24 hours have passed, allow the user to check in again
+            setStreak(0);
+            setReward(0);
             setNextCheckInTime(0);
           }
         } else {
-          // If no last check-in time, allow user to check in
+          setStreak(0);
+          setReward(0);
           setNextCheckInTime(0);
         }
       }
     };
 
-    // Only restore the wallet if needed and fetch data afterward
     const init = async () => {
       await restoreWalletIfNeeded();
       fetchUserData();
@@ -97,27 +107,39 @@ const DailyCheckIn = () => {
 
   const handleCheckIn = async (day) => {
     if (nextCheckInTime > 0) {
-      alert("You can only check in once every 24 hours.");
+      setModalMessage("You can only check in once every 24 hours.");
+      setIsModalOpen(true);
       return;
     }
 
     const now = new Date();
-
     if (!username) {
       console.error("Username not found.");
       return;
     }
 
-    // Update streak and reward
+    // Calculate the new streak and reward
     const newStreak = streak + 1;
+    const newReward = newStreak * REWARD_PER_DAY;
     setStreak(newStreak);
-    setReward(newStreak * REWARD_PER_DAY);
+    setReward(newReward);
     setCheckInDay(day);
 
-    await updateCheckInData(username, newStreak, now.toISOString()); // Update in Supabase
-
-    // Set the countdown for the next check-in
+    // Update check-in data in Supabase
+    await updateCheckInData(username, newStreak, now.toISOString());
     setNextCheckInTime(CHECK_IN_INTERVAL);
+
+    // Update the user's gem balance in Supabase
+    const newGemBalance = gemBalance + REWARD_PER_DAY;
+    setGemBalance(newGemBalance);
+    const totalPoints = coinBalance + newGemBalance;
+    const newLevel = Math.floor(totalPoints / 1000) + 1; // Example level-up logic
+    setLevel(newLevel);
+
+    await updateUserBalance(username, coinBalance, newGemBalance, newLevel);
+
+    // Set daily check-in completion in localStorage for Airdrop page
+    localStorage.setItem(`dailyCheckInCompleted_${username}`, "true");
   };
 
   const formatTimeLeft = (time) => {
@@ -128,7 +150,7 @@ const DailyCheckIn = () => {
   };
 
   return (
-    <div className="settings">
+    <div className="daily-checkin">
       <h2>Daily Check-In</h2>
       <p>
         Check in each day to earn more gems. Miss a day and your progress
@@ -152,6 +174,10 @@ const DailyCheckIn = () => {
 
       {nextCheckInTime > 0 && (
         <p>Next Check-In: {formatTimeLeft(nextCheckInTime)}</p>
+      )}
+
+      {isModalOpen && (
+        <Modal message={modalMessage} onClose={() => setIsModalOpen(false)} />
       )}
     </div>
   );

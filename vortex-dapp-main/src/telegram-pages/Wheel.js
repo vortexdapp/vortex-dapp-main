@@ -1,6 +1,46 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { Doughnut } from "react-chartjs-2";
 import { updateUserBalance } from "../WalletManager";
+import { Chart, ArcElement, Tooltip } from "chart.js";
 import "./Wheel.css";
+import { supabase } from "../supabaseClient"; // Supabase client setup
+
+Chart.register(ArcElement, Tooltip);
+
+const drawSegmentLabels = {
+  id: "drawSegmentLabels",
+  afterDatasetDraw(chart) {
+    const {
+      ctx,
+      data,
+      chartArea: { width, height },
+    } = chart;
+    ctx.save();
+    const fontSize = 14;
+    ctx.font = `${fontSize}px Arial`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    const anglePerSegment = (2 * Math.PI) / data.labels.length;
+    const radius = (width / 2) * 0.7;
+
+    data.labels.forEach((label, index) => {
+      const angle = anglePerSegment * index - Math.PI / 2 + anglePerSegment / 2;
+
+      ctx.save();
+      ctx.translate(width / 2, height / 2);
+      ctx.rotate(angle);
+      ctx.fillStyle = "#ffffff";
+      ctx.fillText(label, radius, 0);
+      ctx.restore();
+    });
+    ctx.restore();
+  },
+};
+
+Chart.register(drawSegmentLabels);
+
+const MAX_SPINS = 3;
 
 const Wheel = ({
   coinBalance,
@@ -9,99 +49,177 @@ const Wheel = ({
   setGemBalance,
   setLevel,
 }) => {
+  const [spinsLeft, setSpinsLeft] = useState(MAX_SPINS);
   const [spinning, setSpinning] = useState(false);
-  const [prize, setPrize] = useState(""); // Prize won by the user
+  const [prize, setPrize] = useState("");
+  const [rotation, setRotation] = useState(0);
+  const [timeUntilReset, setTimeUntilReset] = useState("");
+  const username = localStorage.getItem("username");
 
-  // Possible prizes
   const prizes = [
-    { reward: "100 Gems", color: "#ff6f61", type: "gems", amount: 100 },
-    { reward: "200 Gems", color: "#4a90e2", type: "gems", amount: 200 },
-    { reward: "300 Gems", color: "#50d2c2", type: "gems", amount: 300 },
-    { reward: "500 Coins", color: "#f7b733", type: "coins", amount: 500 },
-    { reward: "1000 Coins", color: "#7ed321", type: "coins", amount: 1000 },
-    { reward: "1 Extra Spin", color: "#d0021b", type: "extra", amount: 1 },
+    { label: "100 Gems", type: "gems", amount: 100, color: "#ff6f61" },
+    { label: "200 Gems", type: "gems", amount: 200, color: "#4a90e2" },
+    { label: "300 Gems", type: "gems", amount: 300, color: "#50d2c2" },
+    { label: "500 Coins", type: "coins", amount: 500, color: "#f7b733" },
+    { label: "1000 Coins", type: "coins", amount: 1000, color: "#7ed321" },
+    { label: "1 Extra Spin", type: "extra", amount: 1, color: "#d0021b" },
+    { label: "2000 Coins", type: "coins", amount: 2000, color: "#7ed321" },
+    { label: "3 Extra Spin", type: "extra", amount: 3, color: "#d0021b" },
   ];
 
   const numSegments = prizes.length;
   const segmentAngle = 360 / numSegments;
-  const username = localStorage.getItem("username");
 
-  const spinWheel = () => {
-    if (spinning) return; // Prevent multiple clicks while spinning
+  useEffect(() => {
+    const fetchSpins = async () => {
+      const { data, error } = await supabase
+        .from("wallets")
+        .select("spins_left, last_spin_date")
+        .eq("username", username)
+        .single();
+
+      if (error) {
+        console.error("Error fetching spins:", error);
+      } else {
+        const today = new Date().toDateString();
+        if (data.last_spin_date !== today) {
+          setSpinsLeft(MAX_SPINS);
+          await supabase
+            .from("wallets")
+            .update({ spins_left: MAX_SPINS, last_spin_date: today })
+            .eq("username", username);
+        } else {
+          setSpinsLeft(data.spins_left);
+        }
+      }
+    };
+
+    fetchSpins();
+  }, [username]);
+
+  // Countdown Timer for Daily Reset
+  useEffect(() => {
+    const calculateTimeUntilMidnight = () => {
+      const now = new Date();
+      const midnight = new Date();
+      midnight.setHours(24, 0, 0, 0); // Set to midnight of the next day
+      const timeDiff = midnight - now;
+
+      const hours = Math.floor(timeDiff / (1000 * 60 * 60));
+      const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+
+      setTimeUntilReset(`${hours}h ${minutes}m ${seconds}s`);
+    };
+
+    calculateTimeUntilMidnight();
+    const interval = setInterval(calculateTimeUntilMidnight, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleSpinReward = async (extraSpins) => {
+    const newSpinsLeft = spinsLeft + extraSpins;
+    setSpinsLeft(newSpinsLeft);
+    await supabase
+      .from("wallets")
+      .update({ spins_left: newSpinsLeft })
+      .eq("username", username);
+  };
+
+  const spinWheel = async () => {
+    if (spinning || spinsLeft <= 0) return;
     setSpinning(true);
-    setPrize(""); // Reset prize before spinning
+    setPrize("");
 
-    // Generate a random spin degree between 5000 and 7000 degrees for a good long spin
-    const randomDegree = Math.floor(Math.random() * 2000) + 5000;
+    // Decrement spins and update the database
+    const newSpinsLeft = spinsLeft - 1;
+    setSpinsLeft(newSpinsLeft);
+    await supabase
+      .from("wallets")
+      .update({ spins_left: newSpinsLeft })
+      .eq("username", username);
 
-    // This ensures the spinning stops at a segment boundary (+1 to avoid boundary issues)
-    const extraDegrees = randomDegree % 360;
-    const adjustment = 360 - extraDegrees + segmentAngle / 2;
+    const randomSegment = Math.floor(Math.random() * numSegments);
+    const endRotation =
+      360 * 5 + randomSegment * segmentAngle - segmentAngle / 2;
 
-    const finalRotation = randomDegree + adjustment; // Adjust so the segment stops at the top
+    setRotation(endRotation);
 
-    const wheel = document.getElementById("wheel");
-    wheel.style.transition = "transform 5s ease-out";
-    wheel.style.transform = `rotate(${finalRotation}deg)`;
-
-    setTimeout(() => {
-      // Compute which segment is at the top
-      const effectiveDegrees = finalRotation % 360; // Normalize rotation
-      const segmentIndex = Math.floor(
-        (effectiveDegrees / segmentAngle) % numSegments
+    setTimeout(async () => {
+      setSpinning(false);
+      const totalPoints = coinBalance + gemBalance;
+      const newLevel = Math.floor(totalPoints / 1000) + 1;
+      setLevel(newLevel);
+      const normalizedAngle = endRotation % 360;
+      const winningSegmentIndex = Math.floor(
+        (numSegments - normalizedAngle / segmentAngle) % numSegments
       );
-      const selectedPrize = prizes[segmentIndex];
+      const selectedPrize = prizes[winningSegmentIndex];
+      setPrize(selectedPrize.label);
 
-      setPrize(selectedPrize.reward); // Set the prize won
-
-      // Update balance based on prize
       if (selectedPrize.type === "coins") {
         const newCoinBalance = coinBalance + selectedPrize.amount;
         setCoinBalance(newCoinBalance);
-        updateUserBalance(username, newCoinBalance, gemBalance, "coins");
+        updateUserBalance(username, newCoinBalance, gemBalance, newLevel);
       } else if (selectedPrize.type === "gems") {
         const newGemBalance = gemBalance + selectedPrize.amount;
         setGemBalance(newGemBalance);
-        updateUserBalance(username, coinBalance, newGemBalance, "gems");
+        updateUserBalance(username, coinBalance, newGemBalance, newLevel);
+      } else if (selectedPrize.type === "extra") {
+        await handleSpinReward(selectedPrize.amount);
       }
+    }, 5000); // Spin duration in ms
+  };
 
-      setSpinning(false); // Allow spinning again
-    }, 5000); // 5-second spin duration
+  const data = {
+    labels: prizes.map((prize) => prize.label),
+    datasets: [
+      {
+        data: prizes.map(() => 1),
+        backgroundColor: prizes.map((prize) => prize.color),
+        borderWidth: 0,
+        borderAlign: "inner",
+      },
+    ],
+  };
+
+  const options = {
+    rotation: 0,
+    circumference: 360,
+    cutout: "0%",
+    plugins: {
+      tooltip: {
+        enabled: false,
+      },
+    },
   };
 
   return (
-    <div className="wheel-container">
-      <h2>Spin the Wheel</h2>
-      <div className="wheel-wrapper">
-        {/* Arrow indicating the selected segment */}
+    <div className="wheel-page">
+      <div className="wheel-container">
         <div className="arrow"></div>
-        {/* Wheel */}
-        <div id="wheel" className="wheel">
-          {prizes.map((prize, index) => (
-            <div
-              key={index}
-              className="wheel-segment"
-              style={{
-                transform: `rotate(${index * segmentAngle}deg)`,
-                backgroundColor: prize.color,
-              }}
-            >
-              <div className="segment-content">
-                <span className="segment-text">{prize.reward}</span>
-              </div>
-            </div>
-          ))}
+        <div
+          className="wheel-wrapper"
+          style={{
+            transform: `rotate(${rotation}deg)`,
+            transition: "transform 5s cubic-bezier(0.33, 1, 0.68, 1)",
+          }}
+        >
+          <Doughnut data={data} options={options} />
         </div>
+        <button
+          id="spin-button"
+          className="spin-button"
+          onClick={spinWheel}
+          disabled={spinning || spinsLeft <= 0}
+        >
+          {spinning ? "Spinning..." : spinsLeft > 0 ? "Spin" : "No Spins Left"}
+        </button>
+        <p>Spins left today: {spinsLeft}</p>
+        {spinsLeft === 0 && <p>Next spin in: {timeUntilReset}</p>}
+        {prize && <p className="prize-announcement">You won: {prize}!</p>}
       </div>
-      <button
-        id="spin-button"
-        className="spin-button"
-        onClick={spinWheel}
-        disabled={spinning}
-      >
-        {spinning ? "Spinning..." : "Spin"}
-      </button>
-      {prize && <p className="prize-announcement">You won: {prize}!</p>}
     </div>
   );
 };

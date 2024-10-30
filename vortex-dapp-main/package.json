@@ -14,6 +14,8 @@
     "@web3modal/ethers": "^4.2.3",
     "assert": "^2.1.0",
     "axios": "^1.7.7",
+    "chart.js": "^4.4.6",
+    "chartjs-plugin-datalabels": "^2.2.0",
     "cors": "^2.8.5",
     "crypto-js": "^4.2.0",
     "csv": "^6.3.10",
@@ -27,6 +29,7 @@
     "node-polyfill-webpack-plugin": "^4.0.0",
     "path-browserify": "^1.0.1",
     "react": "^18.3.1",
+    "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.3.1",
     "react-icons": "^5.2.1",
     "react-infinite-scroller": "^1.2.6",
@@ -39,10 +42,10 @@
     "xml2js": "^0.6.2"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "start-telegram": "react-scripts start index-telegram.js",
-    "build-telegram": "react-scripts build index-telegram.js"
+    "start": "cross-env REACT_APP_MODE=web react-scripts start",
+    "start-telegram": "cross-env REACT_APP_MODE=telegram react-scripts start",
+    "build": "cross-env REACT_APP_MODE=web react-scripts build",
+    "build-telegram": "cross-env REACT_APP_MODE=telegram react-scripts build"
   },
   "eslintConfig": {
     "extends": [

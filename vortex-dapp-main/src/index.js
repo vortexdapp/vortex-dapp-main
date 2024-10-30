@@ -1,20 +1,15 @@
 import React from "react";
-import ReactDOM from "react-dom/client";
+import ReactDOM from "react-dom";
 import "./index.css";
-import reportWebVitals from "./reportWebVitals";
 
-// Check URL parameter to decide which app to load
-const isTelegramApp = window.location.search.includes("mode=telegram");
+const App =
+  process.env.REACT_APP_MODE === "telegram"
+    ? require("./TelegramApp").default
+    : require("./App").default;
 
-const MainApp = isTelegramApp
-  ? require("./TelegramApp").default
-  : require("./App").default;
-
-const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(
+ReactDOM.render(
   <React.StrictMode>
-    <MainApp />
-  </React.StrictMode>
+    <App />
+  </React.StrictMode>,
+  document.getElementById("root")
 );
-
-reportWebVitals();

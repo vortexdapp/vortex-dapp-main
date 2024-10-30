@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Airdrop.css";
 import { useNavigate } from "react-router-dom";
 import { updateUserBalance } from "../WalletManager";
@@ -12,7 +12,6 @@ const Airdrop = ({
   setGemBalance,
   setCoinBalance,
   setLevel,
-  onBalanceUpdate,
 }) => {
   const navigate = useNavigate();
   const [twitterStatus, setTwitterStatus] = useState("Start");
@@ -21,6 +20,16 @@ const Airdrop = ({
   const [retweetStatus, setRetweetStatus] = useState("Start");
   const [dailyCheckinStatus, setDailyCheckinStatus] = useState("Start");
   const username = localStorage.getItem("username");
+
+  useEffect(() => {
+    // Check if daily check-in was completed by this specific user
+    if (
+      username &&
+      localStorage.getItem(`dailyCheckInCompleted_${username}`) === "true"
+    ) {
+      setDailyCheckinStatus("Verified ✓");
+    }
+  }, [username]);
 
   const tasks = [
     {
@@ -56,73 +65,79 @@ const Airdrop = ({
   ];
 
   const handleTaskClick = async (task) => {
-    if (task === "dailyCheckin" && dailyCheckinStatus === "Start") {
-      setDailyCheckinStatus("Claim");
-      navigate("/daily-checkin");
-    } else if (task === "dailyCheckin" && dailyCheckinStatus === "Claim") {
-      setDailyCheckinStatus("Verified ✓");
-      await increaseGemBalance(50);
-    }
-
-    if (task === "twitter" && twitterStatus === "Start") {
-      setTwitterStatus("Claim");
-      window.open("https://twitter.com/vortexdapp", "_blank");
-    } else if (task === "twitter" && twitterStatus === "Claim") {
-      setTwitterStatus("Verified ✓");
-      await increaseGemBalance(100);
-    }
-
-    if (task === "telegram" && telegramStatus === "Start") {
-      setTelegramStatus("Claim");
-      window.open("https://t.me/vortexdapp", "_blank");
-    } else if (task === "telegram" && telegramStatus === "Claim") {
-      setTelegramStatus("Verified ✓");
-      await increaseGemBalance(100);
-    }
-
-    if (task === "like" && likeStatus === "Start") {
-      setLikeStatus("Claim");
-      window.open(
-        "https://x.com/vortexdapp/status/1830638870607941851",
-        "_blank"
-      );
-    } else if (task === "like" && likeStatus === "Claim") {
-      setLikeStatus("Verified ✓");
-      await increaseGemBalance(50);
-    }
-
-    if (task === "retweet" && retweetStatus === "Start") {
-      setRetweetStatus("Claim");
-      window.open(
-        "https://x.com/vortexdapp/status/1830638870607941851",
-        "_blank"
-      );
-    } else if (task === "retweet" && retweetStatus === "Claim") {
-      setRetweetStatus("Verified ✓");
-      await increaseGemBalance(50);
+    if (task === "dailyCheckin") {
+      if (dailyCheckinStatus === "Start") {
+        // Navigate to the check-in page
+        setDailyCheckinStatus("Claim");
+        navigate("/daily-checkin");
+      } else if (
+        dailyCheckinStatus === "Claim" &&
+        localStorage.getItem(`dailyCheckInCompleted_${username}`) === "true"
+      ) {
+        // If check-in is complete, update status and award gems
+        setDailyCheckinStatus("Verified ✓");
+        await increaseGemBalance(50); // Award gems for check-in
+      }
+    } else if (task === "twitter") {
+      if (twitterStatus === "Start") {
+        setTwitterStatus("Claim");
+        window.open("https://twitter.com/vortexdapp", "_blank");
+      } else if (twitterStatus === "Claim") {
+        setTwitterStatus("Verified ✓");
+        await increaseGemBalance(100);
+      }
+    } else if (task === "telegram") {
+      if (telegramStatus === "Start") {
+        setTelegramStatus("Claim");
+        window.open("https://t.me/vortexdapp", "_blank");
+      } else if (telegramStatus === "Claim") {
+        setTelegramStatus("Verified ✓");
+        await increaseGemBalance(100);
+      }
+    } else if (task === "like") {
+      if (likeStatus === "Start") {
+        setLikeStatus("Claim");
+        window.open(
+          "https://x.com/vortexdapp/status/1830638870607941851",
+          "_blank"
+        );
+      } else if (likeStatus === "Claim") {
+        setLikeStatus("Verified ✓");
+        await increaseGemBalance(50);
+      }
+    } else if (task === "retweet") {
+      if (retweetStatus === "Start") {
+        setRetweetStatus("Claim");
+        window.open(
+          "https://x.com/vortexdapp/status/1830638870607941851",
+          "_blank"
+        );
+      } else if (retweetStatus === "Claim") {
+        setRetweetStatus("Verified ✓");
+        await increaseGemBalance(50);
+      }
     }
   };
 
   const increaseGemBalance = async (amount) => {
     const newGemBalance = gemBalance + amount;
-    const username = localStorage.getItem("username"); // Assuming username is stored in local storage
+    const username = localStorage.getItem("username");
 
     if (username) {
-      // Update state immediately
       setGemBalance(newGemBalance);
 
       const totalPoints = coinBalance + newGemBalance;
-      const newLevel = Math.floor(totalPoints / 1000) + 1; // Example level-up logic
+      const newLevel = Math.floor(totalPoints / 1000) + 1;
       setLevel(newLevel);
 
-      // Call the function to update the balance in Supabase
+      // Update the balance in Supabase
       await updateUserBalance(username, coinBalance, newGemBalance, newLevel);
     }
   };
 
   return (
     <div className="settings">
-      <WalletRestorer username={username} />{" "}
+      <WalletRestorer username={username} />
       <div className="airdrop">
         <h2>Airdrop Tasks</h2>
         <p>Complete tasks to earn rewards:</p>

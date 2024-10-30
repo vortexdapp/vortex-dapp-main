@@ -1,70 +1,45 @@
-.wheel-container {
+/* Wheel.css */
+
+.wheel-page {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  margin-top: 50px;
+  text-align: center;
+  margin-top: 100px;
 }
 
-.wheel {
-  width: 350px;
-  height: 350px;
-  border-radius: 50%;
+.wheel-container {
   position: relative;
-  border: 5px solid #333;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
 }
 
-.wheel-segment {
-  position: absolute;
-  width: 100%; /* Full width of the radius */
-  height: 100%; /* Full height of the radius */
-  clip-path: polygon(50% 50%, 50% 100%, 100% 100%); /* Triangle clipping */
-}
-
-.segment-content {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transform: rotate(
-    -segmentAngle / 2
-  ); /* Adjust rotation to make text upright */
-}
-
-.segment-text {
-  font-size: 14px;
-  color: white;
+.wheel-wrapper {
+  width: 300px;
+  height: 300px;
 }
 
 .arrow {
+  position: absolute;
+  top: 0px; /* Position arrow above the wheel */
+  left: 50%;
+  transform: translateX(-50%) rotate(180deg);
   width: 0;
   height: 0;
-  border-left: 20px solid transparent;
-  border-right: 20px solid transparent;
-  border-bottom: 20px solid #333; /* Change to border-bottom for a downward arrow */
-  position: absolute;
-  top: -20px;
-  left: 50%;
-  transform: translateX(-50%);
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 20px solid red; /* Arrow color */
+  z-index: 10;
 }
 
 .spin-button {
   margin-top: 20px;
   padding: 10px 20px;
-  background-color: #28a745;
-  color: white;
-  border: none;
-  border-radius: 5px;
+  font-size: 16px;
   cursor: pointer;
 }
 
 .prize-announcement {
-  margin-top: 20px;
+  margin-top: 10px;
   font-size: 18px;
-  color: #fff;
-  text-align: center;
+  font-weight: bold;
+  color: #e6e6e6;
 }
