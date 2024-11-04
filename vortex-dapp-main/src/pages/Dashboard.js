@@ -332,8 +332,6 @@ function DashboardPage() {
           )}
         </div>
       </div>
-
-      <Footer />
     </div>
   );
 }

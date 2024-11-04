@@ -96,6 +96,30 @@ const TelegramApp = () => {
               }
             />
             <Route
+              path="/token"
+              element={
+                <>
+                  <Header
+                    coinBalance={coinBalance}
+                    gemBalance={gemBalance}
+                    level={level}
+                    setCoinBalance={setCoinBalance}
+                    setGemBalance={setGemBalance}
+                    setLevel={setLevel}
+                  />
+                  <Token
+                    coinBalance={coinBalance}
+                    gemBalance={gemBalance}
+                    level={level}
+                    setCoinBalance={setCoinBalance}
+                    setGemBalance={setGemBalance}
+                    setLevel={setLevel}
+                  />
+                  <Footer />
+                </>
+              }
+            />
+            <Route
               path="/daily-checkin"
               element={
                 <>
@@ -107,7 +131,13 @@ const TelegramApp = () => {
                     setGemBalance={setGemBalance}
                     setLevel={setLevel}
                   />
-                  <CheckIn />
+                  <CheckIn
+                    coinBalance={coinBalance}
+                    gemBalance={gemBalance}
+                    setGemBalance={setGemBalance}
+                    level={level}
+                    setLevel={setLevel}
+                  />
                   <Footer />
                 </>
               }

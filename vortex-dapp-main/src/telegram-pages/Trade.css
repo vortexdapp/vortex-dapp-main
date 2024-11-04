@@ -1,70 +1,31 @@
-/* General Trade Page Styling */
 .trade-page {
-  width: 90%;
-  max-width: 360px;
-  padding: 30px;
-  position: absolute;
-  align-items: center;
   text-align: center;
-  border-radius: 10px;
-  color: #ffffff;
-  margin-top: 80px;
-}
-
-h2 {
-  text-align: center;
-  color: #ffffff;
-  margin-bottom: 20px;
+  padding: 20px;
 }
 
 .token-list {
-  align-items: center;
-  text-align: center;
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
 }
 
 .token-box {
-  background-color: #262626;
-  border-radius: 10px;
+  width: 200px;
   padding: 15px;
-  display: flex;
-  align-items: center;
+  background-color: #333;
+  color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   text-align: center;
-  justify-content: space-between;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.token-box h3,
-.token-box p {
-  margin: 0;
-  color: #ffffff;
-}
-
-.token-box h3 {
-  font-size: 1rem;
-  margin-right: 5px;
-}
-
-.token-box p {
-  font-size: 0.9rem;
-  color: #88d1a8; /* Green color for symbols */
-  margin-right: 5px;
 }
 
 .trade-button {
-  background-color: #007bff;
-  align-items: center;
-  text-align: center;
-  color: #ffffff;
+  margin-top: 10px;
+  padding: 8px 16px;
+  background-color: #4caf50;
+  color: #fff;
   border: none;
-  padding: 8px 12px;
   border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.launch-button:hover {
-  background-color: #0056b3;
 }

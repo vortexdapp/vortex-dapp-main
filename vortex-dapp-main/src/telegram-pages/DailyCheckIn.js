@@ -23,11 +23,11 @@ const DailyCheckIn = ({
   const [reward, setReward] = useState(0);
   const [nextCheckInTime, setNextCheckInTime] = useState(null);
   const [passwordPrompted, setPasswordPrompted] = useState(false);
-  const [modalMessage, setModalMessage] = useState(""); // State for modal message
-  const [isModalOpen, setIsModalOpen] = useState(false); // State to control modal visibility
+  const [modalMessage, setModalMessage] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const REWARD_PER_DAY = 10;
-  const CHECK_IN_INTERVAL = 5 * 60 * 1000; // 5 minutes in milliseconds for testing
+  const REWARDS = [10, 15, 25, 35, 50, 75, 100]; // Define rewards for each day of the streak
+  const CHECK_IN_INTERVAL = 1 * 60 * 1000; // 1 minute interval for testing
   const username = localStorage.getItem("username");
 
   useEffect(() => {
@@ -67,19 +67,21 @@ const DailyCheckIn = ({
           const lastCheckInDate = new Date(lastCheckInTime);
           const timeDifference = now - lastCheckInDate;
 
-          if (timeDifference < CHECK_IN_INTERVAL) {
+          if (timeDifference < 2 * CHECK_IN_INTERVAL) {
             setStreak(savedStreak);
-            setReward(savedStreak * REWARD_PER_DAY);
+            setReward(
+              savedStreak < REWARDS.length
+                ? REWARDS[savedStreak]
+                : REWARDS[REWARDS.length - 1]
+            );
             setNextCheckInTime(CHECK_IN_INTERVAL - timeDifference);
             setCheckInDay(savedStreak % 7);
           } else if (timeDifference >= CHECK_IN_INTERVAL * 2) {
             setStreak(0);
             setReward(0);
+            setCheckInDay(0);
             await updateCheckInData(username, 0, now.toISOString());
-          } else {
-            setStreak(0);
-            setReward(0);
-            setNextCheckInTime(0);
+            localStorage.setItem(`dailyCheckInCompleted_${username}`, "false");
           }
         } else {
           setStreak(0);
@@ -106,39 +108,48 @@ const DailyCheckIn = ({
   }, [wallet, nextCheckInTime, passwordPrompted, setExistingWallet, username]);
 
   const handleCheckIn = async (day) => {
-    if (nextCheckInTime > 0) {
-      setModalMessage("You can only check in once every 24 hours.");
-      setIsModalOpen(true);
-      return;
-    }
-
     const now = new Date();
     if (!username) {
       console.error("Username not found.");
       return;
     }
 
-    // Calculate the new streak and reward
-    const newStreak = streak + 1;
-    const newReward = newStreak * REWARD_PER_DAY;
-    setStreak(newStreak);
-    setReward(newReward);
-    setCheckInDay(day);
+    const userData = await fetchCheckInData(username);
+    const lastCheckInTime = userData?.last_check_in_time
+      ? new Date(userData.last_check_in_time)
+      : null;
 
-    // Update check-in data in Supabase
-    await updateCheckInData(username, newStreak, now.toISOString());
+    const timeDifference = lastCheckInTime
+      ? now - lastCheckInTime
+      : CHECK_IN_INTERVAL + 1;
+
+    if (timeDifference < CHECK_IN_INTERVAL) {
+      setModalMessage("You can only check in once every 24 hours.");
+      setIsModalOpen(true);
+      return;
+    }
+
+    const newStreak = timeDifference >= 2 * CHECK_IN_INTERVAL ? 1 : streak + 1;
+    const rewardForToday =
+      newStreak <= REWARDS.length
+        ? REWARDS[newStreak - 1]
+        : REWARDS[REWARDS.length - 1];
+
+    setStreak(newStreak);
+    setReward(rewardForToday);
+    setCheckInDay(day);
     setNextCheckInTime(CHECK_IN_INTERVAL);
 
-    // Update the user's gem balance in Supabase
-    const newGemBalance = gemBalance + REWARD_PER_DAY;
+    await updateCheckInData(username, newStreak, now.toISOString());
+
+    const newGemBalance = gemBalance + rewardForToday;
     setGemBalance(newGemBalance);
     const totalPoints = coinBalance + newGemBalance;
-    const newLevel = Math.floor(totalPoints / 1000) + 1; // Example level-up logic
+    const newLevel = Math.floor(totalPoints / 1000) + 1;
     setLevel(newLevel);
 
     await updateUserBalance(username, coinBalance, newGemBalance, newLevel);
 
-    // Set daily check-in completion in localStorage for Airdrop page
     localStorage.setItem(`dailyCheckInCompleted_${username}`, "true");
   };
 
@@ -164,13 +175,16 @@ const DailyCheckIn = ({
             className={`day-box ${index < checkInDay ? "checked" : ""}`}
             onClick={() => handleCheckIn(index + 1)}
           >
-            Day {index + 1} <br />+{REWARD_PER_DAY} Gems
+            Day {index + 1} <br />+
+            {index < REWARDS.length
+              ? REWARDS[index]
+              : REWARDS[REWARDS.length - 1]}{" "}
+            Gems
           </div>
         ))}
       </div>
 
       <p>Current Streak: {streak} days</p>
-      <p>Gems Earned: {reward}</p>
 
       {nextCheckInTime > 0 && (
         <p>Next Check-In: {formatTimeLeft(nextCheckInTime)}</p>

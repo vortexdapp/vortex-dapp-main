@@ -36,7 +36,7 @@ const Airdrop = ({
       name: "Daily Check-In",
       reward: 50,
       status: dailyCheckinStatus,
-      action: () => handleTaskClick("dailyCheckin"),
+      action: () => navigate("/daily-checkin"), // Always navigate to daily check-in page
     },
     {
       name: "Follow us on Twitter",
@@ -65,20 +65,7 @@ const Airdrop = ({
   ];
 
   const handleTaskClick = async (task) => {
-    if (task === "dailyCheckin") {
-      if (dailyCheckinStatus === "Start") {
-        // Navigate to the check-in page
-        setDailyCheckinStatus("Claim");
-        navigate("/daily-checkin");
-      } else if (
-        dailyCheckinStatus === "Claim" &&
-        localStorage.getItem(`dailyCheckInCompleted_${username}`) === "true"
-      ) {
-        // If check-in is complete, update status and award gems
-        setDailyCheckinStatus("Verified ✓");
-        await increaseGemBalance(50); // Award gems for check-in
-      }
-    } else if (task === "twitter") {
+    if (task === "twitter") {
       if (twitterStatus === "Start") {
         setTwitterStatus("Claim");
         window.open("https://twitter.com/vortexdapp", "_blank");
@@ -121,8 +108,6 @@ const Airdrop = ({
 
   const increaseGemBalance = async (amount) => {
     const newGemBalance = gemBalance + amount;
-    const username = localStorage.getItem("username");
-
     if (username) {
       setGemBalance(newGemBalance);
 
@@ -147,12 +132,7 @@ const Airdrop = ({
               {task.name} +{task.reward}
               <img src={gemIcon} alt="Gems" className="gem-icon" />
             </span>
-            <button
-              onClick={task.action}
-              disabled={task.status === "Verified ✓"}
-            >
-              {task.status}
-            </button>
+            <button onClick={task.action}>{task.status}</button>
           </div>
         ))}
       </div>
