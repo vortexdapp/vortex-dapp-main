@@ -133,9 +133,20 @@ function DashboardPage() {
     setErrorMessage("");
 
     try {
-      const swapAmountValue = tokenAmountToBuy
-        ? parseFloat(tokenAmountToBuy)
-        : 0;
+      // Add validation for empty/invalid input, but allow zero
+      if (tokenAmountToBuy === "" || tokenAmountToBuy === undefined) {
+        setErrorMessage("Please enter a valid amount (0 or greater)");
+        setIsLoading(false);
+        return;
+      }
+
+      const swapAmountValue = parseFloat(tokenAmountToBuy);
+      if (isNaN(swapAmountValue) || swapAmountValue < 0) {
+        setErrorMessage("Please enter a valid number (0 or greater)");
+        setIsLoading(false);
+        return;
+      }
+
       const swapAmount = ethers.parseUnits(swapAmountValue.toString(), 18);
 
       // Setup for adding liquidity

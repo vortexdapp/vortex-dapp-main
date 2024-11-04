@@ -1,13 +1,13 @@
 /* global BigInt */
 
-import React, { useState, useEffect } from "react";
-import { useWeb3ModalAccount, useWeb3Modal } from "@web3modal/ethers/react";
+import React, { useState, useEffect, useContext } from "react";
 import Header from "../components/Header.js";
 import "./StakingPage.css";
 import Footer from "../components/Footer.js";
 import { ethers } from "ethers";
 import SimpleStakingJson from "../contracts/SimpleStaking.json";
 import { supabase } from "../supabaseClient";
+import { VortexConnectContext } from "../VortexConnectContext";
 
 const CHAIN_NAMES = {
   56: "BSC",
@@ -19,21 +19,21 @@ const CHAIN_NAMES = {
 };
 
 const networkConfig = {
-  //base
+  // Base
   8453: {
     stakingAddress: "",
     WETH_address: "0x4200000000000000000000000000000000000006",
     explorerUrl: "https://base.blockscout.com/",
   },
 
-  //bsc
+  // BSC
   56: {
     stakingAddress: "0x4301B64C8b4239EfBEb5818F968d1cccf4a640E0",
-    WETH_address: "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c", //WBNB
+    WETH_address: "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c", // WBNB
     explorerUrl: "https://bscscan.com/",
   },
 
-  //sepolia
+  // Sepolia
   11155111: {
     stakingAddress: process.env.REACT_APP_STAKING_SEPOLIA_CA,
 
@@ -41,24 +41,24 @@ const networkConfig = {
     explorerUrl: "https://sepolia.etherscan.io",
   },
 
-  //arbitrum
+  // Arbitrum
   42161: {
     stakingAddress: "0x4301B64C8b4239EfBEb5818F968d1cccf4a640E0",
     WETH_address: "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
     explorerUrl: "https://arbitrum.blockscout.com/",
   },
 
-  //optimism
+  // Optimism
   10: {
     stakingAddress: "0x7AB122db3DD3f11bf0558caeFD9Bb2fA7CedEBee",
     WETH_address: "0x4200000000000000000000000000000000000006",
     explorerUrl: "https://optimism.blockscout.com/",
   },
 
-  //celo
+  // Celo
   42220: {
     stakingAddress: "0x7AB122db3DD3f11bf0558caeFD9Bb2fA7CedEBee",
-    WETH_address: "0x471EcE3750Da237f93B8E339c536989b8978a438", //CELO
+    WETH_address: "0x471EcE3750Da237f93B8E339c536989b8978a438", // CELO
     explorerUrl: "https://explorer.celo.org/mainnet/",
   },
 };
@@ -73,49 +73,64 @@ const StakingPage = () => {
   const [stakedAmount, setStakedAmount] = useState(0n);
   const [pendingUnstake, setPendingUnstake] = useState(0n);
   const [canUnstake, setCanUnstake] = useState(true);
-  const {
-    address: connectedWallet,
-    chainId,
-    isConnected,
-  } = useWeb3ModalAccount();
-  const { open } = useWeb3Modal();
   const [loadingClaim, setLoadingClaim] = useState(false);
   const [apy, setApy] = useState("Calculating...");
-  const explorerUrl =
-    networkConfig[chainId]?.explorerUrl || "https://base.blockscout.com/";
-  const StakingChainAddress =
-    networkConfig[chainId]?.stakingAddress || "DefaultFactoryAddress";
   const [isInitialized, setIsInitialized] = useState(false);
   const [totalStaked, setTotalStaked] = useState("0.0000");
   const [totalRewards, setTotalRewards] = useState("0.0000");
 
+  // Consume context
+  const {
+    address: connectedWallet,
+    chainId,
+    isConnected,
+    // connectWallet, // No need to connect here
+    // disconnectWallet,
+    error: walletError,
+    setError: setWalletError,
+  } = useContext(VortexConnectContext);
+
+  const explorerUrl =
+    networkConfig[chainId]?.explorerUrl || "https://base.blockscout.com/";
+  const StakingChainAddress =
+    networkConfig[chainId]?.stakingAddress || "DefaultFactoryAddress";
+
   const fetchStatistics = async () => {
-    const provider = new ethers.BrowserProvider(window.ethereum);
-    const signer = await provider.getSigner();
-    const stakingPoolContract = new ethers.Contract(
-      StakingChainAddress,
-      SimpleStakingJson.abi,
-      signer
-    );
+    if (!window.ethereum) {
+      setErrorMessage("Ethereum provider not found.");
+      return;
+    }
+    try {
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
+      const stakingPoolContract = new ethers.Contract(
+        StakingChainAddress,
+        SimpleStakingJson.abi,
+        signer
+      );
 
-    // Fetch total staked and total rewards
-    const totalStaked = await stakingPoolContract.getTotalStaked();
-    const totalRewards = await stakingPoolContract.getTotalRewards();
+      // Fetch total staked and total rewards
+      const totalStaked = await stakingPoolContract.getTotalStaked();
+      const totalRewards = await stakingPoolContract.getTotalRewards();
 
-    // Format the values to 4 decimal places
-    const formattedTotalStaked = Number(
-      ethers.formatEther(totalStaked)
-    ).toFixed(4);
-    const formattedTotalRewards = Number(
-      ethers.formatEther(totalRewards)
-    ).toFixed(4);
+      // Format the values to 4 decimal places
+      const formattedTotalStaked = Number(ethers.formatEther(totalStaked)).toFixed(4);
+      const formattedTotalRewards = Number(ethers.formatEther(totalRewards)).toFixed(4);
 
-    // Set the state with the formatted values
-    setTotalStaked(formattedTotalStaked);
-    setTotalRewards(formattedTotalRewards);
+      // Set the state with the formatted values
+      setTotalStaked(formattedTotalStaked);
+      setTotalRewards(formattedTotalRewards);
+    } catch (error) {
+      console.error("Error fetching statistics:", error);
+      setErrorMessage("Failed to fetch statistics.");
+    }
   };
 
   const calculateAPY = async () => {
+    if (!window.ethereum) {
+      setErrorMessage("Ethereum provider not found.");
+      return;
+    }
     try {
       const provider = new ethers.BrowserProvider(window.ethereum);
       const signer = await provider.getSigner();
@@ -131,10 +146,8 @@ const StakingPage = () => {
       const rewardIntervalMinutes = Number(rewardIntervalSeconds) / 60;
 
       const intervalsPerYear = (365 * 24 * 60) / rewardIntervalMinutes;
-      const rewardPerInterval =
-        Number(ethers.formatEther(totalRewards)) / intervalsPerYear;
-      const ratePerInterval =
-        rewardPerInterval / Number(ethers.formatEther(totalStaked));
+      const rewardPerInterval = Number(ethers.formatEther(totalRewards)) / intervalsPerYear;
+      const ratePerInterval = rewardPerInterval / Number(ethers.formatEther(totalStaked));
       const apy = (1 + ratePerInterval) ** intervalsPerYear - 1;
 
       setApy(`${(apy * 100).toFixed(2)}%`);
@@ -142,6 +155,7 @@ const StakingPage = () => {
     } catch (error) {
       console.error("Error calculating APY:", error);
       setApy("Error calculating APY");
+      setErrorMessage("Failed to calculate APY.");
     }
   };
 
@@ -150,13 +164,17 @@ const StakingPage = () => {
       console.log("Initialization with chainId:", chainId);
       setIsInitialized(true);
     }
-  }, [chainId, isInitialized]); // Add isInitialized to the dependency array
+  }, [chainId, isInitialized]);
 
   useEffect(() => {
     const checkStakingStatus = async () => {
       if (!connectedWallet) return;
 
       try {
+        if (!window.ethereum) {
+          setErrorMessage("Ethereum provider not found.");
+          return;
+        }
         const provider = new ethers.BrowserProvider(window.ethereum);
         const signer = await provider.getSigner();
         const stakingPoolContract = new ethers.Contract(
@@ -165,30 +183,31 @@ const StakingPage = () => {
           signer
         );
 
-        const stakedAmount = await stakingPoolContract.getStake(
-          connectedWallet
-        );
+        const stakedAmount = await stakingPoolContract.getStake(connectedWallet);
         const stakedAmountBN = BigInt(stakedAmount.toString());
 
         const fetchPendingUnstakes = async (userAddress) => {
-          const provider = new ethers.BrowserProvider(window.ethereum);
-          const signer = await provider.getSigner();
-          const stakingContract = new ethers.Contract(
-            StakingChainAddress,
-            SimpleStakingJson.abi,
-            signer
-          );
+          try {
+            const stakingContract = new ethers.Contract(
+              StakingChainAddress,
+              SimpleStakingJson.abi,
+              signer
+            );
 
-          let totalPendingUnstakes = BigInt(0);
-          const queueLength = await stakingContract.getUnstakeQueueLength();
-          for (let i = 0; i < queueLength; i++) {
-            const request = await stakingContract.getUnstakeRequest(i);
-            if (request.user.toLowerCase() === userAddress.toLowerCase()) {
-              totalPendingUnstakes += BigInt(request.amount.toString());
+            let totalPendingUnstakes = BigInt(0);
+            const queueLength = await stakingContract.getUnstakeQueueLength();
+            for (let i = 0; i < queueLength; i++) {
+              const request = await stakingContract.getUnstakeRequest(i);
+              if (request.user.toLowerCase() === userAddress.toLowerCase()) {
+                totalPendingUnstakes += BigInt(request.amount.toString());
+              }
             }
-          }
 
-          return totalPendingUnstakes;
+            return totalPendingUnstakes;
+          } catch (error) {
+            console.error("Error fetching pending unstakes:", error);
+            return BigInt(0);
+          }
         };
 
         const pendingUnstakes = await fetchPendingUnstakes(connectedWallet);
@@ -233,16 +252,7 @@ const StakingPage = () => {
       calculateAPY();
       fetchStatistics();
     }
-  }, [connectedWallet, isConnected, StakingChainAddress]); // Removed fetchPendingUnstakes from dependencies
-
-  const connectWallet = async () => {
-    try {
-      await open();
-    } catch (error) {
-      console.error("Error connecting wallet:", error);
-      setErrorMessage("Error connecting wallet. Please try again.");
-    }
-  };
+  }, [connectedWallet, isConnected, StakingChainAddress]);
 
   const logStakingEvent = async (action, amount) => {
     try {
@@ -350,6 +360,10 @@ const StakingPage = () => {
 
   // Separate function to update staking state
   const updateStakingState = async () => {
+    if (!window.ethereum) {
+      setErrorMessage("Ethereum provider not found.");
+      return;
+    }
     try {
       const provider = new ethers.BrowserProvider(window.ethereum);
       const signer = await provider.getSigner();
@@ -360,12 +374,8 @@ const StakingPage = () => {
       );
 
       // Fetch new staked amount and pending unstakes
-      const newStakedAmount = await stakingPoolContract.getStake(
-        connectedWallet
-      );
-      const newPendingUnstakes = await stakingPoolContract.pendingUnstakes(
-        connectedWallet
-      );
+      const newStakedAmount = await stakingPoolContract.getStake(connectedWallet);
+      const newPendingUnstakes = await stakingPoolContract.pendingUnstakes(connectedWallet);
 
       const newStakedAmountBN = BigInt(newStakedAmount.toString());
       const newPendingUnstakesBN = BigInt(newPendingUnstakes.toString());
@@ -421,6 +431,11 @@ const StakingPage = () => {
       return;
     }
 
+    if (!window.ethereum) {
+      setErrorMessage("Ethereum provider not found.");
+      return;
+    }
+
     try {
       setLoadingUnstake(true);
       const provider = new ethers.BrowserProvider(window.ethereum);
@@ -442,12 +457,8 @@ const StakingPage = () => {
 
       await logStakingEvent("unstake", amount);
 
-      const updatedStakedAmount = await stakingPoolContract.getStake(
-        connectedWallet
-      );
-      const updatedPendingUnstakes = await stakingPoolContract.pendingUnstakes(
-        connectedWallet
-      );
+      const updatedStakedAmount = await stakingPoolContract.getStake(connectedWallet);
+      const updatedPendingUnstakes = await stakingPoolContract.pendingUnstakes(connectedWallet);
 
       const updatedStakedAmountBN = BigInt(updatedStakedAmount.toString());
       const updatedPendingUnstakesBN = BigInt(
@@ -494,6 +505,11 @@ const StakingPage = () => {
       return;
     }
 
+    if (!window.ethereum) {
+      setErrorMessage("Ethereum provider not found.");
+      return;
+    }
+
     try {
       setLoadingClaim(true);
       const provider = new ethers.BrowserProvider(window.ethereum);
@@ -521,11 +537,7 @@ const StakingPage = () => {
 
   return (
     <div style={{ position: "relative", textAlign: "center" }}>
-      <Header
-        connectWallet={connectWallet}
-        isConnected={isConnected}
-        chainId={chainId}
-      />
+      <Header />
       <div>
         <h1 className="titlestake">
           Earn from every token deployed through Vortex
@@ -537,10 +549,7 @@ const StakingPage = () => {
       <div className="staking-container">
         {/* Staking container in the center */}
         <h2 className="vortex-title">Vortex ETH Pool</h2>
-        {!isConnected && (
-          <button onClick={connectWallet}>Connect Wallet</button>
-        )}
-        {isConnected && (
+        {isConnected ? (
           <>
             <div>
               <div>
@@ -583,7 +592,7 @@ const StakingPage = () => {
                 )}
               </div>
 
-              {isConnected && isStaked && (
+              {isStaked && (
                 <button
                   className="unstake-button"
                   onClick={handleClaimRewards}
@@ -596,6 +605,9 @@ const StakingPage = () => {
               {errorMessage && <p className="error-message">{errorMessage}</p>}
             </div>
           </>
+        ) : (
+          // Removed the "Connect Wallet" button here
+          <p>Please connect your wallet using the button in the header.</p>
         )}
       </div>
       <div className="info-container">
