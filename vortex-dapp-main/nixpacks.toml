@@ -1,0 +1,7 @@
+[project]
+type = "node"
+
+[phases]
+install = "npm install"
+build = "npm run build"
+start = "npx serve build"  # Or "npm run start" if it's not a static app
