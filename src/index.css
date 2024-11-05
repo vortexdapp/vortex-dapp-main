@@ -1,0 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  font-optical-sizing: auto;
+}
+
+code {
+  font-family: 'Poppins', sans-serif;
+}
+
+@font-face {
+  font-family: 'Technoma';
+  src: url('./assets/Technoma.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Luciole';
+  src: url('./assets/Luciole-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Technoma', sans-serif;
+  letter-spacing: 0.09em; /* Adjust the value as needed */
+}
+
+button {
+  font-family: 'Technoma', sans-serif;
+  color: white;
+  background-color: #6c42a4;
+  padding: 10px 54px;
+  font-size: 20px;
+  margin-right: 10px;
+  margin-left: 10px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+button:hover {
+    background-color: #ffffff;
+    color: #000000;
+}
+

@@ -97,10 +97,7 @@ html, body {
         margin-top: 10px;
     }
 
-    .deploy-button {
-      
-        margin-bottom: 15px;
-    }
+   
 }
 
 .token-form label {
@@ -130,34 +127,6 @@ input[type="number"]:focus {
 
     margin-bottom: 13px;
 }
-
-button.deploy-button {
-    padding: 7px 20px;
-    
-    margin-bottom:20px;
-    font-size: 16px;
-    border-radius: 30px;
-    /* Gradient background */
-    background: linear-gradient(38deg, #ef10ffe1, /* purple */ #00CDFFF6); /* Replace #FF5733 with your desired color */
-    border: 1px solid rgba(255, 255, 255, 0.519);
-    color: #ffffff;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    font-style: normal;
-    font-family: "Space Grotesk", sans-serif;
-    font-weight: 600;
-}
-
-
-button.deploy-button:hover {
-    background-color: #ffffff;
-    font-style: normal;
-    font-size: 16px;
-    font-family: "Space Grotesk", sans-serif;
-    font-weight: 600;
-}
-
-
 .contract-address {
     margin-top: 20px;
     font-size: 16px;
@@ -177,29 +146,6 @@ button.deploy-button:hover {
   }
 
   
-.start-button {
-    padding: 7px 20px;
-    margin-top:10px;
-    font-size: 16px;
-    border-radius: 30px;
-    /* Gradient background */
-    background: linear-gradient(38deg, #ef10ffe1, /* purple */ #00CDFFF6); /* Replace #FF5733 with your desired color */
-    border: 1px solid rgba(255, 255, 255, 0.519);
-    color: #ffffff;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    font-style: normal;
-    font-weight: 400;
-    text-decoration: none;
-    font-family: 'Comfortaa', sans-serif; /* Updated font-family */
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-
-.start-button:hover {
-    background-color: #0056b3;
-}
   
 .custom-file-input {
     position: relative;

@@ -74,19 +74,6 @@ padding:10px;}
     margin-top: 20px;
   }
   
-  .create-pair-button button {
-    background: linear-gradient(38deg, #ef10ffe1, /* purple */ #ff6f00f6);
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
-  }
-  
-  .create-pair-button button:hover {
-    background-color: #0056b3;
-  }
 
   .swap-container {margin-top:30px;
   }

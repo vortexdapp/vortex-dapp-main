@@ -21,10 +21,10 @@ function HomePage() {
         <img src="logo512.png" alt="Logo" className="logo2" />
 
         <h1 className="titlehome">
-          Launch ERC20 tokens and get initial liquidity
+          Trade, launch and earn.
           <br />
         </h1>
-        <h4 className="subtitlehome">Currently only on Sepolia Testnet</h4>
+        <h4 className="subtitlehome">A new way to launch tokens without liquidity</h4>
 
         <div>
           <Link to="/factory">
@@ -32,7 +32,7 @@ function HomePage() {
           </Link>
 
           <Link to="/staking">
-            <button className="home-button">Stake</button>
+            <button className="stake-home-button">Stake</button>
           </Link>
         </div>
       </div>

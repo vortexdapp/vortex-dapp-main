@@ -17,36 +17,6 @@
   height: auto; /* Maintain aspect ratio */
 }
 
-.Connect {
-  border-radius: 30px; /* Rounded corners */
-  padding: 7px 25px; /* Padding for the button */
-  background: linear-gradient(38deg, #00CDFFF6, #fb00dec5); /* Gradient background */
-  color: white; /* Text color */
-  border: 1px solid rgba(255, 255, 255, 0.519); /* Border */
-  cursor: pointer; /* Pointer cursor on hover */
-  transition: background-color 0.3s ease, transform 0.3s ease; /* Smooth transition */
-  margin: 0 20px; /* Add horizontal margin for spacing */
-}
-
-.Connect:hover {
-  background-color: #0056b3; /* Change to a darker shade on hover */
-  transform: scale(1.05); /* Slightly enlarge the button on hover */
-}
-
-.Launch {
-  border-radius: 30px; /* Rounded corners */
-  padding: 7px 25px; /* Padding for the button */
-  background: linear-gradient(38deg, #00CDFFF6, #fb00dec5); /* Gradient background */
-  color: white; /* Text color */
-  border: 1px solid rgba(255, 255, 255, 0.519); /* Border */
-  cursor: pointer; /* Pointer cursor on hover */
-  transition: background-color 0.3s ease, transform 0.3s ease; /* Smooth transition */
-}
-
-.Launch:hover {
-  background-color: #0056b3; /* Change to a darker shade on hover */
-  transform: scale(1.05); /* Slightly enlarge the button on hover */
-}
 
 /* Media query for screens with a maximum width of 600 pixels (typical for mobile devices) */
 @media only screen and (max-width: 600px) {
@@ -96,25 +66,6 @@
   width: 100%; /* Ensure header content takes full width */
 }
 
-button {
-  padding: 7px 15px;
-  margin-top: 30px;
-  font-size: 16px;
-  border-radius: 60px;
-  /* Gradient background */
-  background: linear-gradient(38deg, #00CDFFF6, #fb00dec5); /* Replace #FF5733 with your desired color */
-  border: 1px solid rgba(255, 255, 255, 0.519);
-  color: #ffffff;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  font-style: normal;
-  font-weight: 600;
-  font-family: "Space Grotesk", sans-serif;
-}
-
-button:hover {
-  background-color: #0056b3;
-}
 
 .burger-menu {
   display: none; /* Hide burger menu on desktop */

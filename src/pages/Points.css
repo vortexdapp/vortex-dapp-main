@@ -78,21 +78,6 @@ h2 {
     font-size: 11px; /* Font size for the input */
 }
 
-button {
-    padding: 10px 20px; /* Padding for the button */
-    margin-top:10px;
-    background-color: #4caf50; /* Button background color */
-    color: white; /* Button text color */
-    border: none; /* No border */
-    border-radius: 32px; /* Rounded corners */
-    cursor: pointer; /* Pointer cursor on hover */
-    transition: background-color 0.3s ease; /* Smooth transition */
-    margin-left: 10px; /* Space between input and button */
-}
-
-button:hover {
-    background-color: #45a049; /* Darker green on hover */
-}
 
 /* Add this to your existing CSS */
 
