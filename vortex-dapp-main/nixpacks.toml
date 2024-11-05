@@ -1,7 +1,8 @@
-[project]
-type = "node"
+[phases.install]
+cmds = ["npm install"]
 
-[phases]
-install = "npm install"
-build = "npm run build"
-start = "npx serve build"  # Or "npm run start" if it's not a static app
+[phases.build]
+cmds = ["npm run build"]
+
+[phases.start]
+cmds = ["npx serve build"]  # Replace with ["npm start"] if deploying dynamically
