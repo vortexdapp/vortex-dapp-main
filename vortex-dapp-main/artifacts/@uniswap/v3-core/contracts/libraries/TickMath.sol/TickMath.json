@@ -1,0 +1,10 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "TickMath",
+  "sourceName": "@uniswap/v3-core/contracts/libraries/TickMath.sol",
+  "abi": [],
+  "bytecode": "0x60808060405234601757603a9081601d823930815050f35b600080fdfe600080fdfea2646970667358221220c38605c0311e73cd9aa5ca97473177f5b3ec3b2c1e0875ac9b7392c24d58a6f064736f6c63430008180033",
+  "deployedBytecode": "0x600080fdfea2646970667358221220c38605c0311e73cd9aa5ca97473177f5b3ec3b2c1e0875ac9b7392c24d58a6f064736f6c63430008180033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

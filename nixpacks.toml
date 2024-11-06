@@ -1,0 +1,8 @@
+[phases.install]
+cmds = ["npm install"]
+
+[phases.build]
+cmds = ["npm run build"]
+
+[phases.start]
+cmds = ["npx serve build"]  # Replace with ["npm start"] if deploying dynamically
