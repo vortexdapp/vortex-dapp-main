@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@nomicfoundation/hardhat-ethers": "^3.0.8",
     "@openzeppelin/contracts": "^5.0.2",
     "@supabase/supabase-js": "^2.45.4",
     "@testing-library/jest-dom": "^5.17.0",
@@ -44,9 +45,9 @@
     "xml2js": "^0.6.2"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "cross-env REACT_APP_MODE=web react-scripts start",
     "start-telegram": "cross-env REACT_APP_MODE=telegram react-scripts start",
-    "build": "react-scripts build",
+    "build": "cross-env REACT_APP_MODE=web react-scripts build",
     "build-telegram": "cross-env REACT_APP_MODE=telegram react-scripts build"
   },
   "eslintConfig": {
