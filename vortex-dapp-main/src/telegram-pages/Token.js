@@ -10,103 +10,126 @@ import {
   isAddress,
   MaxUint256,
 } from "ethers";
-import { Token, CurrencyAmount, TradeType, Percent } from "@uniswap/sdk-core";
-import {
-  Pool,
-  Route,
-  Trade,
-  SwapRouter,
-  computePoolAddress,
-  TickMath,
-} from "@uniswap/v3-sdk";
 import WalletRestorer from "../telegram-components/WalletRestorer";
 import { useWallet } from "../WalletContext";
 import "./Token.css";
+
+// Minimal ABI for SwapRouter (including deadline in exactInputSingle)
+const SwapRouterABI = [
+  "function exactInputSingle((address tokenIn,address tokenOut,uint24 fee,address recipient,uint256 deadline,uint256 amountIn,uint256 amountOutMinimum,uint160 sqrtPriceLimitX96)) external payable returns (uint256 amountOut)",
+];
+
+// Minimal ABI for ERC20 (symbol, name, decimals, approve, allowance)
+const ERC20ABI = [
+  "function symbol() view returns (string)",
+  "function name() view returns (string)",
+  "function decimals() view returns (uint8)",
+  "function approve(address spender, uint256 amount) external returns (bool)",
+  "function allowance(address owner, address spender) external view returns (uint256)",
+];
+
+// Define supported chains with their configurations from environment variables
+const SUPPORTED_CHAINS = [
+  {
+    name: "Sepolia",
+    chainId: 11155111,
+    rpcUrl: process.env.ALCHEMY_SEPOLIA_ENDPOINT,
+    explorerUrl: "https://sepolia.etherscan.io/",
+    SwapRouter: process.env.SEPOLIA_SWAP_ROUTER,
+    WETH: process.env.SEPOLIA_WETH,
+  },
+  {
+    name: "Base",
+    chainId: 8453,
+    rpcUrl: process.env.ALCHEMY_BASE_ENDPOINT,
+    explorerUrl: "https://basescan.org/",
+    SwapRouter: process.env.BASE_SWAP_ROUTER,
+    WETH: process.env.BASE_WETH,
+  },
+];
 
 const Swap = () => {
   const { wallet } = useWallet();
   const [provider, setProvider] = useState(null);
   const [signer, setSigner] = useState(null);
-
+  const [selectedNetwork, setSelectedNetwork] = useState(SUPPORTED_CHAINS[0]);
   const [inputAmount, setInputAmount] = useState("");
   const [tokenAddress, setTokenAddress] = useState("");
   const [outputAmount, setOutputAmount] = useState("");
   const [loading, setLoading] = useState(false);
+  const [symbol, setSymbol] = useState("");
   const username = localStorage.getItem("username");
 
+  // Initialize provider and signer based on the selected network and wallet
   useEffect(() => {
-    if (wallet) {
-      const newProvider = new JsonRpcProvider(
-        "https://base-mainnet.g.alchemy.com/v2/zKbXaPT2AXf2nljEsWJNUtGZubI7hsAT" // Replace with your actual provider URL
-      );
-      const newSigner = new Wallet(wallet.privateKey, newProvider);
-      setProvider(newProvider);
-      setSigner(newSigner);
-    }
-  }, [wallet]);
+    const init = async () => {
+      if (wallet && selectedNetwork.rpcUrl) {
+        try {
+          const networkProvider = new JsonRpcProvider(selectedNetwork.rpcUrl);
+          const userWallet = new Wallet(wallet.privateKey, networkProvider);
+          setProvider(networkProvider);
+          setSigner(userWallet);
+          console.log(`Signer initialized: ${userWallet.address}`);
+        } catch (error) {
+          console.error("Failed to create signer with private key:", error);
+        }
+      }
+    };
+    init();
+  }, [wallet, selectedNetwork]);
 
+  // Function to fetch token details
   const fetchTokenDetails = async (address) => {
     try {
-      const erc20ABI = [
-        "function symbol() view returns (string)",
-        "function name() view returns (string)",
-        "function decimals() view returns (uint8)",
-      ];
-      const tokenContract = new Contract(address, erc20ABI, provider);
-
+      const tokenContract = new Contract(address, ERC20ABI, provider);
       const [symbol, name, decimals] = await Promise.all([
         tokenContract.symbol(),
         tokenContract.name(),
         tokenContract.decimals(),
       ]);
-
+      setSymbol(symbol);
       return { symbol, name, decimals: Number(decimals) };
     } catch (error) {
       console.error("Error fetching token details:", error);
-      alert(
-        "Invalid token address or unable to fetch token details. Please check the address and try again."
-      );
+      alert("Invalid token address or unable to fetch token details.");
       return null;
     }
   };
 
-  const approveTokenIfNeeded = async (tokenInstance, spender) => {
+  // Function to approve tokens if needed
+  const approveTokenIfNeeded = async (tokenAddress, spender, amount) => {
     try {
-      const erc20ABI = [
-        "function approve(address spender, uint256 amount) external returns (bool)",
-        "function allowance(address owner, address spender) external view returns (uint256)",
-      ];
-      const tokenContract = new Contract(
-        tokenInstance.address,
-        erc20ABI,
-        signer
-      );
-
+      const tokenContract = new Contract(tokenAddress, ERC20ABI, signer);
       const currentAllowance = await tokenContract.allowance(
         wallet.address,
         spender
       );
-      const amountToApprove = MaxUint256;
 
-      if (currentAllowance < parseUnits(inputAmount, tokenInstance.decimals)) {
-        const tx = await tokenContract.approve(spender, amountToApprove);
+      if (currentAllowance.lt(amount)) {
+        const tx = await tokenContract.approve(spender, MaxUint256);
         await tx.wait();
+        console.log("Token approved.");
       } else {
         console.log("Sufficient allowance already set.");
       }
     } catch (error) {
       console.error("Approval error:", error);
-      alert(`Approval failed: ${error.message}`);
+      if (error.code === 4001) {
+        alert("Approval transaction was rejected by the user.");
+      } else {
+        alert(`Approval failed: ${error.reason || error.message}`);
+      }
     }
   };
 
   const executeSwap = async () => {
     setLoading(true);
     setOutputAmount("");
+    console.log("Starting swap execution...");
 
     try {
       if (!inputAmount || isNaN(inputAmount) || Number(inputAmount) <= 0) {
-        alert("Please enter a valid ETH amount.");
+        alert("Please enter a valid WETH amount.");
         setLoading(false);
         return;
       }
@@ -123,130 +146,55 @@ const Swap = () => {
         return;
       }
 
-      const { symbol, name, decimals } = tokenDetails;
-      const WETH_ADDRESS = "0x4200000000000000000000000000000000000006";
-      const chainId = 8453;
+      const { decimals } = tokenDetails;
+      const WETH_ADDRESS = selectedNetwork.WETH;
+      const SWAP_ROUTER_ADDRESS = selectedNetwork.SwapRouter;
 
-      const WETH = new Token(
-        chainId,
-        WETH_ADDRESS,
-        18,
-        "WETH",
-        "Wrapped Ether"
-      );
-
-      const inputToken = WETH;
-      const outputToken = new Token(
-        chainId,
-        tokenAddress,
-        decimals,
-        symbol,
-        name
-      );
-
-      const fee = 3000;
-
-      const poolAddress = computePoolAddress({
-        factoryAddress: "0x33128a8fC17869897dcE68Ed026d694621f6FDfD",
-        tokenA: inputToken,
-        tokenB: outputToken,
-        fee: fee,
-      });
-
-      console.log("Computed Pool Address:", poolAddress);
-
-      const code = await provider.getCode(poolAddress);
-      if (code === "0x") {
-        alert("Pool does not exist for this token pair.");
+      if (!SWAP_ROUTER_ADDRESS || !WETH_ADDRESS) {
+        alert(
+          "SwapRouter or WETH address is not configured for the selected network."
+        );
         setLoading(false);
         return;
       }
 
-      const poolContract = new Contract(
-        poolAddress,
-        [
-          "function liquidity() view returns (uint128)",
-          "function slot0() view returns (uint160 sqrtPriceX96, int24 tick, uint16 observationIndex, uint16 observationCardinality, uint16 observationCardinalityNext, uint8 feeProtocol, bool unlocked)",
-        ],
-        provider
+      const amountIn = parseUnits(inputAmount, 18);
+
+      const swapRouterContract = new Contract(
+        SWAP_ROUTER_ADDRESS,
+        SwapRouterABI,
+        signer
       );
+      const amountOutMinimum = 0;
 
-      const [liquidity, slot0] = await Promise.all([
-        poolContract.liquidity(),
-        poolContract.slot0(),
-      ]);
+      await approveTokenIfNeeded(WETH_ADDRESS, SWAP_ROUTER_ADDRESS, amountIn);
 
-      if (!slot0 || liquidity === 0n || slot0.sqrtPriceX96 === 0n) {
-        alert("The pool is uninitialized or lacks liquidity.");
-        setLoading(false);
-        return;
-      }
-
-      // Ensure tick is within Uniswap's acceptable range
-      const tick = slot0.tick;
-      if (tick < TickMath.MIN_TICK || tick > TickMath.MAX_TICK) {
-        console.error("Tick value out of range:", tick);
-        alert("Invalid pool data. The tick value is out of range.");
-        setLoading(false);
-        return;
-      }
-
-      const pool = new Pool(
-        inputToken,
-        outputToken,
-        fee,
-        slot0.sqrtPriceX96.toString(),
-        liquidity.toString(),
-        tick
-      );
-
-      console.log("Pool Instance:", pool);
-
-      const route = new Route([pool], inputToken, outputToken);
-
-      const amountIn = CurrencyAmount.fromRawAmount(
-        inputToken,
-        parseUnits(inputAmount, inputToken.decimals).toString()
-      );
-
-      const trade = await Trade.fromRoute(
-        route,
-        amountIn,
-        TradeType.EXACT_INPUT
-      );
-
-      const slippageTolerance = new Percent(50, 10000);
-      const deadline = Math.floor(Date.now() / 1000) + 60 * 20;
-
-      const methodParameters = SwapRouter.swapCallParameters([trade], {
-        slippageTolerance,
+      const params = {
+        tokenIn: WETH_ADDRESS,
+        tokenOut: tokenAddress,
+        fee: 3000,
         recipient: wallet.address,
-        deadline,
-      });
-
-      await approveTokenIfNeeded(outputToken, methodParameters.to);
-
-      const tx = {
-        data: methodParameters.calldata,
-        to: methodParameters.to,
-        value: methodParameters.value === "0x" ? "0x0" : methodParameters.value,
-        from: wallet.address,
-        gasPrice: await provider.getGasPrice(),
-        gasLimit: 200000n,
+        deadline: Math.floor(Date.now() / 1000) + 60 * 20,
+        amountIn: amountIn.toString(),
+        amountOutMinimum: amountOutMinimum.toString(),
+        sqrtPriceLimitX96: 0,
       };
 
-      const transactionResponse = await signer.sendTransaction(tx);
-      await transactionResponse.wait();
+      const tx = await swapRouterContract.exactInputSingle(params, {
+        gasLimit: 500000,
+      });
+      await tx.wait();
+      console.log("Transaction confirmed.");
 
-      const formattedOutput = formatUnits(
-        trade.outputAmount.quotient.toString(),
-        decimals
-      );
-      setOutputAmount(formattedOutput);
-      alert(`Swap Successful! You received ${formattedOutput} ${symbol}`);
+      setOutputAmount("Unknown");
+      alert("Swap successful. Check your wallet for the received tokens.");
     } catch (error) {
       console.error("Swap error:", error);
-      alert(`Swap failed: ${error.message}`);
+      if (error.code === 4001) {
+        alert("Swap transaction was rejected by the user.");
+      } else {
+        alert(`Swap failed: ${error.reason || error.message}`);
+      }
     } finally {
       setLoading(false);
     }
@@ -255,12 +203,12 @@ const Swap = () => {
   return (
     <div className="swap-container">
       <WalletRestorer username={username} />
-      <h2>Swap ETH for Tokens on Base</h2>
+      <h2>Swap WETH for Tokens</h2>
       <div className="swap-input">
-        <label>ETH Amount:</label>
+        <label>WETH Amount:</label>
         <input
           type="number"
-          placeholder="Enter ETH amount"
+          placeholder="Enter WETH amount"
           value={inputAmount}
           onChange={(e) => setInputAmount(e.target.value)}
         />
@@ -277,7 +225,11 @@ const Swap = () => {
       <button onClick={executeSwap} disabled={loading || !signer}>
         {loading ? "Swapping..." : "Swap"}
       </button>
-      {outputAmount && <p>Estimated Output: {outputAmount}</p>}
+      {outputAmount && (
+        <p>
+          Estimated Output: {outputAmount} {symbol}
+        </p>
+      )}
     </div>
   );
 };

@@ -280,7 +280,9 @@ function swapTokensForWETH(uint256 amountIn, address tokenAddress) internal retu
     // Check if the factory contract has enough WETH
     uint256 wethBalance = IERC20(weth).balanceOf(address(this));
 
-    require(wethBalance >= wethProvided, "Not enough WETH in the factory contract");}
+    require(wethBalance >= wethProvided, "Not enough WETH in the factory contract");
+    
+    }
 
     if(userProvidedLiquidity == true) {
 
