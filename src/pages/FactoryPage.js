@@ -8,6 +8,7 @@ import Header from "../components/Header.js";
 import Footer from "../components/Footer.js";
 import { supabase } from "../supabaseClient";
 import { VortexConnectContext } from "../VortexConnectContext";
+
 const networkConfig = {
   8453: {
     factoryAddress: "0xF686e6CAF7d823E4130339E6f2b02C37836fE90F",
@@ -131,7 +132,8 @@ function FactoryPage() {
         setDeployedContractAddress(deployedAddress);
         setError(""); // Clear any previous errors after a successful deployment
   
-        const { error } = await supabase.from("tokens").insert([
+        // Insert token details into the tokens table
+        const { error: tokenInsertError } = await supabase.from("tokens").insert([
           {
             name: tokenName,
             symbol: tokenSymbol,
@@ -144,8 +146,31 @@ function FactoryPage() {
           },
         ]);
   
-        if (error) {
-          throw error;
+        if (tokenInsertError) {
+          throw tokenInsertError;
+        }
+  
+        // Increment the points for the user in the usersweb table
+        const { data: userData, error: fetchError } = await supabase
+          .from("usersweb")
+          .select("points")
+          .eq("wallet", connectedWallet)
+          .single(); // Fetch single row for the connected wallet
+  
+        if (fetchError) {
+          console.error("Error fetching user points:", fetchError);
+        } else {
+          const currentPoints = userData ? userData.points : 0;
+  
+          // Update the points by adding 1
+          const { error: updateError } = await supabase
+            .from("usersweb")
+            .update({ points: currentPoints + 1 })
+            .eq("wallet", connectedWallet);
+  
+          if (updateError) {
+            throw updateError;
+          }
         }
       }
     } catch (error) {
@@ -156,6 +181,7 @@ function FactoryPage() {
     }
   }
   
+    
   return (
     <div>
       <Header connectWallet={connect} isConnected={isConnected} chainId={chainId} />

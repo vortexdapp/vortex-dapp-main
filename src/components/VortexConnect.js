@@ -2,13 +2,14 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { ethers } from 'ethers';
+import { supabase } from '../supabaseClient'; // Import Supabase client
 import './VortexConnect.css';
+
 import sepoliaIcon from '../assets/icons/sepolia.png';
 import baseIcon from '../assets/icons/base.png';
 import bscIcon from '../assets/icons/bsc.png';
 import arbitrumIcon from '../assets/icons/arbitrum.png';
 import optimismIcon from '../assets/icons/optimism.png';
-
 
 const chains = [
   {
@@ -17,7 +18,7 @@ const chains = [
     currency: "ETH",
     explorerUrl: "https://eth-sepolia.blockscout.com",
     rpcUrl: process.env.SEPOLIA_RPC_URL,
-    icon:sepoliaIcon,
+    icon: sepoliaIcon,
   },
   {
     chainId: 8453,
@@ -25,7 +26,7 @@ const chains = [
     currency: "ETH",
     explorerUrl: "https://base.blockscout.com/",
     rpcUrl: process.env.BASE_RPC_URL,
-    icon:baseIcon,
+    icon: baseIcon,
   },
   {
     chainId: 56,
@@ -33,7 +34,7 @@ const chains = [
     currency: "BNB",
     explorerUrl: "https://bscscan.com",
     rpcUrl: process.env.BSC_RPC_URL,
-    icon:bscIcon,
+    icon: bscIcon,
   },
   {
     chainId: 42161,
@@ -41,7 +42,7 @@ const chains = [
     currency: "ETH",
     explorerUrl: "https://arbitrum.blockscout.com/",
     rpcUrl: process.env.ARBITRUM_RPC_URL,
-    icon:arbitrumIcon,
+    icon: arbitrumIcon,
   },
   {
     chainId: 10,
@@ -49,7 +50,7 @@ const chains = [
     currency: "ETH",
     explorerUrl: "https://optimism.blockscout.com/",
     rpcUrl: process.env.OPTIMISM_RPC_URL,
-    icon:optimismIcon,
+    icon: optimismIcon,
   },
 ];
 
@@ -89,7 +90,7 @@ const VortexConnect = () => {
 
     // Bind the event listener
     document.addEventListener('mousedown', handleClickOutside);
-    
+
     // Cleanup the event listener on component unmount
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
@@ -147,6 +148,9 @@ const VortexConnect = () => {
       setError(null);
       closeModal();
 
+      // Save the wallet address to Supabase
+      await saveUserToSupabase(userAddress);
+
       window.ethereum.on('accountsChanged', handleAccountsChanged);
       window.ethereum.on('chainChanged', handleChainChanged);
     } catch (err) {
@@ -154,6 +158,36 @@ const VortexConnect = () => {
       setError(`${walletType} connection failed. Please check your wallet setup.`);
     }
   };
+
+  const saveUserToSupabase = async (userAddress) => {
+    try {
+      // Check if the user already exists
+      const { data: existingUser, error: selectError } = await supabase
+        .from('usersweb')
+        .select('wallet')
+        .eq('wallet', userAddress);
+  
+      if (selectError) {
+        console.error('Error checking existing user in Supabase:', selectError.message, selectError);
+      } else if (existingUser && existingUser.length === 0) {
+        // User does not exist, insert new record
+        const { data: insertData, error: insertError } = await supabase
+          .from('usersweb')
+          .insert([{ wallet: userAddress, created: new Date().toISOString(), points: 1 }]);
+  
+        if (insertError) {
+          console.error('Error inserting user into Supabase:', insertError.message, insertError);
+        } else {
+          console.log('User saved to Supabase:', insertData);
+        }
+      } else {
+        console.log('User already exists in Supabase');
+      }
+    } catch (error) {
+      console.error('Unexpected error during Supabase user check/insert:', error.message, error);
+    }
+  };
+  
 
   const reconnectWallet = async () => {
     if (window.ethereum && address) {
@@ -266,29 +300,27 @@ const VortexConnect = () => {
 
       {isModalOpen && (
         <div className="modal">
-        
           <div className="modal-content" ref={modalRef}>
             <button onClick={closeModal} className="close-button">×</button>
             {isSwitchingChains ? (
               <>
                 <h4>Select a Network</h4>
                 <div className="chain-buttons-container">
-  {chains.map((chain) => (
-    <button
-      key={chain.chainId}
-      onClick={() => switchChain(chain)}
-      className="wallet-button"
-    >
-      <img
-        src={chain.icon} // Using the icon property
-        alt={`${chain.name} icon`}
-        className="chain-icon" // You can add styles to adjust the size and appearance
-      />
-      {chain.name} {/* Optional text next to the icon */}
-    </button>
-  ))}
-</div>
-
+                  {chains.map((chain) => (
+                    <button
+                      key={chain.chainId}
+                      onClick={() => switchChain(chain)}
+                      className="wallet-button"
+                    >
+                      <img
+                        src={chain.icon}
+                        alt={`${chain.name} icon`}
+                        className="chain-icon"
+                      />
+                      {chain.name}
+                    </button>
+                  ))}
+                </div>
                 <button onClick={() => setIsSwitchingChains(false)} className="cancel-button">Back</button>
               </>
             ) : (
@@ -305,7 +337,7 @@ const VortexConnect = () => {
                     <p><strong>Chain:</strong> {chainName}</p>
                   </div>
                 )}
-                
+
                 {!address && (
                   <>
                     <button onClick={() => connectWallet('MetaMask')} className="wallet-button">MetaMask</button>
