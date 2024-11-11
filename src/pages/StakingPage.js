@@ -1,3 +1,5 @@
+// src/pages/StakingPage.js
+
 /* global BigInt */
 
 import React, { useState, useEffect, useContext } from "react";
@@ -36,7 +38,6 @@ const networkConfig = {
   // Sepolia
   11155111: {
     stakingAddress: process.env.REACT_APP_STAKING_SEPOLIA_CA,
-
     WETH_address: "0xfff9976782d46cc05630d1f6ebab18b2324d6b14",
     explorerUrl: "https://sepolia.etherscan.io",
   },
@@ -84,10 +85,6 @@ const StakingPage = () => {
     address: connectedWallet,
     chainId,
     isConnected,
-    // connectWallet, // No need to connect here
-    // disconnectWallet,
-    error: walletError,
-    setError: setWalletError,
   } = useContext(VortexConnectContext);
 
   const explorerUrl =
@@ -95,6 +92,7 @@ const StakingPage = () => {
   const StakingChainAddress =
     networkConfig[chainId]?.stakingAddress || "DefaultFactoryAddress";
 
+  // Fetch statistics
   const fetchStatistics = async () => {
     if (!window.ethereum) {
       setErrorMessage("Ethereum provider not found.");
@@ -126,6 +124,7 @@ const StakingPage = () => {
     }
   };
 
+  // Calculate APY
   const calculateAPY = async () => {
     if (!window.ethereum) {
       setErrorMessage("Ethereum provider not found.");
@@ -606,7 +605,6 @@ const StakingPage = () => {
             </div>
           </>
         ) : (
-          // Removed the "Connect Wallet" button here
           <p>Please connect your wallet using the button in the header.</p>
         )}
       </div>
