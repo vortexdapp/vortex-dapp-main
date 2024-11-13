@@ -32,8 +32,8 @@
 
 /* Common button styles */
 .wallet-button, .cancel-button, .disconnect-button {
-    background-color: #1ec7de;
-    color: #fff;
+    background-color: #ffffff;
+    color: #000000;
     padding: 8px 16px;
     margin: 5px;
     font-size: 16px;
@@ -43,7 +43,7 @@
     width: 100%;
     max-width: 300px;
 }
-
+h2{margin-top:20px;}
 /* Hover effect for buttons */
 .wallet-button:hover, .cancel-button:hover, .disconnect-button:hover {
     background-color: #ffffff;

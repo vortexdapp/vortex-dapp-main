@@ -272,6 +272,24 @@ const VortexConnect = () => {
     }
   };
 
+  const changeWallet = async () => {
+    if (window.ethereum) {
+      try {
+        // Request permission to change the connected account
+        await window.ethereum.request({
+          method: 'wallet_requestPermissions',
+          params: [{ eth_accounts: {} }],
+        });
+        // No need for additional logic here, as handleAccountsChanged will be triggered if the user changes their account
+      } catch (error) {
+        console.error('Error changing wallet:', error);
+        setError('Failed to change wallet. Please try again.');
+      }
+    } else {
+      setError('Ethereum provider not found.');
+    }
+  };
+
   const chainDetails = chains.find((chain) => chain.chainId === chainId);
   const chainName = chainNames[chainId] || `Unknown Chain (${chainId})`;
 
@@ -351,6 +369,7 @@ const VortexConnect = () => {
                 {address && (
                   <>
                     <button onClick={() => setIsSwitchingChains(true)} className="wallet-button">Switch Chains</button>
+                    <button onClick={changeWallet} className="wallet-button">Change Wallet</button>
                     <button onClick={disconnectWallet} className="disconnect-button">Disconnect</button>
                   </>
                 )}
