@@ -3,31 +3,28 @@ import { useParams, useNavigate } from "react-router-dom";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { firestore } from "../components/firebaseConfig";
 import Footer from "../components/Footer";
-import "./Trading.css"; // Import the CSS file
+import "./Trading.css";
 import Header2 from "../components/Header2.js";
-import { FaTelegramPlane, FaTwitter, FaGlobe } from "react-icons/fa"; // Import social icons
+import { FaTelegramPlane, FaTwitter, FaGlobe } from "react-icons/fa";
 
 function Trading() {
-  const { chain: initialChain, contractAddress: initialContractAddress } =
-    useParams();
-  const chain = initialChain.toLowerCase(); // Convert chain to lowercase
-  const [contractAddress, setContractAddress] = useState(
-    initialContractAddress
-  );
+  const { chain: initialChain, contractAddress: initialContractAddress } = useParams();
+  const chain = initialChain.toLowerCase();
+  const [contractAddress, setContractAddress] = useState(initialContractAddress);
+  const [poolAddress, setPoolAddress] = useState(""); // New state for pool address
   const [searchValue, setSearchValue] = useState(initialContractAddress);
-  const [tokenName, setTokenName] = useState(""); // State for token name
-  const [imageUrl, setImageUrl] = useState(""); // State for token image
-  const [website, setWebsite] = useState(""); // State for website link
-  const [telegram, setTelegram] = useState(""); // State for telegram link
-  const [twitter, setTwitter] = useState(""); // State for X link
-  const [showInfo, setShowInfo] = useState(false); // State to toggle between chart and info
+  const [tokenName, setTokenName] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
+  const [website, setWebsite] = useState("");
+  const [telegram, setTelegram] = useState("");
+  const [twitter, setTwitter] = useState("");
+  const [showInfo, setShowInfo] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     // Fetch token data (assuming token data is in Firebase)
     const fetchTokenData = async () => {
       try {
-        // Fetch token info from Firebase
         const q = query(
           collection(firestore, "tokens"),
           where("address", "==", contractAddress)
@@ -36,11 +33,18 @@ function Trading() {
 
         querySnapshot.forEach((doc) => {
           const data = doc.data();
-          setTokenName(data.name); // Assuming token data has a name field
-          setImageUrl(data.imageUrl); // Set the token image URL
-          setWebsite(data.website); // Set the website link
-          setTelegram(data.telegram); // Set the Telegram link
-          setTwitter(data.twitter); // Set the X (Twitter) link
+          setTokenName(data.name);
+          setImageUrl(data.imageUrl);
+          setWebsite(data.website);
+          setTelegram(data.telegram);
+          setTwitter(data.twitter);
+          // Assuming there is a poolAddress field in your database
+          if (data.poolAddress) {
+            setPoolAddress(data.poolAddress);
+          } else {
+            // Fallback logic if poolAddress is not available
+            console.warn("No pool address found for this token.");
+          }
         });
       } catch (error) {
         console.error("Error fetching token data:", error);
@@ -68,7 +72,6 @@ function Trading() {
     <div>
       <Header2 />
 
-      {/* Token Name and Image */}
       <div style={{ textAlign: "center", marginTop: "20px", color: "#ffffff" }}>
         {imageUrl && (
           <img
@@ -106,7 +109,6 @@ function Trading() {
             <button
               onClick={() => {
                 navigator.clipboard.writeText(contractAddress);
-                // Optionally, you can add some visual feedback here
               }}
               style={{
                 background: "none",
@@ -124,7 +126,6 @@ function Trading() {
           </div>
         )}
 
-        {/* Social Media Icons */}
         <div
           style={{
             display: "flex",
@@ -145,9 +146,7 @@ function Trading() {
           )}
           {telegram && (
             <a
-              href={
-                telegram.startsWith("http") ? telegram : `https://${telegram}`
-              }
+              href={telegram.startsWith("http") ? telegram : `https://${telegram}`}
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -166,7 +165,6 @@ function Trading() {
         </div>
       </div>
 
-      {/* Search Bar */}
       <div style={{ padding: "20px", textAlign: "center" }}>
         <form onSubmit={handleSearchSubmit}>
           <input
@@ -198,7 +196,6 @@ function Trading() {
         </form>
       </div>
 
-      {/* New Section with Flexbox Layout */}
       <div
         style={{
           display: "flex",
@@ -206,15 +203,12 @@ function Trading() {
           justifyContent: "space-between",
           alignItems: "flex-start",
           margin: "0 auto",
-          maxWidth: "1200px", // Adjust this value as needed
+          maxWidth: "1200px",
           padding: "20px",
         }}
       >
-        {/* Left Section (DexScreener) */}
+        {/* Left Section (GeckoTerminal Embed with Pool Address) */}
         <div style={{ flex: "0 0 70%", marginRight: "10px" }}>
-          {/* Toggle Button (Left-aligned above the iframe) */}
-
-          {/* DexScreener Embed */}
           <div
             style={{
               position: "relative",
@@ -222,23 +216,29 @@ function Trading() {
               minWidth: "300px",
             }}
           >
-            <iframe
-              title="Chart"
-              src={`https://dexscreener.com/${chain}/${contractAddress}?embed=1&info=${
-                showInfo ? 1 : 0
-              }&trades=1&theme=dark`}
-              style={{
-                position: "absolute",
-                width: "100%",
-                height: "100%",
-                top: 0,
-                left: 0,
-                border: "0",
-                borderRadius: "20px",
-                overflow: "hidden",
-              }}
-              allowFullScreen
-            />
+            {poolAddress ? (
+              <iframe
+                title="GeckoTerminal"
+                src={`https://www.geckoterminal.com/${chain}/pools/${poolAddress}?embed=1&info=${
+                  showInfo ? 1 : 0
+                }&swaps=1`}
+                style={{
+                  position: "absolute",
+                  width: "100%",
+                  height: "100%",
+                  top: 0,
+                  left: 0,
+                  border: "0",
+                  borderRadius: "20px",
+                  overflow: "hidden",
+                }}
+                allowFullScreen
+              />
+            ) : (
+              <p style={{ textAlign: "center", color: "#ffffff" }}>
+                Pool address not available for this token.
+              </p>
+            )}
           </div>
           <div style={{ textAlign: "left", marginBottom: "10px" }}>
             <button

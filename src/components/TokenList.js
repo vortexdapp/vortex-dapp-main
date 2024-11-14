@@ -1,7 +1,8 @@
+// src/components/TokensList.js
+
 import React, { useEffect, useState } from "react";
-import { collection, getDocs } from "firebase/firestore";
-import { firestore } from "../components/firebaseConfig.js";
-import { FaTwitter, FaXTwitter, FaTelegram, FaGlobe } from "react-icons/fa6";
+import { supabase } from "../supabaseClient"; // Import the Supabase client
+import { FaTwitter, FaTelegram, FaGlobe } from "react-icons/fa"; // Adjusted icons import
 import "./TokenList.css";
 
 function TokensList({ limit }) {
@@ -11,18 +12,25 @@ function TokensList({ limit }) {
   useEffect(() => {
     const fetchTokens = async () => {
       try {
-        const querySnapshot = await getDocs(collection(firestore, "tokens"));
-        const tokensArray = querySnapshot.docs.map((doc) => {
-          const data = doc.data();
+        // Fetch tokens from Supabase
+        const { data: tokensArray, error } = await supabase
+          .from("tokens")
+          .select("*");
+
+        if (error) {
+          throw error;
+        }
+
+        // Map tokens and parse timestamp
+        const tokensWithParsedData = tokensArray.map((token) => {
           return {
-            id: doc.id,
-            ...data,
-            timestamp: data.timestamp ? data.timestamp.toDate() : null, // Convert Firestore Timestamp to JavaScript Date
+            ...token,
+            timestamp: token.timestamp ? new Date(token.timestamp) : null,
           };
         });
 
         // Sort tokens by timestamp in descending order (most recent first)
-        const sortedTokens = tokensArray.sort(
+        const sortedTokens = tokensWithParsedData.sort(
           (a, b) => b.timestamp - a.timestamp
         );
 
@@ -37,7 +45,12 @@ function TokensList({ limit }) {
     fetchTokens();
   }, []);
 
-  if (loading) return <p>Loading tokens...</p>;
+  if (loading)
+    return (
+      <div className="loading-container">
+        <p>Loading tokens...</p>
+      </div>
+    );
   if (!tokens.length) return <p>No tokens found.</p>;
 
   const displayedTokens = limit ? tokens.slice(0, limit) : tokens;
@@ -48,7 +61,7 @@ function TokensList({ limit }) {
       <h5 className="subtitletokens">Trade them directly on Uniswap</h5>
       <div className="tokens-grid">
         {displayedTokens.map((token) => (
-          <div key={token.id} className="token-card">
+          <div key={token.address} className="token-card">
             {token.imageUrl && (
               <img
                 src={token.imageUrl}
@@ -82,7 +95,7 @@ function TokensList({ limit }) {
                     rel="noopener noreferrer"
                     className="icon-link2"
                   >
-                    <FaXTwitter className="icon2" />
+                    <FaTwitter className="icon2" />
                   </a>
                 )}
                 {token.telegram && (

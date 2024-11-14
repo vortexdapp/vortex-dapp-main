@@ -1,3 +1,5 @@
+// src/pages/StakingPage.js
+
 /* global BigInt */
 
 import React, { useState, useEffect, useContext } from "react";
@@ -36,7 +38,6 @@ const networkConfig = {
   // Sepolia
   11155111: {
     stakingAddress: process.env.REACT_APP_STAKING_SEPOLIA_CA,
-
     WETH_address: "0xfff9976782d46cc05630d1f6ebab18b2324d6b14",
     explorerUrl: "https://sepolia.etherscan.io",
   },
@@ -84,10 +85,6 @@ const StakingPage = () => {
     address: connectedWallet,
     chainId,
     isConnected,
-    // connectWallet, // No need to connect here
-    // disconnectWallet,
-    error: walletError,
-    setError: setWalletError,
   } = useContext(VortexConnectContext);
 
   const explorerUrl =
@@ -95,6 +92,7 @@ const StakingPage = () => {
   const StakingChainAddress =
     networkConfig[chainId]?.stakingAddress || "DefaultFactoryAddress";
 
+  // Fetch statistics
   const fetchStatistics = async () => {
     if (!window.ethereum) {
       setErrorMessage("Ethereum provider not found.");
@@ -126,6 +124,7 @@ const StakingPage = () => {
     }
   };
 
+  // Calculate APY
   const calculateAPY = async () => {
     if (!window.ethereum) {
       setErrorMessage("Ethereum provider not found.");
@@ -265,28 +264,74 @@ const StakingPage = () => {
           chain: CHAIN_NAMES[chainId] || `Unknown Chain (${chainId})`,
         },
       ]);
-
+  
       if (error) {
         throw error;
       }
-
+  
       console.log("Staking event logged to Supabase");
     } catch (error) {
       console.error("Error logging staking event:", error);
     }
   };
-
+  
+  const incrementUserPoints = async () => {
+    try {
+      // Check if the user exists
+      const { data: existingUser, error: selectError } = await supabase
+        .from("usersweb")
+        .select("points")
+        .eq("wallet", connectedWallet)
+        .single();
+  
+      if (selectError && selectError.code !== 'PGRST116') {
+        // If there's an error other than "Row not found", throw it
+        throw selectError;
+      }
+  
+      if (existingUser) {
+        // User exists, increment points
+        const newPoints = existingUser.points + 1;
+        const { error: updateError } = await supabase
+          .from("usersweb")
+          .update({ points: newPoints })
+          .eq("wallet", connectedWallet);
+  
+        if (updateError) {
+          throw updateError;
+        }
+      } else {
+        // User does not exist, insert new row with points = 1
+        const { error: insertError } = await supabase
+          .from("usersweb")
+          .insert({
+            wallet: connectedWallet,
+            created: new Date().toISOString(),
+            points: 1,
+          });
+  
+        if (insertError) {
+          throw insertError;
+        }
+      }
+  
+      console.log("User points updated successfully");
+    } catch (error) {
+      console.error("Error updating user points:", error);
+    }
+  };
+  
   const handleStake = async () => {
     if (!amount) {
       setErrorMessage("Please enter an amount to stake.");
       return;
     }
-
+  
     if (!ethers.isAddress(StakingChainAddress)) {
       setErrorMessage("Invalid staking pool address.");
       return;
     }
-
+  
     try {
       setLoadingStake(true);
       const provider = new ethers.BrowserProvider(window.ethereum);
@@ -296,60 +341,32 @@ const StakingPage = () => {
         SimpleStakingJson.abi,
         signer
       );
-
+  
       // Stake the amount
       const tx = await stakingPoolContract.stake({
         value: ethers.parseUnits(amount, 18),
         gasLimit: 500000, // Adjust the gas limit as needed
       });
-
+  
       await tx.wait();
-
-      const uppercaseWallet = connectedWallet.toUpperCase();
-
-      // Upsert and increment points
-      try {
-        const { data: upsertData, error: upsertError } = await supabase
-          .from("userPoints")
-          .upsert(
-            {
-              wallet: uppercaseWallet,
-              points: 0, // Initialize with 0 points if the wallet doesn't exist
-            },
-            { onConflict: "wallet" }
-          );
-
-        if (!upsertError) {
-          // If upsert was successful, now increment the points
-          const { data: incrementData, error: incrementError } = await supabase
-            .from("userPoints")
-            .update({ points: supabase.increment(1) }) // Increment points by 1
-            .eq("wallet", uppercaseWallet);
-
-          if (incrementError) {
-            throw incrementError;
-          }
-        } else {
-          throw upsertError;
-        }
-      } catch (error) {
-        console.error("Error updating points:", error);
-      }
-
+  
+      // Increment user points
+      await incrementUserPoints();
+  
       // Log the staking event
       await logStakingEvent("stake", amount);
-
+  
       // Adding a small delay to ensure contract state updates
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Adjust delay as needed
-
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+  
       // Fetch updated staking and pending unstakes data
       await updateStakingState();
-
+  
       setStakedMessage(`You staked ${amount} ETH in the Vortex Pool.`);
       fetchStatistics();
       calculateAPY();
       setErrorMessage("");
-
+  
       setLoadingStake(false);
     } catch (error) {
       console.error("Error staking ETH:", error);
@@ -357,6 +374,7 @@ const StakingPage = () => {
       setLoadingStake(false);
     }
   };
+  
 
   // Separate function to update staking state
   const updateStakingState = async () => {
@@ -413,10 +431,10 @@ const StakingPage = () => {
       setErrorMessage("Please enter an amount to unstake.");
       return;
     }
-
+  
     const unstakeAmount = ethers.parseUnits(amount, 18);
     const availableForUnstake = stakedAmount - pendingUnstake;
-
+  
     if (unstakeAmount > availableForUnstake) {
       setErrorMessage(
         `You can only unstake up to ${ethers.formatEther(
@@ -425,17 +443,17 @@ const StakingPage = () => {
       );
       return;
     }
-
+  
     if (!ethers.isAddress(StakingChainAddress)) {
       setErrorMessage("Invalid staking pool address.");
       return;
     }
-
+  
     if (!window.ethereum) {
       setErrorMessage("Ethereum provider not found.");
       return;
     }
-
+  
     try {
       setLoadingUnstake(true);
       const provider = new ethers.BrowserProvider(window.ethereum);
@@ -445,47 +463,30 @@ const StakingPage = () => {
         SimpleStakingJson.abi,
         signer
       );
-
+  
       const txResponse = await stakingPoolContract.requestUnstake(
         unstakeAmount,
         {
           gasLimit: 500000, // Set the gas limit to 500,000
         }
       );
-
+  
       await txResponse.wait();
-
-      await logStakingEvent("unstake", amount);
-
-      const updatedStakedAmount = await stakingPoolContract.getStake(connectedWallet);
-      const updatedPendingUnstakes = await stakingPoolContract.pendingUnstakes(connectedWallet);
-
-      const updatedStakedAmountBN = BigInt(updatedStakedAmount.toString());
-      const updatedPendingUnstakesBN = BigInt(
-        updatedPendingUnstakes.toString()
-      );
-
-      setStakedAmount(updatedStakedAmountBN);
-      setPendingUnstake(updatedPendingUnstakesBN);
-
-      const availableForUnstake =
-        updatedStakedAmountBN - updatedPendingUnstakesBN;
-
-      setIsStaked(updatedStakedAmountBN > 0n);
-      setCanUnstake(availableForUnstake > 0n);
+  
+      // Log the unstake event
+      await logStakingEvent("unstake", ethers.formatUnits(unstakeAmount, 18));
+  
+      // Fetch updated staking state
+      await updateStakingState();
       fetchStatistics();
       calculateAPY();
-
+  
       setLoadingUnstake(false);
       setErrorMessage("");
-
+  
       if (txResponse.events?.find((e) => e.event === "UnstakeProcessed")) {
         setStakedMessage(
-          `You have successfully unstaked ${ethers.formatEther(amount)} ETH.`
-        );
-      } else if (txResponse.events?.find((e) => e.event === "UnstakeQueued")) {
-        setStakedMessage(
-          "Your unstake request is queued. It will be processed as funds become available."
+          `You have successfully unstaked ${amount} ETH.`
         );
       } else {
         setStakedMessage(
@@ -498,18 +499,19 @@ const StakingPage = () => {
       setLoadingUnstake(false);
     }
   };
+  
 
   const handleClaimRewards = async () => {
     if (!isConnected) {
       setErrorMessage("Please connect your wallet.");
       return;
     }
-
+  
     if (!window.ethereum) {
       setErrorMessage("Ethereum provider not found.");
       return;
     }
-
+  
     try {
       setLoadingClaim(true);
       const provider = new ethers.BrowserProvider(window.ethereum);
@@ -519,10 +521,13 @@ const StakingPage = () => {
         SimpleStakingJson.abi,
         signer
       );
-
+  
       const tx = await stakingPoolContract.claimRewards({ gasLimit: 500000 });
       await tx.wait();
-
+  
+      // Log the claim event
+      await logStakingEvent("claim", 0); // Assuming amount is 0 for claim action
+  
       setLoadingClaim(false);
       setStakedMessage("Your rewards have been claimed!");
       setErrorMessage("");
@@ -534,6 +539,7 @@ const StakingPage = () => {
       setLoadingClaim(false);
     }
   };
+  
 
   return (
     <div style={{ position: "relative", textAlign: "center" }}>
@@ -606,7 +612,6 @@ const StakingPage = () => {
             </div>
           </>
         ) : (
-          // Removed the "Connect Wallet" button here
           <p>Please connect your wallet using the button in the header.</p>
         )}
       </div>

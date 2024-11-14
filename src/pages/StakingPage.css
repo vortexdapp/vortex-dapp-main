@@ -124,3 +124,20 @@ h5 {
   text-align: center;
   color: white;
 }
+
+.stake-button,
+.unstake-button {
+  margin-top:10px;
+  font-size: 16px; /* Adjust font size if needed */
+  border-radius: 6px; /* Keep existing border radius */
+  background-color: #6c42a4; /* Example background color */
+  color: white; /* Text color */
+  cursor: pointer; /* Pointer cursor on hover */
+  transition: background-color 0.2s ease; /* Transition effect */
+}
+
+.stake-button:hover,
+.unstake-button:hover {
+  background-color: #ffffff; /* Change background color on hover */
+  color: #000000; /* Change text color on hover */
+}

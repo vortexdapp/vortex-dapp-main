@@ -58,7 +58,6 @@ html, body {
     height: 100%;
     margin: 0;
     padding: 0;
-    background-image: url('https://i.imgur.com/EeSiiMV.jpeg'); /* Background image */
     background-size: cover;
     background-attachment: fixed;
 }
@@ -155,31 +154,6 @@ input[type="number"]:focus {
     margin-bottom: 13px;
 }
 
-button.deploy-button {
-    padding: 7px 20px;
-    margin-top: 20px;
-    margin-bottom: 20px;
-    font-size: 16px;
-    border-radius: 30px;
-    /* Gradient background */
-    background: linear-gradient(38deg, #ef10ffe1, /* purple */ #00CDFFF6); /* Replace #FF5733 with your desired color */
-    border: 1px solid rgba(255, 255, 255, 0.519);
-    color: #ffffff;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    font-style: normal;
-    font-family: "Space Grotesk", sans-serif;
-    font-weight: 600;
-    margin-bottom: 20px; /* Add space below the button */
-}
-
-button.deploy-button:hover {
-    background-color: #ffffff;
-    font-style: normal;
-    font-size: 16px;
-    font-family: "Space Grotesk", sans-serif;
-    font-weight: 600;
-}
 
 .contract-address {
     margin-top: 20px;
@@ -202,29 +176,6 @@ h3 {
     font-size: 16px;
 }
 
-.start-button {
-    padding: 7px 20px;
-    margin-top: 10px;
-    font-size: 16px;
-    border-radius: 30px;
-    /* Gradient background */
-    background: linear-gradient(38deg, #ef10ffe1, /* purple */ #00CDFFF6); /* Replace #FF5733 with your desired color */
-    border: 1px solid rgba(255, 255, 255, 0.519);
-    color: #ffffff;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    font-style: normal;
-    font-weight: 400;
-    text-decoration: none;
-    font-family: 'Comfortaa', sans-serif; /* Updated font-family */
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    margin-bottom: 20px; /* Add space below the button */
-}
-
-.start-button:hover {
-    background-color: #0056b3;
-}
 
 .custom-file-input {
     position: relative;
@@ -376,55 +327,6 @@ h3 {
   height: 100vh; /* Adjust as needed */
 }
 
-.filter-button,
-.sort-button {
-    padding: 10px 20px; /* Adjust padding for button size */
-    font-size: 12px; /* Font size */
-    border-radius: 30px; /* Rounded corners */
-    background: linear-gradient(38deg, #ef10ffe1, #00CDFFF6); /* Gradient background */
-    border: 1px solid rgba(255, 255, 255, 0.519); /* Border style */
-    color: #ffffff; /* Text color */
-    cursor: pointer; /* Pointer cursor on hover */
-    transition: background-color 0.3s ease; /* Smooth transition */
-    margin: 0 5px; /* Margin between buttons */
-}
-
-.filter-button:hover,
-.sort-button:hover {
-    background-color: #ffffff; /* Change background on hover */
-    color: #000000; /* Change text color on hover */
-}
-
-.filter-button:disabled,
-.sort-button:disabled {
-    background-color: #ccc; /* Disabled background color */
-    color: #666; /* Disabled text color */
-    cursor: not-allowed; /* Not allowed cursor */
-}
-
-.copy-button {
-   margin-top:10px;
-    padding: 6px 12px; /* Adjust padding for a more comfortable size */
-    font-size: 11px; /* Slightly larger font size for better readability */
-    border-radius: 20px; /* More rounded corners for a modern look */
-    background: linear-gradient(38deg, #ef10ffe1, #00CDFFF6); /* Gradient background */
-    border: none; /* Remove border for a cleaner look */
-    color: #ffffff; /* Text color */
-    cursor: pointer; /* Pointer cursor on hover */
-    transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth transition for background and transform */
-    margin-left: px; /* Space between address and button */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
-}
-
-.copy-button:hover {
-    background-color: #ffffff; /* Change background on hover */
-    color: #000000; /* Change text color on hover */
-    transform: scale(1.05); /* Slightly enlarge the button on hover */
-}
-
-.copy-button:active {
-    transform: scale(0.95); /* Slightly shrink the button when clicked */
-}
 
 .chain-list {
     font-size: 12px; /* Set font size to 11px */

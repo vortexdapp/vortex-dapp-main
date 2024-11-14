@@ -1,7 +1,8 @@
+// src/components/TokensListTable.js
+
 import React, { useEffect, useState } from "react";
-import { collection, getDocs } from "firebase/firestore";
-import { firestore } from "../components/firebaseConfig.js";
-import { FaTwitter, FaXTwitter } from "react-icons/fa6";
+import { supabase } from "../supabaseClient"; // Import the Supabase client
+import { FaTwitter } from "react-icons/fa"; // Adjusted the import for Twitter icon
 import axios from "axios";
 import "./TokenListTable.css";
 
@@ -19,37 +20,52 @@ function TokensListTable({ limit }) {
   useEffect(() => {
     const fetchTokens = async () => {
       try {
-        const querySnapshot = await getDocs(collection(firestore, "tokens"));
-        const tokensArray = querySnapshot.docs.map((doc) => {
-          const data = doc.data();
+        // Fetch tokens from Supabase
+        const { data: tokensArray, error } = await supabase
+          .from("tokens")
+          .select("*");
+
+        if (error) {
+          throw error;
+        }
+
+        // Map tokens and parse timestamp and supply
+        const tokensWithParsedData = tokensArray.map((token) => {
           return {
-            id: doc.id,
-            ...data,
-            timestamp: data.timestamp ? data.timestamp.toDate() : null,
+            ...token,
+            timestamp: token.timestamp ? new Date(token.timestamp) : null,
+            supply: token.supply ? Number(token.supply) : 0,
           };
         });
 
         // Fetch price, market cap, and volume data from DEX Screener API
         const updatedTokensArray = await Promise.all(
-          tokensArray.map(async (token) => {
+          tokensWithParsedData.map(async (token) => {
             try {
               const response = await axios.get(
                 `https://api.dexscreener.com/latest/dex/tokens/${token.address}`
               );
 
-              const pairData = response.data.pairs
-                ? response.data.pairs[0]
+              const pairData =
+                response.data.pairs && response.data.pairs.length > 0
+                  ? response.data.pairs[0]
+                  : null;
+
+              const price = pairData?.priceUsd
+                ? parseFloat(pairData.priceUsd)
                 : null;
-              const price = pairData?.priceUsd || "N/A";
+              const volume24h = pairData?.volume?.h24
+                ? parseFloat(pairData.volume.h24)
+                : null;
               const marketCap =
-                price !== "N/A" && token.supply
-                  ? (price * token.supply).toFixed(2)
-                  : "N/A";
+                price !== null && token.supply
+                  ? price * token.supply
+                  : null;
 
               return {
                 ...token,
                 price,
-                volume24h: pairData?.volume.h24 || "N/A",
+                volume24h,
                 marketCap,
               };
             } catch (error) {
@@ -59,15 +75,15 @@ function TokensListTable({ limit }) {
               );
               return {
                 ...token,
-                price: "N/A",
-                volume24h: "N/A",
-                marketCap: "N/A",
+                price: null,
+                volume24h: null,
+                marketCap: null,
               };
             }
           })
         );
 
-        // Sorting tokens by date (newest to oldest) by default
+        // Sort tokens by date (newest to oldest) by default
         const sortedTokens = updatedTokensArray.sort(
           (a, b) => b.timestamp - a.timestamp
         );
@@ -92,12 +108,12 @@ function TokensListTable({ limit }) {
             : a.timestamp - b.timestamp;
         case "marketCap":
           return order === "desc"
-            ? b.marketCap - a.marketCap
-            : a.marketCap - b.marketCap;
+            ? (b.marketCap || 0) - (a.marketCap || 0)
+            : (a.marketCap || 0) - (b.marketCap || 0);
         case "volume":
           return order === "desc"
-            ? b.volume24h - a.volume24h
-            : a.volume24h - b.volume24h;
+            ? (b.volume24h || 0) - (a.volume24h || 0)
+            : (a.volume24h || 0) - (b.volume24h || 0);
         default:
           return 0;
       }
@@ -122,8 +138,7 @@ function TokensListTable({ limit }) {
     setCurrentPage((prevPage) => Math.max(prevPage - 1, 1));
   };
 
-  const copyToClipboard = () => {
-    const address = document.getElementById("contractAddress").innerText;
+  const copyToClipboard = (address) => {
     navigator.clipboard
       .writeText(address)
       .then(() => {
@@ -145,7 +160,9 @@ function TokensListTable({ limit }) {
   const filteredTokens =
     selectedChain === "all"
       ? tokens
-      : tokens.filter((token) => token.chain === selectedChain);
+      : tokens.filter(
+          (token) => token.chain && token.chain.toLowerCase() === selectedChain.toLowerCase()
+        );
 
   const displayedTokens = filteredTokens.slice(
     (currentPage - 1) * tokensPerPage,
@@ -162,7 +179,10 @@ function TokensListTable({ limit }) {
         <button
           className="sort-button"
           onClick={() =>
-            sortTokens("date", sortOrder === "newest" ? "oldest" : "newest")
+            sortTokens(
+              "date",
+              sortOrder === "newest" ? "oldest" : "newest"
+            )
           }
         >
           Sort by {sortOrder === "newest" ? "Oldest" : "Newest"} ↓
@@ -202,7 +222,7 @@ function TokensListTable({ limit }) {
               </button>
               <button
                 className="chain-list"
-                onClick={() => filterByChain("Optimism")}
+                onClick={() => filterByChain("OP")}
               >
                 OP
               </button>
@@ -238,7 +258,7 @@ function TokensListTable({ limit }) {
         </thead>
         <tbody>
           {displayedTokens.map((token) => (
-            <tr key={token.id}>
+            <tr key={token.address}>
               <td>
                 {token.imageUrl && (
                   <img
@@ -252,27 +272,32 @@ function TokensListTable({ limit }) {
                 {token.name} ({token.symbol})
               </td>
               <td className="address-cell">
-                <span id="contractAddress">{token.address}</span>{" "}
+                <span>{token.address}</span>{" "}
                 <button
                   className="copy-button"
                   onClick={() => copyToClipboard(token.address)}
                 >
                   Copy
                 </button>
-                {/* Display the contract address */}
               </td>
-              <td>{token.chain}</td>
+              <td>{token.chain || "N/A"}</td>
               <td>
-                {token.timestamp ? token.timestamp.toLocaleDateString() : "N/A"}
-              </td>
-              <td>
-                {token.marketCap !== "N/A"
-                  ? `$${token.marketCap.toLocaleString()}`
+                {token.timestamp
+                  ? token.timestamp.toLocaleDateString()
                   : "N/A"}
               </td>
               <td>
-                {token.volume24h !== "N/A"
-                  ? `$${token.volume24h.toLocaleString()}`
+                {token.marketCap !== null
+                  ? `$${token.marketCap.toLocaleString(undefined, {
+                      maximumFractionDigits: 2,
+                    })}`
+                  : "N/A"}
+              </td>
+              <td>
+                {token.volume24h !== null
+                  ? `$${token.volume24h.toLocaleString(undefined, {
+                      maximumFractionDigits: 2,
+                    })}`
                   : "N/A"}
               </td>
               <td>
@@ -282,7 +307,7 @@ function TokensListTable({ limit }) {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <FaXTwitter className="icon2" />
+                    <FaTwitter className="icon2" />
                   </a>
                 )}
               </td>
