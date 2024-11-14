@@ -1,0 +1,110 @@
+body {
+    font-family: 'Luciole', sans-serif; /* Use Luciole for body text */
+    margin: 0;
+    padding: 0;
+}
+
+.center-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Align items to the start */
+    height: auto; /* Allow height to adjust based on content */
+    padding: 20px;
+    position: relative; /* Position relative to stack content above overlay */
+    z-index: 2; /* Ensure content is above the overlay */
+}
+
+.factory-container {
+    background: rgba(255, 255, 255, 0.1); /* Slightly transparent background */
+    border-radius: 12px; /* Increased border radius for more rounded corners */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); /* Soft shadow for depth */
+    padding: 10px 1px 10px 1px;
+    width: 100%;
+    max-width: 500px;
+    text-align: center;
+    transition: transform 0.3s;
+    margin-top: 10px; /* Add margin to separate from subtitle */
+}
+
+.factory-container:hover {
+    transform: scale(1.02);
+}
+
+.titlefactory {
+    font-family: 'Technoma', sans-serif; /* Use Technoma for the title */
+    font-size: 2.5rem;
+    color: #fff; /* White color for the title */
+    margin-bottom: 10px; /* Space between title and subtitle */
+}
+
+.subtitlefactory {
+    font-family: 'Luciole', sans-serif; /* Use Luciole for the subtitle */
+    font-weight: bold; /* Bold subtitle */
+    font-size: 1.2rem;
+    color: #fff; /* White color for subtitle */
+    margin-bottom: 20px; /* Space below subtitle */
+}
+
+.input {
+    width: 100%;
+    padding: 8px; /* Reduced padding for a more compact look */
+    margin: 10px 0; /* Keep vertical margin */
+    border-radius: 6px; /* 6px border radius */
+    background: rgba(255, 255, 255, 0.2); /* Slightly transparent background */
+    color: #fff; /* White text color */
+    border: none; /* Remove border color */
+    transition: background-color 0.3s;
+}
+
+.input::placeholder {
+    color: #fff; /* Set placeholder text color to white */
+    opacity: 0.7; /* Optional: Adjust opacity for better visibility */
+}
+
+.input:focus {
+    background: rgba(255, 255, 255, 0.3); /* Change background on focus */
+    outline: none;
+}
+
+.custom-file-input {
+    margin: 20px 0;
+    padding: 10px 20px; /* Increased padding for the file input */
+    background: rgba(255, 255, 255, 0.2); /* Slightly transparent background */
+    border-radius: 6px; /* Rounded corners */
+    color: #fff; /* White for file input label */
+    text-align: left; /* Align text to the left */
+}
+
+.custom-file-input span {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #fff; /* White for file input label */
+}
+
+
+.error-message {
+    color: #ff4d4d;
+    font-weight: bold;
+}
+
+.token_address_message,
+.pool_address_message {
+    background: rgba(255, 255, 255, 0.2); /* Slightly transparent background */
+    border-radius: 6px; /* 6px border radius */
+    padding: 10px;
+    margin: 10px 0;
+    color: #fff; /* White text color */
+}
+
+.token_address_message a,
+.pool_address_message a {
+    color: #fff; /* White for links */
+    text-decoration: underline;
+}
+
+.token_address_message a:hover,
+.pool_address_message a:hover {
+    text-decoration: none;
+    color: #fff; /* Change color on hover */
+}

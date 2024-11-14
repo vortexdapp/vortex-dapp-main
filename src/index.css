@@ -4,6 +4,12 @@ body {
   margin: 0;
   font-family: 'Poppins', sans-serif;
   font-optical-sizing: auto;
+  position: relative;
+}
+
+body {
+    background: linear-gradient(135deg, #4b0082, #000000, #0056b3);
+    color: #fff;
 }
 
 code {

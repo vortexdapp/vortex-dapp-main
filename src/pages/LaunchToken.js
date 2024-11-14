@@ -294,19 +294,18 @@ const launchPrice = ethers.parseUnits("0.00002", 18);
   return (
     <div>
       <Header connectWallet={connect} isConnected={isConnected} chainId={chainId} />
-      <div>
-        <h1 className="titlefactory">Launch your new ERC20 token</h1>
-        <h3 className="subtitlefactory">
-          Vortex provides liquidity lending to launch tokens, directly on Uniswap.
-        </h3>
-      </div>
+      <h1 className="titlefactory">Launch your new ERC20 token</h1>
+      <h3 className="subtitlefactory">
+        Vortex provides liquidity lending to launch tokens, directly on Uniswap.
+      </h3>
+
       <div className="center-container">
         <div className="factory-container">
-          <h2 className="createerc">Create Your New Token</h2>
+        
           <form onSubmit={deployTokenAndAddLiquidity} className="token-form">
             {/* Image Upload */}
             <div className="custom-file-input">
-              <span>Add image here</span>
+              <span>Token Logo</span>
               <input
                 type="file"
                 id="tokenImage"
@@ -371,18 +370,18 @@ const launchPrice = ethers.parseUnits("0.00002", 18);
               step="0.0001"
               value={amountToBuy}
               onChange={(e) => setAmountToBuy(e.target.value)}
-              placeholder="Amount of ETH to Buy Tokens"
+              placeholder="Buy Tokens (ETH)"
               className="input"
               required
               min={launchPriced}
-              max={liquidityAmountt*(0.05)+launchPriced}
+              max={liquidityAmountt * (0.05) + launchPriced}
             />
             <br />
 
             {/* Submit Button */}
             {!deployedContractAddress && (
               <button type="submit" className="deploy-button" disabled={isLoading}>
-                {isLoading ? "Processing..." : "Create and Launch Token"}
+                {isLoading ? "Processing..." : "    Launch Token"}
               </button>
             )}
           </form>
