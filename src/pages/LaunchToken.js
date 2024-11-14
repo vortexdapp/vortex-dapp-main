@@ -36,10 +36,9 @@ const CHAIN_NAMES = {
 const IMGUR_API_URL = "https://api.imgur.com/3/image";
 const CLIENT_ID = "7bd162baabe49a2";
 
-// Proceed to add liquidity and buy tokens
-      const launchPriced = 0.0001; // Example value for launch price
-const liquidityAmountt = 0.0000012; // Example value for liquidity amount
-
+// Example values for launch price and liquidity amount
+const launchPriced = 0.0001;
+const liquidityAmountt = 0.0000012;
 
 const uploadImageToImgur = async (file) => {
   const formData = new FormData();
@@ -67,7 +66,6 @@ const uploadImageToImgur = async (file) => {
     return null;
   }
 };
-
 
 function LaunchToken() {
   const [tokenName, setTokenName] = useState("");
@@ -105,7 +103,7 @@ function LaunchToken() {
 
   const chainName = CHAIN_NAMES[chainId] || `Unknown Chain (${chainId})`;
 
-  // Function to deploy token and add liquidity
+  // Function to deploy token and add liquidity in one transaction
   async function deployTokenAndAddLiquidity(e) {
     e.preventDefault();
 
@@ -124,8 +122,6 @@ function LaunchToken() {
       setError("Please enter the amount of ETH to buy tokens.");
       return;
     }
-
-    
 
     setIsLoading(true);
     setError(""); // Clear any existing error at the start
@@ -150,26 +146,43 @@ function LaunchToken() {
         signer
       );
 
-      // Deploy the token
-      const txResponse = await factoryContract.deployToken(
+      // Convert amounts to BigInt
+      const swapAmount = ethers.parseUnits(amountToBuy.toString(), 18); // amountIn
+      const liquidityAmount = ethers.parseUnits("0.0000012", 18);
+      const launchPrice = ethers.parseUnits("0.00002", 18);
+
+      const totalValue = swapAmount + liquidityAmount + launchPrice;
+
+      // Call addLiquidityLockSwap in one transaction
+      const addLiquidityTx = await factoryContract.addLiquidityLockSwap(
+        swapAmount,
+        false, // Adjust as needed for liquidity lock
         tokenName,
         tokenSymbol,
         tokenSupply,
+        {
+          value: totalValue,
+          gasLimit: 9000000,
+        }
       );
-      console.log("Deploy Token Transaction Sent:", txResponse.hash);
-      setTxHash(txResponse.hash);
-      const receipt = await txResponse.wait();
-      console.log("Deploy Token Transaction Confirmed:", receipt);
 
-      // Parse the TokenDeployed event to get the token address
+      console.log("Add Liquidity Transaction Sent:", addLiquidityTx.hash);
+      setTxHash(addLiquidityTx.hash);
+      const addLiquidityReceipt = await addLiquidityTx.wait();
+      console.log("Add Liquidity Transaction Confirmed:", addLiquidityReceipt);
+
+      // Parse events to get tokenAddress and poolAddress
       let tokenAddress = null;
-      for (const log of receipt.logs) {
+      let createdPoolAddress = null;
+      for (const log of addLiquidityReceipt.logs) {
         try {
           const parsedLog = factoryContract.interface.parseLog(log);
           if (parsedLog.name === "TokenDeployed") {
             tokenAddress = parsedLog.args.tokenAddress;
             console.log("Token Deployed at:", tokenAddress);
-            break;
+          } else if (parsedLog.name === "PoolCreated") {
+            createdPoolAddress = parsedLog.args.poolAddress;
+            console.log("Pool Created at:", createdPoolAddress);
           }
         } catch (error) {
           // Ignore logs that can't be parsed
@@ -223,42 +236,6 @@ function LaunchToken() {
           throw updateError;
         }
       }
-// Convert amountToBuy to BigNumber
-const swapAmount = ethers.parseUnits(amountToBuy.toString(), 18);
-const liquidityAmount = ethers.parseUnits("0.0000012", 18);
-const launchPrice = ethers.parseUnits("0.00002", 18);
-
-      const totalValue = swapAmount+liquidityAmount+launchPrice;
-
-      const addLiquidityTx = await factoryContract.addLiquidityLockSwap(
-        tokenAddress,
-        swapAmount,
-        false, // Adjust as needed for liquidity lock
-        {
-          value: totalValue,
-          gasLimit: 9000000,
-        }
-      );
-
-      console.log("Add Liquidity Transaction Sent:", addLiquidityTx.hash);
-      setTxHash(addLiquidityTx.hash);
-      const addLiquidityReceipt = await addLiquidityTx.wait();
-      console.log("Add Liquidity Transaction Confirmed:", addLiquidityReceipt);
-
-      // Parse the PoolCreated event to get the pool address
-      let createdPoolAddress = null;
-      for (const log of addLiquidityReceipt.logs) {
-        try {
-          const parsedLog = factoryContract.interface.parseLog(log);
-          if (parsedLog.name === "PoolCreated") {
-            createdPoolAddress = parsedLog.args.poolAddress;
-            console.log("Pool Created at:", createdPoolAddress);
-            break;
-          }
-        } catch (error) {
-          // Ignore logs that can't be parsed
-        }
-      }
 
       if (!createdPoolAddress) {
         throw new Error("Pool address not found in transaction logs.");
@@ -294,18 +271,19 @@ const launchPrice = ethers.parseUnits("0.00002", 18);
   return (
     <div>
       <Header connectWallet={connect} isConnected={isConnected} chainId={chainId} />
-      <h1 className="titlefactory">Launch your new ERC20 token</h1>
-      <h3 className="subtitlefactory">
-        Vortex provides liquidity lending to launch tokens, directly on Uniswap.
-      </h3>
-
+      <div>
+        <h1 className="titlefactory">Launch your new ERC20 token</h1>
+        <h3 className="subtitlefactory">
+          Vortex provides liquidity lending to launch tokens, directly on Uniswap.
+        </h3>
+      </div>
       <div className="center-container">
         <div className="factory-container">
-        
+          <h2 className="createerc">Create Your New Token</h2>
           <form onSubmit={deployTokenAndAddLiquidity} className="token-form">
             {/* Image Upload */}
             <div className="custom-file-input">
-              <span>Token Logo</span>
+              <span>Add image here</span>
               <input
                 type="file"
                 id="tokenImage"
@@ -374,14 +352,14 @@ const launchPrice = ethers.parseUnits("0.00002", 18);
               className="input"
               required
               min={launchPriced}
-              max={liquidityAmountt * (0.05) + launchPriced}
+              max={liquidityAmountt * 0.05 + launchPriced}
             />
             <br />
 
             {/* Submit Button */}
             {!deployedContractAddress && (
               <button type="submit" className="deploy-button" disabled={isLoading}>
-                {isLoading ? "Processing..." : "    Launch Token"}
+                {isLoading ? "Processing..." : "Launch Token"}
               </button>
             )}
           </form>
