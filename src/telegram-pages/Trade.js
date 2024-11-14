@@ -1,11 +1,10 @@
+// src/telegram-pages/Trade.js
+
 import React, { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import { useWallet } from "../WalletContext";
 import { supabase } from "../supabaseClient"; // Import Supabase client
-import "./Launch.css";
 import "./Trade.css";
-import Header from "../telegram-components/Header";
-import Footer from "../telegram-components/Footer";
 import WalletRestorer from "../telegram-components/WalletRestorer";
 
 const networkOptions = [
@@ -31,12 +30,8 @@ const networkOptions = [
 ];
 
 const Trade = () => {
-  const [coinBalance, setCoinBalance] = useState(1000);
-  const [gemBalance, setGemBalance] = useState(250);
-  const [level, setLevel] = useState(1);
-  const { wallet, setExistingWallet } = useWallet();
+  const { wallet } = useWallet();
   const [provider, setProvider] = useState(null);
-  const [signer, setSigner] = useState(null);
   const [selectedNetwork, setSelectedNetwork] = useState(networkOptions[0]);
   const [tokenList, setTokenList] = useState([]);
   const username = localStorage.getItem("username");
@@ -50,8 +45,6 @@ const Trade = () => {
       if (error) {
         console.error("Error fetching tokens:", error);
       } else {
-        console.log("Fetched tokens data:", data); // Log data fetched
-        console.log("Fetched tokens error:", error); // Log if any error occurs
         setTokenList(data);
       }
     };
@@ -67,17 +60,16 @@ const Trade = () => {
         const privateKey = wallet.privateKey.startsWith("0x")
           ? wallet.privateKey
           : `0x${wallet.privateKey}`;
-        const userWallet = new ethers.Wallet(privateKey, networkProvider);
+        new ethers.Wallet(privateKey, networkProvider);
         setProvider(networkProvider);
-        setSigner(userWallet);
       } catch (error) {
-        console.error("Failed to create signer with private key:", error);
+        console.error("Failed to create provider with private key:", error);
       }
     }
   }, [wallet, selectedNetwork]);
 
   const handleTradeClick = (token) => {
-    window.open(`/token/${token.symbol}`, "_blank");
+    window.open(`/token/${token.address}`, "_blank"); // Redirecting to /token/<tokenAddress>
   };
 
   return (
@@ -95,8 +87,7 @@ const Trade = () => {
               <p>Symbol: {token.symbol}</p>
               <p>
                 Market Cap: {token.supply ? `${token.supply * 0.1} USD` : "N/A"}
-              </p>{" "}
-              {/* Example assuming a static price */}
+              </p>
               <button
                 className="trade-button"
                 onClick={() => handleTradeClick(token)}

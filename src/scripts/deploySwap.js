@@ -11,7 +11,7 @@ async function main() {
 
   console.log("Deploying contracts with the account:", deployer.address);
 
-  const ContractFactory = await ethers.getContractFactory("Swap");
+  const ContractFactory = await ethers.getContractFactory("VortexSwapper");
 
   const contract = await ContractFactory.deploy(
     positionManager_address,
@@ -22,17 +22,6 @@ async function main() {
   );
   const SwapperAddress = contract.target;
   console.log("Swapper address:", contract.target);
-
-  /* console.log("Distributor Contract deployed to:", contract.target);
-  try {
-    await run("verify:verify", {
-      address: contract.target,
-      constructorArguments: [],
-    });
-    console.log("Contract verified on Etherscan");
-  } catch (error) {
-    console.error("Verification failed:", error);
-  } */
 }
 
 main()

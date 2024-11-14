@@ -43,8 +43,8 @@ async function main() {
 
   // Replace this with the address of the deployed factory contract
 
-  const lockerAddress = "0x85388e4c51b835737128Ca723d3d6cC32128F344";
-  const factoryAddress = "0xd433dC3B5698039d9506EcBc366dEb8D118F2094";
+  const lockerAddress = "0x0961C79a1fEa51aD3997fe3e3c585251007a49ce";
+  const factoryAddress = "0x2CEcf09101925b4F2B555a80F0bE5d82fEE2B5ba";
   // Connect to the factory contract using its ABI and address
   const Factory = await ethers.getContractFactory("MyFactory");
   const factory = await Factory.attach(factoryAddress);
@@ -60,20 +60,22 @@ async function main() {
   const launchPrice = ethers.parseUnits("0.00002", 18);
 
   // Call the deployToken function of the factory contract
-  const tx = await factory.deployToken(tokenName, tokenSymbol, tokenSupply);
+  /* const tx = await factory.deployToken(tokenName, tokenSymbol, tokenSupply);
   await tx.wait();
-  console.log("Token deployed successfully!");
+  console.log("Token deployed successfully!"); 
 
   const tokenDeployedEvent = await getLatestEvent(factory, "TokenDeployed");
 
   const tokenAddress = tokenDeployedEvent.args[0];
-  console.log("Token Address: ", tokenAddress);
+  console.log("Token Address: ", tokenAddress);*/
 
   console.log("Adding initial liquidity, swapping and locking");
   const txtest = await factory.addLiquidityLockSwap(
-    tokenAddress,
     amountIn,
     false,
+    tokenName,
+    tokenSymbol,
+    tokenSupply,
     {
       value: amountIn + liquidityAmount + launchPrice,
       gasLimit: 9000000,

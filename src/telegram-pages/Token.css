@@ -4,6 +4,15 @@
   margin-top: 100px;
 }
 
+.main-container {
+  display: flex;
+  flex-direction: column;
+  max-width: 600px;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+}
+
 .swap-container {
   display: inline-block;
   padding: 20px;
@@ -13,7 +22,7 @@
   color: #fff;
   max-width: 400px;
   width: 100%;
-  margin-top: 150px;
+  margin-top: 15px;
 }
 
 .token-select {

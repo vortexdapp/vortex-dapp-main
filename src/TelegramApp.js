@@ -10,6 +10,7 @@ import CheckIn from "./telegram-pages/DailyCheckIn";
 import Token from "./telegram-pages/Token";
 import Wallet from "./telegram-pages/Wallet";
 import Wheel from "./telegram-pages/Wheel";
+import Swap from "./telegram-pages/Token"; // Import the Swap component
 import Header from "./telegram-components/Header";
 import Footer from "./telegram-components/Footer";
 import { WalletProvider } from "./WalletContext";
@@ -96,7 +97,7 @@ const TelegramApp = () => {
               }
             />
             <Route
-              path="/token"
+              path="/token/:tokenAddress"
               element={
                 <>
                   <Header
@@ -107,14 +108,7 @@ const TelegramApp = () => {
                     setGemBalance={setGemBalance}
                     setLevel={setLevel}
                   />
-                  <Token
-                    coinBalance={coinBalance}
-                    gemBalance={gemBalance}
-                    level={level}
-                    setCoinBalance={setCoinBalance}
-                    setGemBalance={setGemBalance}
-                    setLevel={setLevel}
-                  />
+                  <Swap />
                   <Footer />
                 </>
               }
@@ -206,8 +200,6 @@ const TelegramApp = () => {
                 </>
               }
             />
-
-            {/* Other routes remain the same */}
           </Routes>
         </div>
       </Router>

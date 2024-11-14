@@ -8,8 +8,10 @@ import "@uniswap/v3-core/contracts/interfaces/IUniswapV3Factory.sol";
 import "@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol";
 import "@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol";
 import "@uniswap/v3-periphery/contracts/interfaces/IQuoterV2.sol";
+import '@uniswap/v3-core/contracts/interfaces/callback/IUniswapV3SwapCallback.sol';
 
-contract Swap {
+
+contract VortexSwapper {
 uint256 public tokenCount = 0;
     uint256 public activeTokenCount = 0;
     uint256 public totalFees = 0;
@@ -34,10 +36,22 @@ constructor(address _positionManager, address _weth, address _uniswapFactory, ad
         
     }
 
+    // Fallback function to receive Ether
+    fallback() external payable {
+        
+    }
+
+    // Receive function to handle incoming Ether
+    receive() external payable {
+        
+    }
+
     // Function to approve another contract or address to manage a specific token
-    function approveToken(address token, address spender, uint256 amount) internal {
+    function approveToken(address token, address spender, uint256 amount) public {
     require(IERC20(token).approve(spender, amount), "Approval failed");
 }
+
+    
 
      // Function to find the optimal fee tier by checking available pools
     function getOptimalFee(address tokenIn, address tokenOut) public view returns (uint24) {
@@ -47,7 +61,7 @@ constructor(address _positionManager, address _weth, address _uniswapFactory, ad
                 return feeTiers[i]; // Return the first available pool with liquidity
             }
         }
-        revert("No pool available for the token pair with specified fee tiers.");
+        return 0;
     }
 
     function getEstimatedAmountOut(
@@ -58,6 +72,8 @@ constructor(address _positionManager, address _weth, address _uniswapFactory, ad
 
     uint24 optimalFee = getOptimalFee(tokenIn, tokenOut); // Get the optimal fee tier
 
+    require(optimalFee > 0, "No valid pool found for the token pair");
+
     // Call quoteExactInputSingle from QuoterV2
     IQuoterV2.QuoteExactInputSingleParams memory params = IQuoterV2.QuoteExactInputSingleParams({
         tokenIn: tokenIn,
@@ -67,23 +83,61 @@ constructor(address _positionManager, address _weth, address _uniswapFactory, ad
         sqrtPriceLimitX96: 0
     });
 
-    // Call the QuoterV2 to get the amountOut
-    (amountOut,,,) = quoter.quoteExactInputSingle(params);
+    try quoter.quoteExactInputSingle(params) returns (uint256 outAmount, uint160, uint32, uint256) {
+    amountOut = outAmount;
+} catch {
+    revert("Quoter call failed or no available liquidity for the pair");
+}
+
 
     return amountOut;
 }
 
 
-function swapWETHforTokens(uint256 amountIn, address tokenAddress) external payable returns (uint256 amountOut) {
-    //uint256 estimatedAmountOut = getEstimatedAmountOut(weth, tokenAddress, amountIn);
-    //uint256 amountOutMinimum = estimatedAmountOut * 95 / 100; // 5% slippage tolerance
-    //IERC20(weth).approve(address(swapRouter), amountIn);
-approveToken(weth, address(swapRouter), amountIn);
+function swapWETHforTokens(uint256 amountIn, address tokenAddress) public payable returns (uint256 amountOut) {
+
+     uint256 estimatedAmountOut = getEstimatedAmountOut(weth, tokenAddress, amountIn);
+    uint256 amountOutMinimum = estimatedAmountOut * 95 / 100; // 5% slippage tolerance
+    /*
+    uint24 optimalFee = getOptimalFee(weth, tokenAddress);
+    require(optimalFee > 0, "No valid pool found for the token pair"); */
+
+    IERC20(weth).approve(address(swapRouter), amountIn);
 
     //return executeSwap(weth, tokenAddress, amountIn, amountOutMinimum, msg.sender);
     ISwapRouter.ExactInputSingleParams memory params = ISwapRouter.ExactInputSingleParams({
             tokenIn: weth,
             tokenOut: tokenAddress,
+            fee: 10000,
+            recipient: msg.sender,
+            amountIn: amountIn,
+            amountOutMinimum: amountOutMinimum,
+            sqrtPriceLimitX96: 0
+        });
+
+        amountOut = swapRouter.exactInputSingle{value: amountIn}(params);
+
+        return amountOut;
+
+}
+
+
+function externalFunction(uint256 amountIn, address tokenAddress) public returns (uint256 ethReceived) {
+        ethReceived = swapTokensforWETH(amountIn, tokenAddress);
+    } 
+
+function swapTokensforWETH(uint256 amountIn, address tokenAddress) public returns (uint256 amountOut) {
+
+    require(amountIn > 0, "Amount must be greater than zero");
+
+    TransferHelper.safeTransferFrom(tokenAddress, msg.sender, address(this), amountIn);
+
+    require(IERC20(tokenAddress).approve(address(swapRouter), amountIn), "Approval failed");
+
+    //return executeSwap(weth, tokenAddress, amountIn, amountOutMinimum, msg.sender);
+    ISwapRouter.ExactInputSingleParams memory params = ISwapRouter.ExactInputSingleParams({
+            tokenIn: tokenAddress,
+            tokenOut: weth,
             fee: 10000,
             recipient: msg.sender,
             amountIn: amountIn,
@@ -98,43 +152,11 @@ approveToken(weth, address(swapRouter), amountIn);
 }
 
 
-    function swapTokensForWETH(uint256 amountIn, address tokenAddress) external returns (uint256) {
-    uint256 estimatedAmountOut = getEstimatedAmountOut(tokenAddress, weth, amountIn);
-    uint256 amountOutMinimum = estimatedAmountOut * 95 / 100; // 5% slippage tolerance
-    IERC20(tokenAddress).approve(address(swapRouter), amountIn);
-    return executeSwap(tokenAddress, weth, amountIn, amountOutMinimum, msg.sender);
-
-}
-
-
-// Function to execute swap
-    function executeSwap(
-        address tokenIn, 
-        address tokenOut, 
-        uint256 amountIn, 
-        uint256 amountOutMinimum, 
-        address recipient
-    ) internal returns (uint256 amountOut) {
-        ISwapRouter.ExactInputSingleParams memory params = ISwapRouter.ExactInputSingleParams({
-            tokenIn: tokenIn,
-            tokenOut: tokenOut,
-            fee: 10000,
-            recipient: recipient,
-            amountIn: amountIn,
-            amountOutMinimum: amountOutMinimum,
-            sqrtPriceLimitX96: 0
-        });
-
-        amountOut = swapRouter.exactInputSingle(params);
-        //emit TokensSwapped(amountOut);
-        return amountOut;
-    }
-
 
 
 }
 
-interface ISwapRouter {
+interface ISwapRouter is IUniswapV3SwapCallback {
     struct ExactInputSingleParams {
         address tokenIn;
         address tokenOut;

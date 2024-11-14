@@ -146,7 +146,7 @@ contract MyFactory {
 
 
     // Deploys a token with a given name, symbol and total supply
-    function deployToken( string calldata _name, string calldata _symbol, uint256 _supply) external returns (address) {
+    function deployToken( string calldata _name, string calldata _symbol, uint256 _supply) public returns (address) {
 
         // The token is minted to the factory contract
         MyToken token = new MyToken(_name, _symbol, _supply, address(this)); 
@@ -200,7 +200,7 @@ contract MyFactory {
     address tokenIn, 
     address tokenOut, 
     uint256 amountIn
-) public returns (uint256 amountOut) {
+) internal returns (uint256 amountOut) {
 
     // Call quoteExactInputSingle from QuoterV2
     IQuoterV2.QuoteExactInputSingleParams memory params = IQuoterV2.QuoteExactInputSingleParams({
@@ -265,9 +265,11 @@ function swapTokensForWETH(uint256 amountIn, address tokenAddress) internal retu
 
 
     // Function that adds the initial liquidity to each token      bool userLiquidity, uint256 userLiquidityAmount
-    function addLiquidityLockSwap(address tokenAddress, uint256 amountToBuy, bool userProvidedLiquidity) external payable returns (uint256 tokenId) {
+    function addLiquidityLockSwap(uint256 amountToBuy, bool userProvidedLiquidity, string calldata _name, string calldata _symbol, uint256 _supply) external payable returns (uint256 tokenId) {
 
     require(msg.value >= priceToLaunch, "Insufficient ETH sent. Required: 0.00015 ETH"); 
+    
+    address tokenAddress = deployToken(_name, _symbol, _supply);
     
     uint256 providedLiquidity = wethProvided;
 
@@ -397,7 +399,7 @@ function swapTokensForWETH(uint256 amountIn, address tokenAddress) internal retu
 
         payable(teamWallet).transfer(taxAmount);
 
-        uint256 amountOut = factoryHelper.swapETHforTokens(amountToSwap, tokenAddress);
+        uint256 amountOut = swapETHforTokens(amountToSwap, tokenAddress);
 
         fee = amountToBuy * 1 / 100;
     }
