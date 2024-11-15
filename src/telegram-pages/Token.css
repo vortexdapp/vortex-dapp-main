@@ -1,40 +1,143 @@
-.swap-page {
-  text-align: center;
-  padding: 20px;
-  margin-top: 100px;
-}
-
 .main-container {
   display: flex;
   flex-direction: column;
-  max-width: 600px;
-  width: 100%;
   align-items: center;
   justify-content: center;
+  padding: 20px;
+  min-height: 100vh;
+  font-family: "Arial", sans-serif;
 }
 
 .swap-container {
-  display: inline-block;
-  padding: 20px;
-  background-color: #333;
-  justify-content: center;
-  border-radius: 10px;
-  color: #fff;
+  background-color: #ffffff;
+  padding: 20px 25px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   max-width: 400px;
   width: 100%;
-  margin-top: 15px;
-}
-
-.token-select {
-  margin: 10px 0;
-}
-
-button {
   margin-top: 20px;
-  padding: 10px 20px;
-  background-color: #4caf50;
-  color: #fff;
+}
+
+.swap-container h2 {
+  font-size: 20px;
+  margin-bottom: 15px;
+  color: #333;
+  text-align: center;
+}
+
+.balance-display {
+  background-color: #f9f9fc;
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 15px;
+  text-align: center;
+  font-size: 14px;
+  color: #555;
+}
+
+.swap-input {
+  margin-bottom: 15px;
+}
+
+.swap-input label {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 14px;
+  color: #333;
+}
+
+.swap-input input {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.swap-input input:focus {
+  border-color: #007bff;
+}
+
+.button {
+  display: inline-block;
+  padding: 10px 15px;
+  margin-top: 10px;
+  font-size: 14px;
+  color: #ffffff;
+  background-color: #007bff;
   border: none;
-  border-radius: 5px;
+  border-radius: 6px;
   cursor: pointer;
+  text-align: center;
+  transition: background-color 0.3s ease;
+  width: 100%;
+}
+
+.button:hover {
+  background-color: #0056b3;
+}
+
+.button:disabled {
+  background-color: #a0a0a0;
+  cursor: not-allowed;
+}
+
+.chain-switcher {
+  margin-bottom: 20px;
+}
+
+.chain-switcher button {
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  padding: 8px 12px;
+  font-size: 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.chain-switcher button:hover {
+  background-color: #f0f0f5;
+}
+
+.dropdown {
+  position: absolute;
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 8px 0;
+  margin-top: 5px;
+  z-index: 1000;
+}
+
+.dropdown li {
+  list-style: none;
+  padding: 8px 12px;
+}
+
+.dropdown li button {
+  background: none;
+  border: none;
+  font-size: 14px;
+  color: #333;
+  width: 100%;
+  text-align: left;
+  padding: 0;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.dropdown li button:hover {
+  background-color: #f0f0f5;
+}
+
+iframe {
+  border: none;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  max-width: 100%;
+  height: 300px;
 }

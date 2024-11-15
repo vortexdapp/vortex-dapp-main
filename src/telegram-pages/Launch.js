@@ -1,10 +1,7 @@
 import { ethers } from "ethers";
 import React, { useState, useEffect } from "react";
 import { useWallet } from "../WalletContext"; // Access the user's wallet from context
-import { restoreWalletIfNeeded } from "../WalletManager"; // Import wallet restoration logic
 import "./Launch.css";
-import Header from "../telegram-components/Header";
-import Footer from "../telegram-components/Footer";
 import WalletRestorer from "../telegram-components/WalletRestorer"; // Import WalletRestorer
 
 // Your ABI (replace with the actual ABI of the factory and locker contracts)
@@ -38,6 +35,7 @@ const Launch = () => {
   const [tokenName, setTokenName] = useState("");
   const [tokenSymbol, setTokenSymbol] = useState("");
   const [tokenSupply, setTokenSupply] = useState(0);
+  const [buyAmount, setBuyAmount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
 
@@ -81,34 +79,25 @@ const Launch = () => {
 
     try {
       // Connect to the factory and locker contracts using ABI and addresses
-      const factoryAddress = "0xadF0A9557991188E1B642e38F8d0210801E19B41"; // Replace with your factory contract address
-      const lockerAddress = "0x002cbBDcca63eF5DeF050570E7e0b892EDB4617A"; // Replace with your locker contract address
+      const factoryAddress = "0x1b515B736036a760DdEd128c15b8324380BA7963"; // Replace with your factory contract address
+      const lockerAddress = "0xaD1d41a47b0Faf28cba5FA0291A85df6eB1561e5"; // Replace with your locker contract address
 
       const factory = new ethers.Contract(factoryAddress, factoryABI, signer);
       const locker = new ethers.Contract(lockerAddress, lockerABI, signer);
 
       // Define necessary amounts
-      const amountIn = ethers.parseUnits("0.0000000", 18); // ETH amount
+      const amountIn = ethers.parseUnits("0.00000001", 18); // ETH amount
       const liquidityAmount = ethers.parseUnits("0.0000012", 18); // Liquidity amount
       const launchPrice = ethers.parseUnits("0.00002", 18); // Launch price
-
-      // Call the deployToken function of the factory contract
-      const tx = await factory.deployToken(tokenName, tokenSymbol, tokenSupply);
-      await tx.wait();
-      console.log("Token deployed successfully!");
-
-      // Get the deployed token address from the TokenDeployed event
-      const tokenDeployedEvent = await factory.queryFilter("TokenDeployed");
-      const tokenAddress =
-        tokenDeployedEvent[tokenDeployedEvent.length - 1].args[0]; // Get the token address
-      console.log("Token Address: ", tokenAddress);
 
       // Add liquidity, swap, and lock liquidity
       console.log("Adding initial liquidity, swapping and locking");
       const txtest = await factory.addLiquidityLockSwap(
-        tokenAddress,
         amountIn,
         false,
+        tokenName,
+        tokenSymbol,
+        tokenSupply,
         {
           value: amountIn + liquidityAmount + launchPrice, // ETH value
           gasLimit: 9000000, // Adjust gas limit based on contract complexity
@@ -180,6 +169,15 @@ const Launch = () => {
               placeholder="Enter total supply"
               value={tokenSupply}
               onChange={(e) => setTokenSupply(Number(e.target.value))}
+            />
+          </label>
+          <label>
+            Buy Amount:
+            <input
+              type="number"
+              placeholder="Enter buy amount"
+              value={buyAmount}
+              onChange={(e) => setBuyAmount(Number(e.target.value))}
             />
           </label>
           <button

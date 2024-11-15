@@ -5,6 +5,7 @@ import { ethers } from "ethers";
 import { useParams } from "react-router-dom";
 import WalletRestorer from "../telegram-components/WalletRestorer";
 import { useWallet } from "../WalletContext";
+import { supabase } from "../supabaseClient"; // Import Supabase client
 import "./Token.css";
 
 // ABI for your Swap contract
@@ -51,8 +52,10 @@ const Swap = () => {
   const [loading, setLoading] = useState(false);
   const [isEthToToken, setIsEthToToken] = useState(true);
   const [balance, setBalance] = useState("0");
+  const [poolAddress, setPoolAddress] = useState(""); // State to hold pool address
   const username = localStorage.getItem("username");
 
+  // Initialize provider and signer
   useEffect(() => {
     if (wallet && selectedNetwork) {
       try {
@@ -72,6 +75,7 @@ const Swap = () => {
     }
   }, [wallet, selectedNetwork]);
 
+  // Fetch balances
   useEffect(() => {
     if (signer) {
       fetchBalances();
@@ -101,6 +105,31 @@ const Swap = () => {
       setBalance("0");
     }
   };
+
+  // Fetch pool address from Supabase
+  useEffect(() => {
+    const fetchPoolAddress = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("tokens")
+          .select("pool")
+          .eq("address", tokenAddress)
+          .single();
+
+        if (error) {
+          console.error("Error fetching pool address:", error);
+        } else {
+          setPoolAddress(data?.pool || "");
+        }
+      } catch (error) {
+        console.error("Error fetching pool address:", error);
+      }
+    };
+
+    if (tokenAddress) {
+      fetchPoolAddress();
+    }
+  }, [tokenAddress]);
 
   const ensureSigner = () => {
     if (!signer) {
@@ -185,16 +214,22 @@ const Swap = () => {
 
   return (
     <div className="main-container">
-      <iframe
-        height="100%"
-        width="100%"
-        id="geckoterminal-embed"
-        title="GeckoTerminal Embed"
-        src="https://www.geckoterminal.com/sepolia-testnet/pools/0x473e8ad48e1b00cf4f34fa82bc1fecc0fd71a88b?embed=1&info=0&swaps=1"
-        frameborder="0"
-        allow="clipboard-write"
-        allowfullscreen
-      ></iframe>
+      {/* Display iframe with dynamic pool address */}
+      {poolAddress ? (
+        <iframe
+          height="100%"
+          width="100%"
+          id="geckoterminal-embed"
+          title="GeckoTerminal Embed"
+          src={`https://www.geckoterminal.com/sepolia-testnet/pools/${poolAddress}?embed=1&info=0&swaps=1`}
+          frameBorder="0"
+          allow="clipboard-write"
+          allowFullScreen
+        ></iframe>
+      ) : (
+        <p>Loading pool chart...</p>
+      )}
+
       <div className="swap-container">
         <WalletRestorer username={username} />
         <h2>{isEthToToken ? "Swap ETH for Tokens" : "Swap Tokens for ETH"}</h2>

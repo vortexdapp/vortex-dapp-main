@@ -43,8 +43,9 @@ async function main() {
 
   // Replace this with the address of the deployed factory contract
 
-  const lockerAddress = "0x0961C79a1fEa51aD3997fe3e3c585251007a49ce";
-  const factoryAddress = "0x2CEcf09101925b4F2B555a80F0bE5d82fEE2B5ba";
+  const lockerAddress = "0xF6A461e4903BB5b294A7F5b544B02EaD606fc365";
+  const factoryAddress = "0x94Fc7Df5dE19BC691725347190582fEdFB8159da";
+
   // Connect to the factory contract using its ABI and address
   const Factory = await ethers.getContractFactory("MyFactory");
   const factory = await Factory.attach(factoryAddress);
@@ -83,6 +84,15 @@ async function main() {
   );
   await txtest.wait();
   console.log("Success!");
+
+  const tokenLaunchedEvent = await getLatestEvent(factory, "TokenLaunched");
+
+  const poolAddress = tokenLaunchedEvent.args[0];
+  const tokenId = tokenLaunchedEvent.args[1];
+  const lockID = tokenLaunchedEvent.args[2];
+  console.log("Pool Address: ", poolAddress);
+  console.log("tokenId: ", tokenId);
+  console.log("lockID: ", lockID);
 }
 
 main()

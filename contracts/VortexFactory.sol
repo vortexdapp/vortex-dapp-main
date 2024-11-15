@@ -78,6 +78,7 @@ contract MyFactory {
     event ResetFeesDays(uint256 tokenId, bool isTokenDead);
     event TokensSwapped(uint256 amount);
     event VortexEvent(uint256 rewardAmount);
+    event TokenLaunched(address, uint256, uint256);
     
     // Functions with this modifier can only be called by the contract owner
     modifier onlyOwner() {
@@ -265,15 +266,13 @@ function swapTokensForWETH(uint256 amountIn, address tokenAddress) internal retu
 
 
     // Function that adds the initial liquidity to each token      bool userLiquidity, uint256 userLiquidityAmount
-    function addLiquidityLockSwap(uint256 amountToBuy, bool userProvidedLiquidity, string calldata _name, string calldata _symbol, uint256 _supply) external payable returns (uint256 tokenId) {
+    function addLiquidityLockSwap(uint256 amountToBuy, bool userProvidedLiquidity, string calldata _name, string calldata _symbol, uint256 _supply) external payable returns (address poolAddress, uint256 tokenId, uint256 lockID) {
 
     require(msg.value >= priceToLaunch, "Insufficient ETH sent. Required: 0.00015 ETH"); 
     
     address tokenAddress = deployToken(_name, _symbol, _supply);
     
     uint256 providedLiquidity = wethProvided;
-
-    address poolAddress;
 
     uint256 tokenBalance = IERC20(tokenAddress).balanceOf(address(this));
 
@@ -314,11 +313,8 @@ function swapTokensForWETH(uint256 amountIn, address tokenAddress) internal retu
     }
 
 
-        // Approve the factoryHelper to spend the tokens
-        //approveToken(token0, helperAddress, token0amount);
-        //approveToken(token1, helperAddress, token1amount);
 
-        uint256 priceRatio = (token1amount * 1e18) / token0amount;
+    uint256 priceRatio = (token1amount * 1e18) / token0amount;
     uint256 sqrtPriceRatio = sqrt(priceRatio);
     uint160 sqrtPrice_X96 = uint160((sqrtPriceRatio * 2**96) / 1e9);
 
@@ -344,21 +340,14 @@ function swapTokensForWETH(uint256 amountIn, address tokenAddress) internal retu
         deadline: block.timestamp + 5 minutes
     });
 
-    // Try minting liquidity and handle failure
-    
+        // Try minting liquidity and handle failure
         (tokenId, , , ) = positionManager.mint(params);
-
-        // Call addLiquidityHelper and add lp
-        //(poolAddress, tokenId) = factoryHelper.addLiquidityHelper(token0, token1, token0amount, token1amount);
 
         // Approve the locker contract to manage the liquidity NFT
         IERC721(address(positionManager)).approve(lockerAddress, tokenId);
 
-        //uint256 duration = lockTime1; 
-
         // Lock the liquidity NFT
-        uint256 lockID = ILiquidityLocker(lockerAddress).lockLiquidity(address(positionManager), tokenId, lockTime1, address(this));
-        //uint256 lockID = 0;
+        lockID = ILiquidityLocker(lockerAddress).lockLiquidity(address(positionManager), tokenId, lockTime1, address(this));
 
     // Store the token details in the array
     allTokens.push(TokenDetails({
@@ -399,13 +388,14 @@ function swapTokensForWETH(uint256 amountIn, address tokenAddress) internal retu
 
         payable(teamWallet).transfer(taxAmount);
 
-        uint256 amountOut = swapETHforTokens(amountToSwap, tokenAddress);
+        swapETHforTokens(amountToSwap, tokenAddress);
 
         fee = amountToBuy * 1 / 100;
     }
 
+    emit TokenLaunched(poolAddress, tokenId, lockID);
 
-    return tokenId;
+    return (poolAddress, tokenId, lockID);
     }
 
 
