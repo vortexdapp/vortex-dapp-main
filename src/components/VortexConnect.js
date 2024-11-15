@@ -312,7 +312,7 @@ const VortexConnect = () => {
       {address ? (
         <button onClick={openModal} className="connect-button">{shortenAddress(address)}</button>
       ) : (
-        <button onClick={openModal} className="connect-button">Connect Wallet</button>
+        <button onClick={openModal} className="connect-button">Connect</button>
       )}
       {error && <p className="error-message">{error}</p>}
 
