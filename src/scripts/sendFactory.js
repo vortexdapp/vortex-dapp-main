@@ -75,10 +75,10 @@ async function convertEthAndSendToFactory(
 }
 
 async function main() {
-  const factoryContractAddress = "0xCF8ce4884Bb4abf9B2409ee447219C07FD5284de";
+  const factoryContractAddress = "0xfa7CD03150363656dA394d0BE40487dcd5Eb03c3";
   // Replace with your actual factory contract address
   const wethAddress = "0xfff9976782d46cc05630d1f6ebab18b2324d6b14"; // Replace with the WETH address on your network
-  const amountInEth = 0.02; // The amount of ETH to convert to WETH and send
+  const amountInEth = 0.01; // The amount of ETH to convert to WETH and send
 
   await convertEthAndSendToFactory(
     factoryContractAddress,

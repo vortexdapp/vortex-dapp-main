@@ -2,13 +2,14 @@
 
 import React, { useState, useEffect, useContext } from "react";
 import { ethers } from "ethers";
-import MyFactoryJson from "../contracts/MyFactory.json";
 import "./LaunchToken.css";
 import { Link } from "react-router-dom";
 import Header from "../components/Header.js";
 import Footer from "../components/Footer.js";
 import { supabase } from "../supabaseClient";
 import { VortexConnectContext } from "../VortexConnectContext";
+import factoryABI from "../abis/FactoryABI.json";
+import lockerABI from "../abis/LockerABI.json";
 
 const networkConfig = {
   8453: {
@@ -35,10 +36,6 @@ const CHAIN_NAMES = {
 
 const IMGUR_API_URL = "https://api.imgur.com/3/image";
 const CLIENT_ID = "7bd162baabe49a2";
-
-// Example values for launch price and liquidity amount
-const launchPriced = 0.0001;
-const liquidityAmountt = 0.0000012;
 
 const uploadImageToImgur = async (file) => {
   const formData = new FormData();
@@ -118,8 +115,8 @@ function LaunchToken() {
       return;
     }
 
-    if (!amountToBuy) {
-      setError("Please enter the amount of ETH to buy tokens.");
+    if (!amountToBuy || isNaN(amountToBuy) || parseFloat(amountToBuy) < 0) {
+      setError("Please enter a valid amount of ETH to buy tokens.");
       return;
     }
 
@@ -137,25 +134,27 @@ function LaunchToken() {
     }
 
     try {
+      const factoryAddress = "0xfa7CD03150363656dA394d0BE40487dcd5Eb03c3"; // Use the factory address from networkConfig
+      const lockerAddress = "0xaD1d41a47b0Faf28cba5FA0291A85df6eB1561e5"; // Replace with your locker contract address
+
       // Initialize provider and signer
       const provider = new ethers.BrowserProvider(window.ethereum);
       const signer = await provider.getSigner();
-      const factoryContract = new ethers.Contract(
-        factoryChainAddress,
-        MyFactoryJson.abi,
-        signer
-      );
+
+      const factoryContract = new ethers.Contract(factoryAddress, factoryABI, signer);
+      const locker = new ethers.Contract(lockerAddress, lockerABI, signer);
 
       // Convert amounts to BigInt
-      const swapAmount = ethers.parseUnits(amountToBuy.toString(), 18); // amountIn
+      const amountIn = ethers.parseUnits(amountToBuy, 18); // amountIn from user input
       const liquidityAmount = ethers.parseUnits("0.0000012", 18);
       const launchPrice = ethers.parseUnits("0.00002", 18);
 
-      const totalValue = swapAmount + liquidityAmount + launchPrice;
+      const totalValue = amountIn + liquidityAmount + launchPrice;
 
       // Call addLiquidityLockSwap in one transaction
+      console.log("Adding initial liquidity, swapping and locking");
       const addLiquidityTx = await factoryContract.addLiquidityLockSwap(
-        swapAmount,
+        amountIn,
         false, // Adjust as needed for liquidity lock
         tokenName,
         tokenSymbol,
@@ -168,6 +167,7 @@ function LaunchToken() {
 
       console.log("Add Liquidity Transaction Sent:", addLiquidityTx.hash);
       setTxHash(addLiquidityTx.hash);
+
       const addLiquidityReceipt = await addLiquidityTx.wait();
       console.log("Add Liquidity Transaction Confirmed:", addLiquidityReceipt);
 
@@ -345,14 +345,13 @@ function LaunchToken() {
             {/* Amount to Buy ETH */}
             <input
               type="number"
-              step="0.0001"
+              step="0.00001"
               value={amountToBuy}
               onChange={(e) => setAmountToBuy(e.target.value)}
               placeholder="Buy Tokens (ETH)"
               className="input"
               required
-              min={launchPriced}
-              max={liquidityAmountt * 0.05 + launchPriced}
+              min="0"
             />
             <br />
 
@@ -385,7 +384,7 @@ function LaunchToken() {
                 <p className="pool_address_message">
                   Your liquidity pool address is:{" "}
                   <a
-                    href={`${networkConfig[chainId]?.explorerUrl}/address/${poolAddress}`}
+                    href={`${explorerUrl}/address/${poolAddress}`}
                     target="_blank"
                     rel="noreferrer"
                   >
