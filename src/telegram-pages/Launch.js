@@ -1,47 +1,52 @@
+// src/telegram-pages/Launch.js
 import { ethers } from "ethers";
 import React, { useState, useEffect } from "react";
-import { useWallet } from "../WalletContext"; // Access the user's wallet from context
+import { useWallet } from "../WalletContext";
+import { supabase } from "../supabaseClient"; // Import Supabase client
 import "./Launch.css";
-import WalletRestorer from "../telegram-components/WalletRestorer"; // Import WalletRestorer
-
-// Your ABI (replace with the actual ABI of the factory and locker contracts)
+import WalletRestorer from "../telegram-components/WalletRestorer";
 import factoryABI from "../abis/FactoryABI.json";
 import lockerABI from "../abis/LockerABI.json";
+
+async function getLatestEvent(token, eventName) {
+  // Get the filter for the TokenDeployed event
+  const filter = token.filters[eventName]();
+
+  // Query the filter for events emitted by the token contract
+  const events = await token.queryFilter(filter);
+
+  // Find the TokenDeployed event emitted by the token contract
+  const latestEvent = events[events.length - 1]; // Get the latest event
+
+  return latestEvent;
+}
 
 const networkOptions = [
   {
     name: "Sepolia",
-    chainId: "0xaa36a7", // Hexadecimal for Sepolia
+    chainId: "0xaa36a7",
     rpcUrl: "https://sepolia.infura.io/v3/4a4fe805be2e453fb73eb027658a0aa6",
     explorerUrl: "https://sepolia.etherscan.io/",
   },
   {
     name: "Base",
-    chainId: "0x2105", // Hexadecimal for Base
+    chainId: "0x2105",
     rpcUrl: "https://mainnet.base.org",
     explorerUrl: "https://basescan.org/",
   },
 ];
 
 const Launch = () => {
-  const { wallet, setExistingWallet } = useWallet(); // Use the connected wallet from WalletContext
+  const { wallet } = useWallet();
   const [provider, setProvider] = useState(null);
   const [signer, setSigner] = useState(null);
   const [selectedNetwork, setSelectedNetwork] = useState(networkOptions[0]);
-
-  const [coinBalance, setCoinBalance] = useState(1000);
-  const [gemBalance, setGemBalance] = useState(250);
-  const [level, setLevel] = useState(1);
   const [tokenName, setTokenName] = useState("");
   const [tokenSymbol, setTokenSymbol] = useState("");
   const [tokenSupply, setTokenSupply] = useState(0);
   const [buyAmount, setBuyAmount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
-
-  const levelUpThreshold = 1000;
-  const totalPoints = coinBalance + gemBalance;
-  const progress = ((totalPoints % levelUpThreshold) / levelUpThreshold) * 100;
   const username = localStorage.getItem("username");
 
   useEffect(() => {
@@ -62,7 +67,6 @@ const Launch = () => {
     }
   }, [wallet, selectedNetwork]);
 
-  // Function to deploy the token and add liquidity
   const handleLaunchToken = async () => {
     if (!signer) {
       setErrorMessage("No wallet found. Please ensure you're logged in.");
@@ -78,33 +82,66 @@ const Launch = () => {
     setErrorMessage(null);
 
     try {
-      // Connect to the factory and locker contracts using ABI and addresses
-      const factoryAddress = "0x1b515B736036a760DdEd128c15b8324380BA7963"; // Replace with your factory contract address
-      const lockerAddress = "0xaD1d41a47b0Faf28cba5FA0291A85df6eB1561e5"; // Replace with your locker contract address
-
+      const factoryAddress = "0xfa7CD03150363656dA394d0BE40487dcd5Eb03c3";
+      const lockerAddress = "0xf84679fF4F4d1e2Be76495194d0f6f2feA056CBb";
       const factory = new ethers.Contract(factoryAddress, factoryABI, signer);
-      const locker = new ethers.Contract(lockerAddress, lockerABI, signer);
+      const amountIn = ethers.parseUnits("0.00000001", 18);
+      const liquidityAmount = ethers.parseUnits("0.0000012", 18);
+      const launchPrice = ethers.parseUnits("0.00002", 18);
 
-      // Define necessary amounts
-      const amountIn = ethers.parseUnits("0.00000001", 18); // ETH amount
-      const liquidityAmount = ethers.parseUnits("0.0000012", 18); // Liquidity amount
-      const launchPrice = ethers.parseUnits("0.00002", 18); // Launch price
-
-      // Add liquidity, swap, and lock liquidity
       console.log("Adding initial liquidity, swapping and locking");
-      const txtest = await factory.addLiquidityLockSwap(
+      const tx = await factory.addLiquidityLockSwap(
         amountIn,
         false,
         tokenName,
         tokenSymbol,
         tokenSupply,
         {
-          value: amountIn + liquidityAmount + launchPrice, // ETH value
-          gasLimit: 9000000, // Adjust gas limit based on contract complexity
+          value: amountIn + liquidityAmount + launchPrice,
+          gasLimit: 9000000,
         }
       );
-      await txtest.wait();
-      console.log("Success!");
+
+      const tokenLaunchedEvent = await getLatestEvent(factory, "TokenLaunched");
+
+      const [poolAddress, tokenAddress, tokenId, lockID] =
+        tokenLaunchedEvent.args;
+      console.log("Pool Address:", poolAddress);
+      console.log("Token Address:", tokenAddress);
+      console.log("Token ID:", tokenId);
+      console.log("Lock ID:", lockID);
+
+      const { data, error } = await supabase
+        .from("tokens")
+        .insert([
+          {
+            name: tokenName,
+            symbol: tokenSymbol,
+            supply: tokenSupply,
+            address: tokenAddress,
+            imageUrl: "fhjddfnjsdjf",
+            deployer: signer,
+            timestamp: new Date().toISOString(),
+            chain: "sepolia",
+            pool: poolAddress,
+          },
+        ])
+        .select("user_id"); // Return the user_id from the inserted row
+
+      if (error) {
+        console.error("Error storing encrypted wallet:", error);
+        return null;
+      }
+
+      /* if (tokenInsertError) {
+        console.error("Error inserting token to database:", tokenInsertError);
+        setErrorMessage(
+          "Token launch succeeded, but saving to database failed."
+        );
+      } else {
+        console.log("Token saved to database:", data);
+        alert("Token launch and database entry succeeded!");
+      } */
     } catch (error) {
       console.error("Error launching token:", error);
       setErrorMessage("Error launching token. Please try again.");
@@ -134,7 +171,7 @@ const Launch = () => {
 
   return (
     <div className="settings">
-      <WalletRestorer username={username} /> {/* Add the wallet restorer */}
+      <WalletRestorer username={username} />
       <p className="display-wallet">
         Connected: {wallet?.address || "No wallet connected"}
       </p>
@@ -142,7 +179,6 @@ const Launch = () => {
         <h2>Token Launch</h2>
         <p className="title">Borrow initial LP and launch your token</p>
 
-        {/* Token Launch Form */}
         <div className="launch-form">
           <label>
             Token Name:

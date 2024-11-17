@@ -78,7 +78,7 @@ contract MyFactory {
     event ResetFeesDays(uint256 tokenId, bool isTokenDead);
     event TokensSwapped(uint256 amount);
     event VortexEvent(uint256 rewardAmount);
-    event TokenLaunched(address, uint256, uint256);
+    event TokenLaunched(address, address, uint256, uint256);
     
     // Functions with this modifier can only be called by the contract owner
     modifier onlyOwner() {
@@ -266,11 +266,11 @@ function swapTokensForWETH(uint256 amountIn, address tokenAddress) internal retu
 
 
     // Function that adds the initial liquidity to each token      bool userLiquidity, uint256 userLiquidityAmount
-    function addLiquidityLockSwap(uint256 amountToBuy, bool userProvidedLiquidity, string calldata _name, string calldata _symbol, uint256 _supply) external payable returns (address poolAddress, uint256 tokenId, uint256 lockID) {
+    function addLiquidityLockSwap(uint256 amountToBuy, bool userProvidedLiquidity, string calldata _name, string calldata _symbol, uint256 _supply) external payable returns (address poolAddress, address tokenAddress, uint256 tokenId, uint256 lockID) {
 
     require(msg.value >= priceToLaunch, "Insufficient ETH sent. Required: 0.00015 ETH"); 
     
-    address tokenAddress = deployToken(_name, _symbol, _supply);
+    tokenAddress = deployToken(_name, _symbol, _supply);
     
     uint256 providedLiquidity = wethProvided;
 
@@ -393,9 +393,9 @@ function swapTokensForWETH(uint256 amountIn, address tokenAddress) internal retu
         fee = amountToBuy * 1 / 100;
     }
 
-    emit TokenLaunched(poolAddress, tokenId, lockID);
+    emit TokenLaunched(poolAddress, tokenAddress, tokenId, lockID);
 
-    return (poolAddress, tokenId, lockID);
+    return (poolAddress, tokenAddress, tokenId, lockID);
     }
 
 
