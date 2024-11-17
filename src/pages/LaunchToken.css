@@ -88,6 +88,7 @@ body {
     font-weight: bold;
 }
 
+.createerc {margin-top:50px;}
 .token_address_message,
 .pool_address_message {
     background: rgba(255, 255, 255, 0.2); /* Slightly transparent background */
