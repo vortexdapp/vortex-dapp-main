@@ -5,9 +5,9 @@ async function main() {
   const [deployer] = await ethers.getSigners();
   console.log("Removing liquidity with the account:", deployer.address);
 
-  const factoryAddress = "0x5076e3B39115CE8BC528bAad2B4fe7Dc30cb5843";
+  const factoryAddress = "0x7b9048C4DEb5d9bEE1d5320221759Ad901F416C6";
 
-  const lockerAddress = "0xf60AC5b48600b9e31bC87933331e79241157F2d0";
+  const lockerAddress = "0x83F2dAdb04462B3f542c4Abf726B225c18B35c20";
 
   const Factory = await hre.ethers.getContractFactory("MyFactory");
   const factory = await Factory.attach(factoryAddress);

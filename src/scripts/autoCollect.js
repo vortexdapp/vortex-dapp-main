@@ -22,9 +22,9 @@ async function main() {
   );
 
   // Replace this with the address of the deployed factory contract
-  const factoryAddress = "0xd48347c1cafcc936084aDEB0540362106926a992";
+  const factoryAddress = "0x7b9048C4DEb5d9bEE1d5320221759Ad901F416C6";
 
-  const lockerAddress = "0x48f88f06fA96f77D8CC5909d7502e741390A47Cb";
+  const lockerAddress = "0x83F2dAdb04462B3f542c4Abf726B225c18B35c20";
 
   // Get the locker contract instance
   const Locker = await ethers.getContractFactory("LiquidityLocker");
