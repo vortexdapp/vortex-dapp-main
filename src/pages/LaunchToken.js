@@ -11,6 +11,10 @@ import { VortexConnectContext } from "../VortexConnectContext";
 import factoryABI from "../abis/FactoryABI.json";
 import lockerABI from "../abis/LockerABI.json";
 
+
+
+
+
 const networkConfig = {
   8453: {
     factoryAddress: "0xF686e6CAF7d823E4130339E6f2b02C37836fE90F",
@@ -169,32 +173,30 @@ function LaunchToken() {
       setTxHash(addLiquidityTx.hash);
 
       const addLiquidityReceipt = await addLiquidityTx.wait();
-      console.log("Add Liquidity Transaction Confirmed:", addLiquidityReceipt);
+console.log("Add Liquidity Transaction Confirmed:", addLiquidityReceipt);
 
-      // Parse events to get tokenAddress and poolAddress
-      let tokenAddress = null;
-      let createdPoolAddress = null;
-      for (const log of addLiquidityReceipt.logs) {
-        try {
-          const parsedLog = factoryContract.interface.parseLog(log);
-          if (parsedLog.name === "TokenDeployed") {
-            tokenAddress = parsedLog.args.tokenAddress;
-            console.log("Token Deployed at:", tokenAddress);
-          } else if (parsedLog.name === "PoolCreated") {
-            createdPoolAddress = parsedLog.args.poolAddress;
-            console.log("Pool Created at:", createdPoolAddress);
-          }
-        } catch (error) {
-          // Ignore logs that can't be parsed
-        }
-      }
+// Parse events to get tokenAddress and poolAddress
+let tokenAddress = null;
+let createdPoolAddress = addLiquidityReceipt.logs[8]?.address || null; // Get the address from log 8
+let lockid = addLiquidityReceipt.logs[0]?.address || null;
+if (createdPoolAddress) {
+  console.log("Pool Created at (from log 8):", createdPoolAddress);
+}
 
-      if (!tokenAddress) {
-        throw new Error("Token address not found in transaction logs.");
-      }
+for (const log of addLiquidityReceipt.logs) {
+  try {
+    const parsedLog = factoryContract.interface.parseLog(log);
+    if (parsedLog.name === "TokenDeployed") {
+      tokenAddress = parsedLog.args.tokenAddress;
+      console.log("Token Deployed at:", tokenAddress);
+    }
+  } catch (error) {
+    // Ignore logs that can't be parsed
+  }
+}
 
       setDeployedContractAddress(tokenAddress);
-
+      
       // Insert token details into the tokens table
       const { error: tokenInsertError } = await supabase.from("tokens").insert([
         {
@@ -206,7 +208,9 @@ function LaunchToken() {
           deployer: connectedWallet,
           timestamp: new Date().toISOString(),
           chain: chainName,
-          pool: null,
+          pool: createdPoolAddress,
+          lock_id:lockid,
+
         },
       ]);
 
@@ -237,21 +241,7 @@ function LaunchToken() {
         }
       }
 
-      if (!createdPoolAddress) {
-        throw new Error("Pool address not found in transaction logs.");
-      }
-
-      setPoolAddress(createdPoolAddress);
-
-      // Update the pool address in Supabase
-      const { error: poolUpdateError } = await supabase
-        .from("tokens")
-        .update({ pool: createdPoolAddress })
-        .eq("address", tokenAddress);
-
-      if (poolUpdateError) {
-        throw poolUpdateError;
-      }
+      
 
       // Success Message
       setError(""); // Clear any previous errors
