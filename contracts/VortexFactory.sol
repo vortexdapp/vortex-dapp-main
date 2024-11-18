@@ -289,7 +289,7 @@ function swapTokensForWETH(uint256 amountIn, address tokenAddress) internal retu
 
     require(msg.value > 0, "Must send ETH to convert");
 
-    providedLiquidity = msg.value - amountToBuy;
+    providedLiquidity = msg.value - amountToBuy - priceToLaunch;
 
     IWETH(weth).deposit{value: providedLiquidity}();
     
@@ -616,12 +616,15 @@ function sqrt(uint256 y) internal pure returns (uint256 z) {
     }
 
     // Function to remove the user provided initial liquidity 
-    function removeUserLiquidity(uint256 tokenId, uint256 lockId, uint128 percentAmount) external {
+    function removeUserLiquidity(uint256 tokenId, uint256 lockId) external {
 
         uint256 index = tokenIndex[tokenId]; 
         address tokenOwner = allTokens[index].tokenCreator;
         // only the token creator can remove liquidity
         require(msg.sender == tokenOwner, "Caller is not the token creator");
+
+        // currentTime = block.timestamp;
+        //require( currentTime > allTokens[index].unlockTime, "Please wait for unlockTime");
 
         // If 7 days have passed since launch unlock the liquidity
         ILiquidityLocker lockerContract = ILiquidityLocker(lockerAddress);
@@ -632,7 +635,7 @@ function sqrt(uint256 y) internal pure returns (uint256 z) {
         // Fetch the position details
         (,, address token0, address token1, , , , uint128 liquidity, , , ,) = positionManager.positions(tokenId);
 
-        uint128 liquidityAmount = percentAmount * liquidity;
+        uint128 liquidityAmount = liquidity;
 
         (uint collectedAmount0, uint collectedAmount1) = removeLiquidity(tokenId, liquidityAmount);
 
@@ -645,8 +648,8 @@ function sqrt(uint256 y) internal pure returns (uint256 z) {
     function removeInitialLiquidity(uint256 tokenId, uint256 lockId) external onlyAuth {
 
         // If 7 days have passed since launch unlock the liquidity
-        //ILiquidityLocker lockerContract = ILiquidityLocker(lockerAddress);
-        //lockerContract.unlockLiquidity(lockId, address(this));
+        ILiquidityLocker lockerContract = ILiquidityLocker(lockerAddress);
+        lockerContract.unlockLiquidity(lockId, address(this));
 
         uint256 wethAmountToRemove = wethProvided; 
 
@@ -657,18 +660,18 @@ function sqrt(uint256 y) internal pure returns (uint256 z) {
 
         address poolAddress = uniswapFactory.getPool(token0, token1, fee);
 
-        // Use the TWAP to calculate the price
+        /* // Use the TWAP to calculate the price
         uint32 twapInterval = 1800;  // Set TWAP period (e.g., 30 minutes)
-        uint256 price = factoryHelper.getTWAPPrice(poolAddress, twapInterval);
+        uint256 price = factoryHelper.getTWAPPrice(poolAddress, twapInterval);  */
 
-        /* // Fetch pool state (price, liquidity, etc.)
+        // Fetch pool state (price, liquidity, etc.)
         IUniswapV3Pool poolContract = IUniswapV3Pool(poolAddress);
         (uint160 sqrtPriceX96,,,,,,) = poolContract.slot0();
-        uint256 price = (uint256(sqrtPriceX96) ** 2 * 10 ** 18) / (2 ** 192); */
+        uint256 price = (uint256(sqrtPriceX96) ** 2 * 10 ** 18) / (2 ** 192);
 
         // Calculate the corresponding amount of tokens to remove
         uint256 tokensToRemove = (wethAmountToRemove * 10 ** 18) / price;
-
+        
         // Calculate the liquidity to remove 
         uint128 liquidityToRemove = uint128(sqrt(wethAmountToRemove * tokensToRemove));
 

@@ -7,11 +7,11 @@ async function main() {
   );
 
   // Replace this with the address of the deployed factory contract
-  const factoryAddress = "0x258eBD61dD591Ca351FbC976379CFafB8D86D201";
+  const factoryAddress = "0x79aE49585a0a602d922FD4602CEeCDA7b90dEd6F";
 
   const tokenAddress = "0xec08Ae6AEFcB3cEd7261B5957dfD70bd3be701c4";
 
-  const abi = require("../scripts/swapRouterABI.json");
+  const abi = require("../abis/ISwapRouter.json");
 
   const WETH_address = process.env.SEPOLIA_WETH;
   const swapRouterAddress = process.env.SEPOLIA_SWAP_ROUTER;
@@ -27,12 +27,12 @@ async function main() {
   // Amount of Tokens to swap
   const amountIn2 = ethers.parseUnits("3", 18); // 0.01 ETH
 
-  console.log("Checking price and MC...");
+  /* console.log("Checking price and MC...");
   const [allTokens, allActiveTokens, fees] = await factory.getMetrics();
   //await tx3.wait();
   console.log("Number of launches: ", allTokens);
   console.log("Number of active tokens: ", allActiveTokens);
-  console.log("Fees collected: ", fees);
+  console.log("Fees collected: ", fees); */
 
   //-----------------------------------------------------------------------------------------
 
@@ -46,7 +46,7 @@ async function main() {
   //-----------------------------------------------------------------------------------------
 
   console.log("Retrieving user provided liquidity...");
-  tx10 = await factory.removeUserLiquidity(21251, 0);
+  tx10 = await factory.removeUserLiquidity(26396, 0);
   receipt = await tx10.wait();
   console.log("Liquidity retrieved successfully!");
 

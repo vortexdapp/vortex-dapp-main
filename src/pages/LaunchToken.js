@@ -31,7 +31,7 @@ const networkConfig = {
     explorerUrl: "https://base.blockscout.com/",
   },
   11155111: {
-    factoryAddress: process.env.REACT_APP_FACTORY_SEPOLIA_CA,
+    factoryAddress: "0xbBE1Dc6148D1a43347Cf02612Ed1C6519146A8E9",
     WETH_address: "0xfff9976782d46cc05630d1f6ebab18b2324d6b14",
     explorerUrl: "https://eth-sepolia.blockscout.com/",
   },
@@ -169,8 +169,17 @@ function LaunchToken() {
       // Convert amounts to BigInt
       const amountIn = ethers.parseUnits(amountToBuy, 18); // amountIn from user input
       const launchPrice = ethers.parseUnits("0.00002", 18);
+      const liquidity_amount = ethers.parseUnits(liquidityAmount, 18);
+      console.log("amountIn:", amountIn);
+      console.log("launchPrice:", launchPrice);
+      console.log("liquidity_amount:", liquidity_amount);
 
-      const totalValue = amountIn + (liquidityAmount > 0 ? ethers.parseUnits(liquidityAmount.toString(), 18) : 0n) + launchPrice;
+      const totalValue =
+        amountIn +
+        (liquidityAmount > 0
+          ? ethers.parseUnits(liquidityAmount.toString(), 18)
+          : 0n) +
+        launchPrice;
 
       // Call addLiquidityLockSwap in one transaction
       console.log("Adding initial liquidity, swapping and locking");
@@ -181,7 +190,7 @@ function LaunchToken() {
         tokenSymbol,
         tokenSupply,
         {
-          value: totalValue,
+          value: amountIn + liquidity_amount + launchPrice,
           gasLimit: 9000000,
         }
       );
@@ -240,8 +249,8 @@ function LaunchToken() {
           timestamp: new Date().toISOString(),
           chain: chainName,
           pool: poolAddress,
-          token_id:tokenId,
-          lock_id:lockID,
+          token_id: tokenId,
+          lock_id: lockID,
         },
       ]);
 
@@ -272,10 +281,8 @@ function LaunchToken() {
         }
       }
 
-     
       setPoolAddress(poolAddress);
 
-      
       // Success Message
       setError(""); // Clear any previous errors
     } catch (err) {
@@ -305,13 +312,11 @@ function LaunchToken() {
       <div>
         <h1 className="titlelaunch">Launch your new token</h1>
         <h3 className="subtitlefactory">
-          Vortex provides liquidity to launch tokens, directly on
-          Uniswap.
+          Vortex provides liquidity to launch tokens, directly on Uniswap.
         </h3>
       </div>
       <div className="center-container">
         <div className="factory-container">
-          
           <form onSubmit={deployTokenAndAddLiquidity} className="token-form">
             {/* Image Upload */}
             <div className="custom-file-input">
@@ -324,7 +329,13 @@ function LaunchToken() {
                 className="input"
               />
               {tokenImage && (
-                <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
                   <img
                     src={URL.createObjectURL(tokenImage)}
                     alt="Token Preview"
@@ -350,7 +361,7 @@ function LaunchToken() {
                 className="input"
                 required
               />
-              
+
               {/* Token Symbol */}
               <input
                 type="text"
@@ -360,7 +371,7 @@ function LaunchToken() {
                 className="input"
                 required
               />
-              
+
               {/* Token Supply */}
               <input
                 type="number"
@@ -377,7 +388,7 @@ function LaunchToken() {
                 required
                 min="1"
               />
-              
+
               {/* Amount to Buy ETH */}
               <input
                 type="number"
@@ -396,18 +407,24 @@ function LaunchToken() {
               onClick={() => setShowLiquidity(!showLiquidity)} // Toggle visibility
               className="liquidity-toggle" // Add a class for the clickable box
             >
-              {showLiquidity ? "Hide Liquidity Options" : "Would you like to add your own liquidity?"}
+              {showLiquidity
+                ? "Hide Liquidity Options"
+                : "Would you like to add your own liquidity?"}
             </div>
 
             {/* Liquidity Section */}
             {showLiquidity && (
-              <div className="liquidity-section"> {/* Add a class for the liquidity section */}
-                <label className="liquidity-label">Select Liquidity Amount: {liquidityAmount} ETH</label>
+              <div className="liquidity-section">
+                {" "}
+                {/* Add a class for the liquidity section */}
+                <label className="liquidity-label">
+                  Select Liquidity Amount: {liquidityAmount} ETH
+                </label>
                 <input
                   type="range"
                   min="0"
-                  max="30"
-                  step="0.05"
+                  max="1"
+                  step="0.001"
                   value={liquidityAmount}
                   onChange={(e) => setLiquidityAmount(e.target.value)}
                   className="liquidity-slider" // Add a class for the slider
