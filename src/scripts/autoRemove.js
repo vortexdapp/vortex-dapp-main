@@ -52,6 +52,9 @@ async function main() {
   // Loop through all tokens to check their launch time
   for (let i = 0; i < addresses.length; i++) {
     // Check if the token's initial liquidity has already been removed and if the locktime has passed
+    console.log("Number of tokens launched: ", addresses.length);
+    console.log("tokenIds[i]: ", tokenIds[i]);
+    console.log("lockID[i]: ", lockID[i]);
 
     if (
       !liquidityRemovedStatus[i] &&

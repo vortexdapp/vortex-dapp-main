@@ -78,7 +78,7 @@ contract MyFactory {
     event ResetFeesDays(uint256 tokenId, bool isTokenDead);
     event TokensSwapped(uint256 amount);
     event VortexEvent(uint256 rewardAmount);
-    event TokenLaunched(address, address, uint256, uint256);
+    event TokenLaunched(address pool, address token, uint256 tokenID, uint256 lockID);
     
     // Functions with this modifier can only be called by the contract owner
     modifier onlyOwner() {
@@ -645,8 +645,8 @@ function sqrt(uint256 y) internal pure returns (uint256 z) {
     function removeInitialLiquidity(uint256 tokenId, uint256 lockId) external onlyAuth {
 
         // If 7 days have passed since launch unlock the liquidity
-        ILiquidityLocker lockerContract = ILiquidityLocker(lockerAddress);
-        lockerContract.unlockLiquidity(lockId, address(this));
+        //ILiquidityLocker lockerContract = ILiquidityLocker(lockerAddress);
+        //lockerContract.unlockLiquidity(lockId, address(this));
 
         uint256 wethAmountToRemove = wethProvided; 
 

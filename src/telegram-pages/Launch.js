@@ -102,6 +102,10 @@ const Launch = () => {
         }
       );
 
+      const receipt = await tx.wait();
+
+      //await new Promise((resolve) => setTimeout(resolve, 5000)); // 5-second delay
+
       const tokenLaunchedEvent = await getLatestEvent(factory, "TokenLaunched");
 
       const [poolAddress, tokenAddress, tokenId, lockID] =

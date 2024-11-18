@@ -1,6 +1,6 @@
 // src/pages/LaunchToken.js
 
-import React, { useState, useEffect, useContext, useCallback } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { ethers } from "ethers";
 import "./LaunchToken.css";
 import { Link } from "react-router-dom";
@@ -11,14 +11,27 @@ import { VortexConnectContext } from "../VortexConnectContext";
 import factoryABI from "../abis/FactoryABI.json";
 import lockerABI from "../abis/LockerABI.json";
 
+async function getLatestEvent(token, eventName) {
+  // Get the filter for the TokenDeployed event
+  const filter = token.filters[eventName]();
+
+  // Query the filter for events emitted by the token contract
+  const events = await token.queryFilter(filter);
+
+  // Find the TokenDeployed event emitted by the token contract
+  const latestEvent = events[events.length - 1]; // Get the latest event
+
+  return latestEvent;
+}
+
 const networkConfig = {
   8453: {
-    factoryAddress: "0xF686e6CAF7d823E4130339E6f2b02C37836fE90F",
+    factoryAddress: "0x447D107F1D3D984B13603c3cF44f7BcD75aaB5eD",
     WETH_address: "0x4200000000000000000000000000000000000006",
     explorerUrl: "https://base.blockscout.com/",
   },
   11155111: {
-    factoryAddress: process.env.REACT_APP_FACTORY_SEPOLIA_CA,
+    factoryAddress: "0x447D107F1D3D984B13603c3cF44f7BcD75aaB5eD",
     WETH_address: "0xfff9976782d46cc05630d1f6ebab18b2324d6b14",
     explorerUrl: "https://eth-sepolia.blockscout.com/",
   },
@@ -87,9 +100,12 @@ function LaunchToken() {
     disconnectWallet: disconnect,
   } = useContext(VortexConnectContext);
 
-  const explorerUrl = networkConfig[chainId]?.explorerUrl || "https://eth.blockscout.com/";
-  const factoryChainAddress = networkConfig[chainId]?.factoryAddress || "DefaultFactoryAddress";
-  const wethAddress = networkConfig[chainId]?.WETH_address || "DefaultWETHAddress";
+  const explorerUrl =
+    networkConfig[chainId]?.explorerUrl || "https://eth.blockscout.com/";
+  const factoryChainAddress =
+    networkConfig[chainId]?.factoryAddress || "DefaultFactoryAddress";
+  const wethAddress =
+    networkConfig[chainId]?.WETH_address || "DefaultWETHAddress";
 
   useEffect(() => {
     if (!isInitialized && chainId) {
@@ -101,184 +117,214 @@ function LaunchToken() {
   const chainName = CHAIN_NAMES[chainId] || `Unknown Chain (${chainId})`;
 
   // Function to deploy token and add liquidity in one transaction
-  const deployTokenAndAddLiquidity = useCallback(
-    async (e) => {
-      e.preventDefault();
+  async function deployTokenAndAddLiquidity(e) {
+    e.preventDefault();
 
-      console.log("isConnected at function call:", isConnected);
+    if (!isConnected) {
+      setError("Please connect your wallet before trying to deploy a token.");
+      return;
+    }
 
-      if (!isConnected) {
-        setError("Please connect your wallet before trying to deploy a token.");
-        return;
+    // Input validations
+    if (!tokenName || !tokenSymbol || !tokenSupply) {
+      setError("Please fill in all the required fields.");
+      return;
+    }
+
+    if (!amountToBuy || isNaN(amountToBuy) || parseFloat(amountToBuy) < 0) {
+      setError("Please enter a valid amount of ETH to buy tokens.");
+      return;
+    }
+
+    setIsLoading(true);
+    setError(""); // Clear any existing error at the start
+
+    let imageUrl = null;
+    if (tokenImage) {
+      imageUrl = await uploadImageToImgur(tokenImage);
+      if (!imageUrl) {
+        setError("Failed to upload image, proceeding without it.");
+      } else {
+        setTokenImageUrl(imageUrl);
       }
+    }
 
-      // Input validations
-      if (!tokenName || !tokenSymbol || !tokenSupply) {
-        setError("Please fill in all the required fields.");
-        return;
-      }
+    try {
+      const factoryAddress = "0x447D107F1D3D984B13603c3cF44f7BcD75aaB5eD"; // Use the factory address from networkConfig
+      const lockerAddress = "0xaD1d41a47b0Faf28cba5FA0291A85df6eB1561e5"; // Replace with your locker contract address
 
-      if (!amountToBuy || isNaN(amountToBuy) || parseFloat(amountToBuy) < 0) {
-        setError("Please enter a valid amount of ETH to buy tokens.");
-        return;
-      }
+      // Initialize provider and signer
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
 
-      setIsLoading(true);
-      setError(""); // Clear any existing error at the start
+      const factoryContract = new ethers.Contract(
+        factoryAddress,
+        factoryABI,
+        signer
+      );
+      const locker = new ethers.Contract(lockerAddress, lockerABI, signer);
 
-      let imageUrl = null;
-      if (tokenImage) {
-        imageUrl = await uploadImageToImgur(tokenImage);
-        if (!imageUrl) {
-          setError("Failed to upload image, proceeding without it.");
-        } else {
-          setTokenImageUrl(imageUrl);
+      // Convert amounts to BigInt
+      const amountIn = ethers.parseUnits(amountToBuy, 18); // amountIn from user input
+      const liquidityAmount = ethers.parseUnits("0.0000012", 18);
+      const launchPrice = ethers.parseUnits("0.00002", 18);
+
+      const totalValue = amountIn + liquidityAmount + launchPrice;
+
+      // Call addLiquidityLockSwap in one transaction
+      console.log("Adding initial liquidity, swapping and locking");
+      const addLiquidityTx = await factoryContract.addLiquidityLockSwap(
+        amountIn,
+        false, // Adjust as needed for liquidity lock
+        tokenName,
+        tokenSymbol,
+        tokenSupply,
+        {
+          value: totalValue,
+          gasLimit: 9000000,
         }
-      }
+      );
 
-      try {
-        const factoryChainAddress =
-          networkConfig[chainId]?.factoryAddress || "DefaultFactoryAddress";
-        const lockerAddress = "0xaD1d41a47b0Faf28cba5FA0291A85df6eB1561e5"; // Replace with your locker contract address
+      const receipt = await addLiquidityTx.wait();
 
-        // Initialize provider and signer
-        const provider = new ethers.BrowserProvider(window.ethereum);
-        const signer = await provider.getSigner();
+      console.log("Add Liquidity Transaction Sent:", addLiquidityTx.hash);
+      setTxHash(addLiquidityTx.hash);
 
-        const factoryContract = new ethers.Contract(factoryChainAddress, factoryABI, signer);
-        const locker = new ethers.Contract(lockerAddress, lockerABI, signer);
+      const addLiquidityReceipt = await addLiquidityTx.wait();
+      console.log("Add Liquidity Transaction Confirmed:", addLiquidityReceipt);
 
-        // Convert amounts to BigInt
-        const amountIn = ethers.parseUnits(amountToBuy, 18); // amountIn from user input
-        const liquidityAmount = ethers.parseUnits("0.0000012", 18);
-        const launchPrice = ethers.parseUnits("0.00002", 18);
-
-        const totalValue = amountIn + liquidityAmount + launchPrice;
-
-        // Call addLiquidityLockSwap in one transaction
-        console.log("Adding initial liquidity, swapping and locking");
-        const addLiquidityTx = await factoryContract.addLiquidityLockSwap(
-          amountIn,
-          false, // Adjust as needed for liquidity lock
-          tokenName,
-          tokenSymbol,
-          tokenSupply,
-          {
-            value: totalValue,
-            gasLimit: 9000000,
+      // Parse events to get tokenAddress and poolAddress
+      let tokenAddress = null;
+      let createdPoolAddress = null;
+      for (const log of addLiquidityReceipt.logs) {
+        try {
+          const parsedLog = factoryContract.interface.parseLog(log);
+          if (parsedLog.name === "TokenDeployed") {
+            tokenAddress = parsedLog.args.tokenAddress;
+            console.log("Token Deployed at:", tokenAddress);
+          } else if (parsedLog.name === "PoolCreated") {
+            createdPoolAddress = parsedLog.args.poolAddress;
+            console.log("Pool Created at:", createdPoolAddress);
           }
-        );
-
-        console.log("Add Liquidity Transaction Sent:", addLiquidityTx.hash);
-        setTxHash(addLiquidityTx.hash);
-
-        const addLiquidityReceipt = await addLiquidityTx.wait();
-        console.log("Add Liquidity Transaction Confirmed:", addLiquidityReceipt);
-
-        // Parse events to get tokenAddress and poolAddress
-        let tokenAddress = null;
-        let createdPoolAddress = addLiquidityReceipt.logs[8]?.address || null; // Get the address from log 8
-
-        if (createdPoolAddress) {
-          console.log("Pool Created at (from log 8):", createdPoolAddress);
+        } catch (error) {
+          // Ignore logs that can't be parsed
         }
+      }
 
-        for (const log of addLiquidityReceipt.logs) {
-          try {
-            const parsedLog = factoryContract.interface.parseLog(log);
-            if (parsedLog.name === "TokenDeployed") {
-              tokenAddress = parsedLog.args.tokenAddress;
-              console.log("Token Deployed at:", tokenAddress);
-            }
-          } catch (error) {
-            // Ignore logs that can't be parsed
-          }
-        }
+      if (!tokenAddress) {
+        throw new Error("Token address not found in transaction logs.");
+      }
 
-        setDeployedContractAddress(tokenAddress);
+      const tokenLaunchedEvent = await getLatestEvent(
+        factoryContract,
+        "TokenLaunched"
+      );
 
-        // Insert token details into the tokens table
-        const { error: tokenInsertError } = await supabase.from("tokens").insert([
-          {
-            name: tokenName,
-            symbol: tokenSymbol,
-            supply: tokenSupply,
-            address: tokenAddress,
-            imageUrl: imageUrl,
-            deployer: connectedWallet,
-            timestamp: new Date().toISOString(),
-            chain: chainName,
-            pool: createdPoolAddress,
-          },
-        ]);
+      const poolAddress = tokenLaunchedEvent.args[0];
+      const token_Address = tokenLaunchedEvent.args[1];
+      const tokenId = tokenLaunchedEvent.args[2];
+      const lockID = tokenLaunchedEvent.args[3];
+      console.log("Pool Address: ", poolAddress);
+      console.log("Token Address: ", token_Address);
+      console.log("tokenId: ", tokenId);
+      console.log("lockID: ", lockID);
 
-        if (tokenInsertError) {
-          throw tokenInsertError;
-        }
+      setDeployedContractAddress(tokenAddress);
 
-        // Increment the points for the user in the usersweb table
-        const { data: userData, error: fetchError } = await supabase
+      // Insert token details into the tokens table
+      const { error: tokenInsertError } = await supabase.from("tokens").insert([
+        {
+          name: tokenName,
+          symbol: tokenSymbol,
+          supply: tokenSupply,
+          address: tokenAddress,
+          imageUrl: imageUrl,
+          deployer: connectedWallet,
+          timestamp: new Date().toISOString(),
+          chain: chainName,
+          pool: null,
+        },
+      ]);
+
+      if (tokenInsertError) {
+        throw tokenInsertError;
+      }
+
+      // Increment the points for the user in the usersweb table
+      const { data: userData, error: fetchError } = await supabase
+        .from("usersweb")
+        .select("points")
+        .eq("wallet", connectedWallet)
+        .single();
+
+      if (fetchError && fetchError.code !== "PGRST116") {
+        console.error("Error fetching user points:", fetchError);
+      } else {
+        const currentPoints = userData ? userData.points : 0;
+
+        // Update the points by adding 1
+        const { error: updateError } = await supabase
           .from("usersweb")
-          .select("points")
-          .eq("wallet", connectedWallet)
-          .single();
+          .update({ points: currentPoints + 1 })
+          .eq("wallet", connectedWallet);
 
-        if (fetchError && fetchError.code !== "PGRST116") {
-          console.error("Error fetching user points:", fetchError);
-        } else {
-          const currentPoints = userData ? userData.points : 0;
-
-          // Update the points by adding 1
-          const { error: updateError } = await supabase
-            .from("usersweb")
-            .update({ points: currentPoints + 1 })
-            .eq("wallet", connectedWallet);
-
-          if (updateError) {
-            throw updateError;
-          }
+        if (updateError) {
+          throw updateError;
         }
-
-        // Success Message
-        setError(""); // Clear any previous errors
-      } catch (err) {
-        console.error("Error during deployment and liquidity addition:", err);
-        // Check for user denial error
-        if (err.message.includes("User denied transaction signature")) {
-          setError("You rejected the transaction.");
-        } else {
-          setError(err.message || "There was an error with the transaction. Please try again.");
-        }
-      } finally {
-        setIsLoading(false);
       }
-    },
-    // Dependencies array
-    [
-      isConnected,
-      chainId,
-      connectedWallet,
-      tokenName,
-      tokenSymbol,
-      tokenSupply,
-      tokenImage,
-      amountToBuy,
-      chainName,
-    ]
-  );
+
+      if (!createdPoolAddress) {
+        throw new Error("Pool address not found in transaction logs.");
+      }
+
+      setPoolAddress(createdPoolAddress);
+
+      // Update the pool address in Supabase
+      const { error: poolUpdateError } = await supabase
+        .from("tokens")
+        .update({ pool: createdPoolAddress })
+        .eq("address", tokenAddress);
+
+      if (poolUpdateError) {
+        throw poolUpdateError;
+      }
+
+      // Success Message
+      setError(""); // Clear any previous errors
+    } catch (err) {
+      console.error("Error during deployment and liquidity addition:", err);
+      // Check for user denial error
+      if (err.message.includes("User denied transaction signature")) {
+        setError("You rejected the transaction.");
+      } else {
+        setError(
+          err.message ||
+            "There was an error with the transaction. Please try again."
+        );
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   return (
     <div>
-      <Header />
+      <Header
+        connectWallet={connect}
+        disconnectWallet={disconnect}
+        isConnected={isConnected}
+        chainId={chainId}
+      />
       <div>
-        <h1 className="titlelaunch">Launch your new ERC20 token</h1>
+        <h1 className="titlefactory">Launch your new ERC20 token</h1>
         <h3 className="subtitlefactory">
-          Vortex provides liquidity lending to launch tokens, directly on Uniswap.
+          Vortex provides liquidity lending to launch tokens, directly on
+          Uniswap.
         </h3>
       </div>
       <div className="center-container">
         <div className="factory-container">
-       
+          <h2 className="createerc">Create Your New Token</h2>
           <form onSubmit={deployTokenAndAddLiquidity} className="token-form">
             {/* Image Upload */}
             <div className="custom-file-input">
@@ -358,8 +404,8 @@ function LaunchToken() {
             {!deployedContractAddress && (
               <button
                 type="submit"
-                className="deploy2-button"
-                disabled={isLoading || !isConnected}
+                className="deploy-button"
+                disabled={isLoading}
               >
                 {isLoading ? "Processing..." : "Launch Token"}
               </button>
