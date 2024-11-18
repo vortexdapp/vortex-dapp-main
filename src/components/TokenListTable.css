@@ -265,26 +265,7 @@ h3 {
     height: 100%; /* Ensure the cell takes up full height */
   }
   
-  .trade-button {
-    display: inline-block; /* Make the button behave like an inline element to center it */
-    padding: 7px 20px; /* Adjust padding for button size */
-    font-size: 12px;
-    border-radius: 10px;
-   
-    border: 1px solid rgba(255, 255, 255, 0.519);
-    color: #ffffff;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    font-style: normal;
-    font-weight: 600;
-  letter-spacing: 1.5px; /* Increases space between letters */
-  }
   
-
-
-.trade-button:hover {
-  background-color: #ffffff;
-}
 
 .token-image {
   width: 12px;

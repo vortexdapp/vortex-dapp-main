@@ -6,6 +6,7 @@ import Header from "../components/Header";
 import HowItWorks from "../components/HowItWorks";
 import Footer from "../components/Footer";
 import { VortexConnectContext } from "../VortexConnectContext";
+import TokensList from "../components/TokenList";
 
 function HomePage() {
   const { address: connectedWallet, chainId, isConnected, connectMetaMask: connect, disconnectWallet: disconnect } = useContext(VortexConnectContext);
@@ -38,6 +39,7 @@ function HomePage() {
       </div>
 
       <div className="container">
+        <TokensList/>
         <Link to="/tokens">
           <button>View All</button>
         </Link>
