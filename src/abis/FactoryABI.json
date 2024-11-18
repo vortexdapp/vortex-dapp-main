@@ -330,25 +330,25 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "",
+        "name": "pool",
         "type": "address"
       },
       {
         "indexed": false,
         "internalType": "address",
-        "name": "",
+        "name": "token",
         "type": "address"
       },
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "",
+        "name": "tokenID",
         "type": "uint256"
       },
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "",
+        "name": "lockID",
         "type": "uint256"
       }
     ],

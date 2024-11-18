@@ -43,8 +43,8 @@ async function main() {
 
   // Replace this with the address of the deployed factory contract
 
-  const lockerAddress = "0x83F2dAdb04462B3f542c4Abf726B225c18B35c20";
-  const factoryAddress = "0x7b9048C4DEb5d9bEE1d5320221759Ad901F416C6";
+  const lockerAddress = "0x665204920f31A11654898a96FA5116d12D07ab60";
+  const factoryAddress = "0xf16de1014f1E2411b1B98Ebb04Cf9cAdd2d40B40";
 
   // Connect to the factory contract using its ABI and address
   const Factory = await ethers.getContractFactory("MyFactory");

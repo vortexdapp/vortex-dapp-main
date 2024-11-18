@@ -11,14 +11,27 @@ import { VortexConnectContext } from "../VortexConnectContext";
 import factoryABI from "../abis/FactoryABI.json";
 import lockerABI from "../abis/LockerABI.json";
 
+async function getLatestEvent(token, eventName) {
+  // Get the filter for the TokenDeployed event
+  const filter = token.filters[eventName]();
+
+  // Query the filter for events emitted by the token contract
+  const events = await token.queryFilter(filter);
+
+  // Find the TokenDeployed event emitted by the token contract
+  const latestEvent = events[events.length - 1]; // Get the latest event
+
+  return latestEvent;
+}
+
 const networkConfig = {
   8453: {
-    factoryAddress: "0xF686e6CAF7d823E4130339E6f2b02C37836fE90F",
+    factoryAddress: "0x447D107F1D3D984B13603c3cF44f7BcD75aaB5eD",
     WETH_address: "0x4200000000000000000000000000000000000006",
     explorerUrl: "https://base.blockscout.com/",
   },
   11155111: {
-    factoryAddress: process.env.REACT_APP_FACTORY_SEPOLIA_CA,
+    factoryAddress: "0x447D107F1D3D984B13603c3cF44f7BcD75aaB5eD",
     WETH_address: "0xfff9976782d46cc05630d1f6ebab18b2324d6b14",
     explorerUrl: "https://eth-sepolia.blockscout.com/",
   },
@@ -87,9 +100,12 @@ function LaunchToken() {
     disconnectWallet: disconnect,
   } = useContext(VortexConnectContext);
 
-  const explorerUrl = networkConfig[chainId]?.explorerUrl || "https://eth.blockscout.com/";
-  const factoryChainAddress = networkConfig[chainId]?.factoryAddress || "DefaultFactoryAddress";
-  const wethAddress = networkConfig[chainId]?.WETH_address || "DefaultWETHAddress";
+  const explorerUrl =
+    networkConfig[chainId]?.explorerUrl || "https://eth.blockscout.com/";
+  const factoryChainAddress =
+    networkConfig[chainId]?.factoryAddress || "DefaultFactoryAddress";
+  const wethAddress =
+    networkConfig[chainId]?.WETH_address || "DefaultWETHAddress";
 
   useEffect(() => {
     if (!isInitialized && chainId) {
@@ -134,14 +150,18 @@ function LaunchToken() {
     }
 
     try {
-      const factoryAddress = "0xfa7CD03150363656dA394d0BE40487dcd5Eb03c3"; // Use the factory address from networkConfig
+      const factoryAddress = "0x447D107F1D3D984B13603c3cF44f7BcD75aaB5eD"; // Use the factory address from networkConfig
       const lockerAddress = "0xaD1d41a47b0Faf28cba5FA0291A85df6eB1561e5"; // Replace with your locker contract address
 
       // Initialize provider and signer
       const provider = new ethers.BrowserProvider(window.ethereum);
       const signer = await provider.getSigner();
 
-      const factoryContract = new ethers.Contract(factoryAddress, factoryABI, signer);
+      const factoryContract = new ethers.Contract(
+        factoryAddress,
+        factoryABI,
+        signer
+      );
       const locker = new ethers.Contract(lockerAddress, lockerABI, signer);
 
       // Convert amounts to BigInt
@@ -164,6 +184,8 @@ function LaunchToken() {
           gasLimit: 9000000,
         }
       );
+
+      const receipt = await addLiquidityTx.wait();
 
       console.log("Add Liquidity Transaction Sent:", addLiquidityTx.hash);
       setTxHash(addLiquidityTx.hash);
@@ -192,6 +214,20 @@ function LaunchToken() {
       if (!tokenAddress) {
         throw new Error("Token address not found in transaction logs.");
       }
+
+      const tokenLaunchedEvent = await getLatestEvent(
+        factoryContract,
+        "TokenLaunched"
+      );
+
+      const poolAddress = tokenLaunchedEvent.args[0];
+      const token_Address = tokenLaunchedEvent.args[1];
+      const tokenId = tokenLaunchedEvent.args[2];
+      const lockID = tokenLaunchedEvent.args[3];
+      console.log("Pool Address: ", poolAddress);
+      console.log("Token Address: ", token_Address);
+      console.log("tokenId: ", tokenId);
+      console.log("lockID: ", lockID);
 
       setDeployedContractAddress(tokenAddress);
 
@@ -261,7 +297,10 @@ function LaunchToken() {
       if (err.message.includes("User denied transaction signature")) {
         setError("You rejected the transaction.");
       } else {
-        setError(err.message || "There was an error with the transaction. Please try again.");
+        setError(
+          err.message ||
+            "There was an error with the transaction. Please try again."
+        );
       }
     } finally {
       setIsLoading(false);
@@ -270,11 +309,17 @@ function LaunchToken() {
 
   return (
     <div>
-      <Header connectWallet={connect} isConnected={isConnected} chainId={chainId} />
+      <Header
+        connectWallet={connect}
+        disconnectWallet={disconnect}
+        isConnected={isConnected}
+        chainId={chainId}
+      />
       <div>
         <h1 className="titlefactory">Launch your new ERC20 token</h1>
         <h3 className="subtitlefactory">
-          Vortex provides liquidity lending to launch tokens, directly on Uniswap.
+          Vortex provides liquidity lending to launch tokens, directly on
+          Uniswap.
         </h3>
       </div>
       <div className="center-container">
@@ -357,7 +402,11 @@ function LaunchToken() {
 
             {/* Submit Button */}
             {!deployedContractAddress && (
-              <button type="submit" className="deploy-button" disabled={isLoading}>
+              <button
+                type="submit"
+                className="deploy-button"
+                disabled={isLoading}
+              >
                 {isLoading ? "Processing..." : "Launch Token"}
               </button>
             )}
