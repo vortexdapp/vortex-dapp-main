@@ -2,6 +2,8 @@ body {
     font-family: 'Luciole', sans-serif; /* Use Luciole for body text */
     margin: 0;
     padding: 0;
+    background-color: #000000; /* Set background color to black */
+    background-image: none; /* Override any background image set in index.css */
 }
 
 
@@ -36,6 +38,7 @@ body {
 .titlelaunch {
     margin: 30px auto;
     text-align: center;
+    font-size: 400px;
 }
 
 
@@ -54,7 +57,7 @@ body {
     margin: 10px 0; /* Keep vertical margin */
     border-radius: 6px; /* 6px border radius */
     background: rgba(255, 255, 255, 0.2); /* Slightly transparent background */
-    color: #fff; /* White text color */
+   
     border: none; /* Remove border color */
     transition: background-color 0.3s;
 }
@@ -73,11 +76,14 @@ body {
     margin: 30px 0px 0px 0px; /* Increased margin for more space */
     padding: 20px 50px; /* Increased padding for a more prominent look */
     background: rgba(255, 255, 255, 0.2); /* Slightly transparent background */
-    border-radius: 2s0px; /* More pronounced rounded corners */
-    color: #fff; /* White for file input label */
+    border-radius: 10px; /* More pronounced rounded corners */
+    color: #ffffffaf;
     text-align: left; /* Align text to the left */
-    border: 0px solid #fff; /* Add a solid white border */
+    border: 0px solid #ffffff4c; /* Add a solid white border */
     transition: border-color 0.3s; /* Smooth transition for border color */
+    font-family: 'Technoma', sans-serif;
+    font-size:22px;
+    letter-spacing: 2px; /* Increased space between letters */
 }
 
 .custom-file-input:hover {
@@ -88,7 +94,7 @@ body {
     display: block;
     margin-bottom: 5px;
     font-weight: bold;
-    color: #fff; /* White for file input label */
+    color: #ffffffaf;
 }
 
 
@@ -123,10 +129,11 @@ body {
 .deploy-button {
    /* Add margin-top of 50px */
     margin-bottom:20px;
+    margin-top:20px;
     background-color: #1d00aa; /* Set background color */
     color: #fff; /* Set text color to white */
     border: none; /* Remove default border */
-    padding: 10px 20px; /* Add padding for better appearance */
+    padding: 10px 60px; /* Increased padding horizontally for a bigger button */
     border-radius: 10px; /* Optional: Add border radius */
     cursor: pointer; /* Change cursor to pointer */
     transition: background-color 0.3s; /* Smooth transition for background color */
@@ -156,7 +163,8 @@ body {
   padding: 10px; /* Increased padding for better appearance */
   text-align: center;
   margin-top: 10px;
-  color: #fff;
+  font-size: 22px;
+  color: #ffffffaf;
   transition: background-color 0.3s; /* Smooth transition for hover effect */
 }
 

@@ -304,9 +304,9 @@ function LaunchToken() {
         chainId={chainId}
       />
       <div>
-        <h1 className="titlelaunch">Launch your new ERC20 token</h1>
+        <h1 className="titlelaunch">Launch your new token</h1>
         <h3 className="subtitlefactory">
-          Vortex provides liquidity lending to launch tokens, directly on
+          Vortex provides liquidity to launch tokens, directly on
           Uniswap.
         </h3>
       </div>
@@ -357,7 +357,7 @@ function LaunchToken() {
                 type="text"
                 value={tokenSymbol}
                 onChange={(e) => setTokenSymbol(e.target.value)}
-                placeholder="Token Symbol"
+                placeholder="Ticker"
                 className="input"
                 required
               />
@@ -421,7 +421,6 @@ function LaunchToken() {
               <button
                 type="submit"
                 className="deploy-button"
-                style={{ marginTop: "50px" }} // Add margin-top of 50px
                 disabled={isLoading}
               >
                 {isLoading ? "Processing..." : "Launch Token"}
