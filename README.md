@@ -36,7 +36,6 @@ If you want to fork our dapp to test it out, ensure you have the following insta
 - [Metamask](https://metamask.io/) (or another Ethereum wallet)
 - Ethers V6
 - A valid Alchemy API Key
-- WalletConnect API Key
 - Imgur API Key
 
 
