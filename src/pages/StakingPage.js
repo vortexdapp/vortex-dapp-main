@@ -90,7 +90,7 @@ const StakingPage = () => {
   const explorerUrl =
     networkConfig[chainId]?.explorerUrl || "https://base.blockscout.com/";
   const StakingChainAddress =
-    networkConfig[chainId]?.stakingAddress || "DefaultFactoryAddress";
+    networkConfig[chainId]?.stakingAddress || "DefaultStakingAddress";
 
   // Fetch statistics
   const fetchStatistics = async () => {

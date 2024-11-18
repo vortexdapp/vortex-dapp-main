@@ -138,14 +138,15 @@ function LaunchToken() {
     }
 
     try {
-      const factoryAddress = "0xfa7CD03150363656dA394d0BE40487dcd5Eb03c3"; // Use the factory address from networkConfig
+      const factoryChainAddress =
+      networkConfig[chainId]?.factoryAddress || "DefaultStakingAddress";
       const lockerAddress = "0xaD1d41a47b0Faf28cba5FA0291A85df6eB1561e5"; // Replace with your locker contract address
 
       // Initialize provider and signer
       const provider = new ethers.BrowserProvider(window.ethereum);
       const signer = await provider.getSigner();
 
-      const factoryContract = new ethers.Contract(factoryAddress, factoryABI, signer);
+      const factoryContract = new ethers.Contract(factoryChainAddress, factoryABI, signer);
       const locker = new ethers.Contract(lockerAddress, lockerABI, signer);
 
       // Convert amounts to BigInt
@@ -177,7 +178,7 @@ console.log("Add Liquidity Transaction Confirmed:", addLiquidityReceipt);
 
 // Parse events to get tokenAddress and poolAddress
 let tokenAddress = null;
-let createdPoolAddress = addLiquidityReceipt.logs[8]?.address || null; // Get the address from log 8
+let createdPoolAddress =   addLiquidityReceipt.logs[8]?.address || null; // Get the address from log 8
 let lockid = addLiquidityReceipt.logs[0]?.address || null;
 if (createdPoolAddress) {
   console.log("Pool Created at (from log 8):", createdPoolAddress);
