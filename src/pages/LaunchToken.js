@@ -1,6 +1,6 @@
 // src/pages/LaunchToken.js
 
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import { ethers } from "ethers";
 import "./LaunchToken.css";
 import { Link } from "react-router-dom";
@@ -10,10 +10,6 @@ import { supabase } from "../supabaseClient";
 import { VortexConnectContext } from "../VortexConnectContext";
 import factoryABI from "../abis/FactoryABI.json";
 import lockerABI from "../abis/LockerABI.json";
-
-
-
-
 
 const networkConfig = {
   8453: {
@@ -105,172 +101,184 @@ function LaunchToken() {
   const chainName = CHAIN_NAMES[chainId] || `Unknown Chain (${chainId})`;
 
   // Function to deploy token and add liquidity in one transaction
-  async function deployTokenAndAddLiquidity(e) {
-    e.preventDefault();
+  const deployTokenAndAddLiquidity = useCallback(
+    async (e) => {
+      e.preventDefault();
 
-    if (!isConnected) {
-      setError("Please connect your wallet before trying to deploy a token.");
-      return;
-    }
+      console.log("isConnected at function call:", isConnected);
 
-    // Input validations
-    if (!tokenName || !tokenSymbol || !tokenSupply) {
-      setError("Please fill in all the required fields.");
-      return;
-    }
-
-    if (!amountToBuy || isNaN(amountToBuy) || parseFloat(amountToBuy) < 0) {
-      setError("Please enter a valid amount of ETH to buy tokens.");
-      return;
-    }
-
-    setIsLoading(true);
-    setError(""); // Clear any existing error at the start
-
-    let imageUrl = null;
-    if (tokenImage) {
-      imageUrl = await uploadImageToImgur(tokenImage);
-      if (!imageUrl) {
-        setError("Failed to upload image, proceeding without it.");
-      } else {
-        setTokenImageUrl(imageUrl);
+      if (!isConnected) {
+        setError("Please connect your wallet before trying to deploy a token.");
+        return;
       }
-    }
 
-    try {
-      const factoryChainAddress =
-      networkConfig[chainId]?.factoryAddress || "DefaultStakingAddress";
-      const lockerAddress = "0xaD1d41a47b0Faf28cba5FA0291A85df6eB1561e5"; // Replace with your locker contract address
+      // Input validations
+      if (!tokenName || !tokenSymbol || !tokenSupply) {
+        setError("Please fill in all the required fields.");
+        return;
+      }
 
-      // Initialize provider and signer
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      const signer = await provider.getSigner();
+      if (!amountToBuy || isNaN(amountToBuy) || parseFloat(amountToBuy) < 0) {
+        setError("Please enter a valid amount of ETH to buy tokens.");
+        return;
+      }
 
-      const factoryContract = new ethers.Contract(factoryChainAddress, factoryABI, signer);
-      const locker = new ethers.Contract(lockerAddress, lockerABI, signer);
+      setIsLoading(true);
+      setError(""); // Clear any existing error at the start
 
-      // Convert amounts to BigInt
-      const amountIn = ethers.parseUnits(amountToBuy, 18); // amountIn from user input
-      const liquidityAmount = ethers.parseUnits("0.0000012", 18);
-      const launchPrice = ethers.parseUnits("0.00002", 18);
-
-      const totalValue = amountIn + liquidityAmount + launchPrice;
-
-      // Call addLiquidityLockSwap in one transaction
-      console.log("Adding initial liquidity, swapping and locking");
-      const addLiquidityTx = await factoryContract.addLiquidityLockSwap(
-        amountIn,
-        false, // Adjust as needed for liquidity lock
-        tokenName,
-        tokenSymbol,
-        tokenSupply,
-        {
-          value: totalValue,
-          gasLimit: 9000000,
+      let imageUrl = null;
+      if (tokenImage) {
+        imageUrl = await uploadImageToImgur(tokenImage);
+        if (!imageUrl) {
+          setError("Failed to upload image, proceeding without it.");
+        } else {
+          setTokenImageUrl(imageUrl);
         }
-      );
-
-      console.log("Add Liquidity Transaction Sent:", addLiquidityTx.hash);
-      setTxHash(addLiquidityTx.hash);
-
-      const addLiquidityReceipt = await addLiquidityTx.wait();
-console.log("Add Liquidity Transaction Confirmed:", addLiquidityReceipt);
-
-// Parse events to get tokenAddress and poolAddress
-let tokenAddress = null;
-let createdPoolAddress =   addLiquidityReceipt.logs[8]?.address || null; // Get the address from log 8
-let lockid = addLiquidityReceipt.logs[0]?.address || null;
-if (createdPoolAddress) {
-  console.log("Pool Created at (from log 8):", createdPoolAddress);
-}
-
-for (const log of addLiquidityReceipt.logs) {
-  try {
-    const parsedLog = factoryContract.interface.parseLog(log);
-    if (parsedLog.name === "TokenDeployed") {
-      tokenAddress = parsedLog.args.tokenAddress;
-      console.log("Token Deployed at:", tokenAddress);
-    }
-  } catch (error) {
-    // Ignore logs that can't be parsed
-  }
-}
-
-      setDeployedContractAddress(tokenAddress);
-      
-      // Insert token details into the tokens table
-      const { error: tokenInsertError } = await supabase.from("tokens").insert([
-        {
-          name: tokenName,
-          symbol: tokenSymbol,
-          supply: tokenSupply,
-          address: tokenAddress,
-          imageUrl: imageUrl,
-          deployer: connectedWallet,
-          timestamp: new Date().toISOString(),
-          chain: chainName,
-          pool: createdPoolAddress,
-          lock_id:lockid,
-
-        },
-      ]);
-
-      if (tokenInsertError) {
-        throw tokenInsertError;
       }
 
-      // Increment the points for the user in the usersweb table
-      const { data: userData, error: fetchError } = await supabase
-        .from("usersweb")
-        .select("points")
-        .eq("wallet", connectedWallet)
-        .single();
+      try {
+        const factoryChainAddress =
+          networkConfig[chainId]?.factoryAddress || "DefaultFactoryAddress";
+        const lockerAddress = "0xaD1d41a47b0Faf28cba5FA0291A85df6eB1561e5"; // Replace with your locker contract address
 
-      if (fetchError && fetchError.code !== "PGRST116") {
-        console.error("Error fetching user points:", fetchError);
-      } else {
-        const currentPoints = userData ? userData.points : 0;
+        // Initialize provider and signer
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        const signer = await provider.getSigner();
 
-        // Update the points by adding 1
-        const { error: updateError } = await supabase
+        const factoryContract = new ethers.Contract(factoryChainAddress, factoryABI, signer);
+        const locker = new ethers.Contract(lockerAddress, lockerABI, signer);
+
+        // Convert amounts to BigInt
+        const amountIn = ethers.parseUnits(amountToBuy, 18); // amountIn from user input
+        const liquidityAmount = ethers.parseUnits("0.0000012", 18);
+        const launchPrice = ethers.parseUnits("0.00002", 18);
+
+        const totalValue = amountIn + liquidityAmount + launchPrice;
+
+        // Call addLiquidityLockSwap in one transaction
+        console.log("Adding initial liquidity, swapping and locking");
+        const addLiquidityTx = await factoryContract.addLiquidityLockSwap(
+          amountIn,
+          false, // Adjust as needed for liquidity lock
+          tokenName,
+          tokenSymbol,
+          tokenSupply,
+          {
+            value: totalValue,
+            gasLimit: 9000000,
+          }
+        );
+
+        console.log("Add Liquidity Transaction Sent:", addLiquidityTx.hash);
+        setTxHash(addLiquidityTx.hash);
+
+        const addLiquidityReceipt = await addLiquidityTx.wait();
+        console.log("Add Liquidity Transaction Confirmed:", addLiquidityReceipt);
+
+        // Parse events to get tokenAddress and poolAddress
+        let tokenAddress = null;
+        let createdPoolAddress = addLiquidityReceipt.logs[8]?.address || null; // Get the address from log 8
+
+        if (createdPoolAddress) {
+          console.log("Pool Created at (from log 8):", createdPoolAddress);
+        }
+
+        for (const log of addLiquidityReceipt.logs) {
+          try {
+            const parsedLog = factoryContract.interface.parseLog(log);
+            if (parsedLog.name === "TokenDeployed") {
+              tokenAddress = parsedLog.args.tokenAddress;
+              console.log("Token Deployed at:", tokenAddress);
+            }
+          } catch (error) {
+            // Ignore logs that can't be parsed
+          }
+        }
+
+        setDeployedContractAddress(tokenAddress);
+
+        // Insert token details into the tokens table
+        const { error: tokenInsertError } = await supabase.from("tokens").insert([
+          {
+            name: tokenName,
+            symbol: tokenSymbol,
+            supply: tokenSupply,
+            address: tokenAddress,
+            imageUrl: imageUrl,
+            deployer: connectedWallet,
+            timestamp: new Date().toISOString(),
+            chain: chainName,
+            pool: createdPoolAddress,
+          },
+        ]);
+
+        if (tokenInsertError) {
+          throw tokenInsertError;
+        }
+
+        // Increment the points for the user in the usersweb table
+        const { data: userData, error: fetchError } = await supabase
           .from("usersweb")
-          .update({ points: currentPoints + 1 })
-          .eq("wallet", connectedWallet);
+          .select("points")
+          .eq("wallet", connectedWallet)
+          .single();
 
-        if (updateError) {
-          throw updateError;
+        if (fetchError && fetchError.code !== "PGRST116") {
+          console.error("Error fetching user points:", fetchError);
+        } else {
+          const currentPoints = userData ? userData.points : 0;
+
+          // Update the points by adding 1
+          const { error: updateError } = await supabase
+            .from("usersweb")
+            .update({ points: currentPoints + 1 })
+            .eq("wallet", connectedWallet);
+
+          if (updateError) {
+            throw updateError;
+          }
         }
-      }
 
-      
-
-      // Success Message
-      setError(""); // Clear any previous errors
-    } catch (err) {
-      console.error("Error during deployment and liquidity addition:", err);
-      // Check for user denial error
-      if (err.message.includes("User denied transaction signature")) {
-        setError("You rejected the transaction.");
-      } else {
-        setError(err.message || "There was an error with the transaction. Please try again.");
+        // Success Message
+        setError(""); // Clear any previous errors
+      } catch (err) {
+        console.error("Error during deployment and liquidity addition:", err);
+        // Check for user denial error
+        if (err.message.includes("User denied transaction signature")) {
+          setError("You rejected the transaction.");
+        } else {
+          setError(err.message || "There was an error with the transaction. Please try again.");
+        }
+      } finally {
+        setIsLoading(false);
       }
-    } finally {
-      setIsLoading(false);
-    }
-  }
+    },
+    // Dependencies array
+    [
+      isConnected,
+      chainId,
+      connectedWallet,
+      tokenName,
+      tokenSymbol,
+      tokenSupply,
+      tokenImage,
+      amountToBuy,
+      chainName,
+    ]
+  );
 
   return (
     <div>
-      <Header connectWallet={connect} isConnected={isConnected} chainId={chainId} />
+      <Header />
       <div>
-        <h1 className="titlefactory">Launch your new ERC20 token</h1>
+        <h1 className="titlelaunch">Launch your new ERC20 token</h1>
         <h3 className="subtitlefactory">
           Vortex provides liquidity lending to launch tokens, directly on Uniswap.
         </h3>
       </div>
       <div className="center-container">
         <div className="factory-container">
-          <h2 className="createerc">Create Your New Token</h2>
+       
           <form onSubmit={deployTokenAndAddLiquidity} className="token-form">
             {/* Image Upload */}
             <div className="custom-file-input">
@@ -348,7 +356,11 @@ for (const log of addLiquidityReceipt.logs) {
 
             {/* Submit Button */}
             {!deployedContractAddress && (
-              <button type="submit" className="deploy-button" disabled={isLoading}>
+              <button
+                type="submit"
+                className="deploy2-button"
+                disabled={isLoading || !isConnected}
+              >
                 {isLoading ? "Processing..." : "Launch Token"}
               </button>
             )}

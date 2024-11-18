@@ -4,7 +4,6 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import StakingPage from "./pages/StakingPage";
 import DashboardPage from "./pages/Dashboard";
-import FactoryPage from "./pages/FactoryPage";
 import PointsPage from "./pages/Points";
 import TaskPage from "./pages/Task";
 import AfterLaunch from "./pages/AfterLaunch";
@@ -23,14 +22,14 @@ function App() {
        
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/factory" element={<FactoryPage />} />
+          <Route path="/factory" element={<LaunchToken />} />
           <Route path="/points" element={<PointsPage />} />
           <Route path="/tasks" element={<TaskPage />} />
           <Route path="/tokenbuy" element={<TokenBuyTrackerPage />} />
           <Route path="/dashboard/:contractAddress" element={<DashboardPage />} />
           <Route path="/connect" element={<VortexConnectPage />} />
           <Route path="/tokens" element={<TokensPage />} />
-          <Route path="/launchtoken" element={<LaunchToken />} />
+         
           <Route path="/token/:contractAddress" element={<AfterLaunch />} />
           <Route path="/trading/:chain/:contractAddress" element={<Trading />} />
           <Route path="/staking" element={<StakingPage />} />

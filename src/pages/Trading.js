@@ -72,10 +72,6 @@ function Trading() {
     navigate(`/trading/${chain}/${searchValue}`);
   };
 
-  const toggleInfo = () => {
-    setShowInfo(!showInfo);
-  };
-
   return (
     <div>
       <Header />
@@ -246,21 +242,6 @@ function Trading() {
                 Pool address not available for this token.
               </p>
             )}
-          </div>
-          <div style={{ textAlign: "left", marginBottom: "10px" }}>
-            <button
-              onClick={toggleInfo}
-              style={{
-                padding: "10px 20px",
-                backgroundColor: "#333",
-                color: "#fff",
-                borderRadius: "10px",
-                border: "none",
-                cursor: "pointer",
-              }}
-            >
-              {showInfo ? "Show Chart" : "Show Info"}
-            </button>
           </div>
         </div>
 
