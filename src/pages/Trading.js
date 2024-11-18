@@ -1,17 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { collection, query, where, getDocs } from "firebase/firestore";
-import { firestore } from "../components/firebaseConfig";
+import { supabase } from "../supabaseClient"; // Import your Supabase client
 import Footer from "../components/Footer";
 import "./Trading.css";
-import Header2 from "../components/Header2.js";
+import Header from "../components/Header.js";
 import { FaTelegramPlane, FaTwitter, FaGlobe } from "react-icons/fa";
 
 function Trading() {
   const { chain: initialChain, contractAddress: initialContractAddress } = useParams();
-  const chain = initialChain.toLowerCase();
+  let chain = initialChain.toLowerCase();
+
+  // Update chain if it is sepolia
+  if (chain === "sepolia") {
+    chain = "sepolia-testnet";
+  }
+
   const [contractAddress, setContractAddress] = useState(initialContractAddress);
-  const [poolAddress, setPoolAddress] = useState(""); // New state for pool address
+  const [pool, setPool] = useState(""); // New state for pool address
   const [searchValue, setSearchValue] = useState(initialContractAddress);
   const [tokenName, setTokenName] = useState("");
   const [imageUrl, setImageUrl] = useState("");
@@ -22,32 +27,35 @@ function Trading() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch token data (assuming token data is in Firebase)
+    // Fetch token data (using Supabase)
     const fetchTokenData = async () => {
       try {
-        const q = query(
-          collection(firestore, "tokens"),
-          where("address", "==", contractAddress)
-        );
-        const querySnapshot = await getDocs(q);
+        const { data, error } = await supabase
+          .from("tokens")
+          .select("*")
+          .eq("address", contractAddress);
 
-        querySnapshot.forEach((doc) => {
-          const data = doc.data();
-          setTokenName(data.name);
-          setImageUrl(data.imageUrl);
-          setWebsite(data.website);
-          setTelegram(data.telegram);
-          setTwitter(data.twitter);
-          // Assuming there is a poolAddress field in your database
-          if (data.poolAddress) {
-            setPoolAddress(data.poolAddress);
+        if (error) {
+          throw error;
+        }
+
+        if (data && data.length > 0) {
+          const tokenData = data[0]; // Assuming you want the first match
+          setTokenName(tokenData.name);
+          setImageUrl(tokenData.imageUrl);
+          setWebsite(tokenData.website);
+          setTelegram(tokenData.telegram);
+          setTwitter(tokenData.twitter);
+          if (tokenData.pool) {
+            setPool(tokenData.pool);
           } else {
-            // Fallback logic if poolAddress is not available
             console.warn("No pool address found for this token.");
           }
-        });
+        } else {
+          console.warn("Token data not found.");
+        }
       } catch (error) {
-        console.error("Error fetching token data:", error);
+        console.error("Error fetching token data from Supabase:", error);
       }
     };
 
@@ -64,14 +72,9 @@ function Trading() {
     navigate(`/trading/${chain}/${searchValue}`);
   };
 
-  const toggleInfo = () => {
-    setShowInfo(!showInfo);
-  };
-
   return (
     <div>
-      <Header2 />
-
+      <Header />
       <div style={{ textAlign: "center", marginTop: "20px", color: "#ffffff" }}>
         {imageUrl && (
           <img
@@ -216,10 +219,10 @@ function Trading() {
               minWidth: "300px",
             }}
           >
-            {poolAddress ? (
+            {pool ? (
               <iframe
                 title="GeckoTerminal"
-                src={`https://www.geckoterminal.com/${chain}/pools/${poolAddress}?embed=1&info=${
+                src={`https://www.geckoterminal.com/${chain}/pools/${pool}?embed=1&info=${
                   showInfo ? 1 : 0
                 }&swaps=1`}
                 style={{
@@ -239,21 +242,6 @@ function Trading() {
                 Pool address not available for this token.
               </p>
             )}
-          </div>
-          <div style={{ textAlign: "left", marginBottom: "10px" }}>
-            <button
-              onClick={toggleInfo}
-              style={{
-                padding: "10px 20px",
-                backgroundColor: "#333",
-                color: "#fff",
-                borderRadius: "10px",
-                border: "none",
-                cursor: "pointer",
-              }}
-            >
-              {showInfo ? "Show Chart" : "Show Info"}
-            </button>
           </div>
         </div>
 

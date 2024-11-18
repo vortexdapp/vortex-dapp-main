@@ -26,6 +26,7 @@ body {
     margin-top: 10px; /* Add margin to separate from subtitle */
 }
 
+
 .factory-container:hover {
     transform: scale(1.02);
 }
@@ -98,6 +99,7 @@ body {
     color: #fff; /* White text color */
 }
 
+.titlelaunch{align-items: center; font-size: 30px; text-align: center; margin: auto;}
 .token_address_message a,
 .pool_address_message a {
     color: #fff; /* White for links */
