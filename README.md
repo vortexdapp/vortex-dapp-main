@@ -12,9 +12,9 @@ You can also try it on Base and Optimism, although current initial liquidity poo
 ## Features
 
 - **Multi-Chain Support**: Vortex Dapp is optimized to work on Base, OP, Arbitrum, BSC, Sepolia, and others. (Currently only live on Sepolia)
-- **Token Creation**: [Launch](https://launch.vortexdapp.com/factory) new tokens with initial liquidity without costs and without coding.
-- **Staking**: [Stake](https://launch.vortexdapp.com/stake) your ETH to contribute to the Vortex LP Lending Pool and earn 30% of the trading fees of tokens created through Vortex.
-- **Trading**: [Trade](https://launch.vortexdapp.com/trade) tokens created on the Vortex platform.
+- **Token Creation**: [Launch](https://go.vortexdapp.com/factory) new tokens with initial liquidity without costs and without coding.
+- **Staking**: [Stake](https://go.vortexdapp.com/stake) your ETH to contribute to the Vortex LP Lending Pool and earn 30% of the trading fees of tokens created through Vortex.
+- **Trading**: [Trade](https://go.vortexdapp.com/trade) tokens created on the Vortex platform.
 
 
 ### Invest
@@ -36,7 +36,6 @@ If you want to fork our dapp to test it out, ensure you have the following insta
 - [Metamask](https://metamask.io/) (or another Ethereum wallet)
 - Ethers V6
 - A valid Alchemy API Key
-- WalletConnect API Key
 - Imgur API Key
 
 
