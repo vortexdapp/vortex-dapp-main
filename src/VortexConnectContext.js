@@ -14,6 +14,20 @@ const VortexConnectProvider = ({ children }) => {
     if (address) {
       reconnectWallet();
     }
+  }, [address]);
+
+  // Set up event listeners once when the provider mounts
+  useEffect(() => {
+    if (window.ethereum) {
+      window.ethereum.on('accountsChanged', handleAccountsChanged);
+      window.ethereum.on('chainChanged', handleChainChanged);
+
+      return () => {
+        // Clean up listeners when the provider unmounts
+        window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
+        window.ethereum.removeListener('chainChanged', handleChainChanged);
+      };
+    }
   }, []);
 
   const connectMetaMask = async () => {
@@ -29,11 +43,6 @@ const VortexConnectProvider = ({ children }) => {
         setIsConnected(true);
         setChainId(network.chainId);
         localStorage.setItem('connectedAddress', userAddress);
-
-       
-        // Setup listeners
-        window.ethereum.on('accountsChanged', handleAccountsChanged);
-        window.ethereum.on('chainChanged', handleChainChanged);
       }
     } catch (err) {
       console.error("Error connecting MetaMask:", err);
@@ -66,10 +75,6 @@ const VortexConnectProvider = ({ children }) => {
         setAddress(userAddress);
         setIsConnected(true);
         setChainId(network.chainId);
-
-        // Setup listeners
-        window.ethereum.on('accountsChanged', handleAccountsChanged);
-        window.ethereum.on('chainChanged', handleChainChanged);
       } catch (err) {
         console.error("Error reconnecting wallet:", err);
         disconnectWallet();
@@ -82,11 +87,6 @@ const VortexConnectProvider = ({ children }) => {
     setIsConnected(false);
     setChainId(null);
     localStorage.removeItem('connectedAddress');
-
-    if (window.ethereum) {
-      window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
-      window.ethereum.removeListener('chainChanged', handleChainChanged);
-    }
   };
 
   return (
