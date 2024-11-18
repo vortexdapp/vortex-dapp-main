@@ -31,7 +31,7 @@ const networkConfig = {
     explorerUrl: "https://base.blockscout.com/",
   },
   11155111: {
-    factoryAddress: "0x447D107F1D3D984B13603c3cF44f7BcD75aaB5eD",
+    factoryAddress: process.env.REACT_APP_FACTORY_SEPOLIA_CA,
     WETH_address: "0xfff9976782d46cc05630d1f6ebab18b2324d6b14",
     explorerUrl: "https://eth-sepolia.blockscout.com/",
   },
@@ -166,7 +166,7 @@ function LaunchToken() {
 
       // Convert amounts to BigInt
       const amountIn = ethers.parseUnits(amountToBuy, 18); // amountIn from user input
-      const liquidityAmount = ethers.parseUnits("0.0000012", 18);
+      const liquidityAmount = ethers.parseUnits("0.00001", 18);
       const launchPrice = ethers.parseUnits("0.00002", 18);
 
       const totalValue = amountIn + liquidityAmount + launchPrice;
@@ -195,16 +195,12 @@ function LaunchToken() {
 
       // Parse events to get tokenAddress and poolAddress
       let tokenAddress = null;
-      let createdPoolAddress = null;
       for (const log of addLiquidityReceipt.logs) {
         try {
           const parsedLog = factoryContract.interface.parseLog(log);
           if (parsedLog.name === "TokenDeployed") {
             tokenAddress = parsedLog.args.tokenAddress;
             console.log("Token Deployed at:", tokenAddress);
-          } else if (parsedLog.name === "PoolCreated") {
-            createdPoolAddress = parsedLog.args.poolAddress;
-            console.log("Pool Created at:", createdPoolAddress);
           }
         } catch (error) {
           // Ignore logs that can't be parsed
@@ -222,8 +218,8 @@ function LaunchToken() {
 
       const poolAddress = tokenLaunchedEvent.args[0];
       const token_Address = tokenLaunchedEvent.args[1];
-      const tokenId = tokenLaunchedEvent.args[2];
-      const lockID = tokenLaunchedEvent.args[3];
+      const tokenId = parseInt(tokenLaunchedEvent.args[2], 10);
+      const lockID = parseInt(tokenLaunchedEvent.args[3], 10);
       console.log("Pool Address: ", poolAddress);
       console.log("Token Address: ", token_Address);
       console.log("tokenId: ", tokenId);
@@ -242,7 +238,9 @@ function LaunchToken() {
           deployer: connectedWallet,
           timestamp: new Date().toISOString(),
           chain: chainName,
-          pool: null,
+          pool: poolAddress,
+          token_id:tokenId,
+          lock_id:lockID,
         },
       ]);
 
@@ -273,22 +271,10 @@ function LaunchToken() {
         }
       }
 
-      if (!createdPoolAddress) {
-        throw new Error("Pool address not found in transaction logs.");
-      }
+     
+      setPoolAddress(poolAddress);
 
-      setPoolAddress(createdPoolAddress);
-
-      // Update the pool address in Supabase
-      const { error: poolUpdateError } = await supabase
-        .from("tokens")
-        .update({ pool: createdPoolAddress })
-        .eq("address", tokenAddress);
-
-      if (poolUpdateError) {
-        throw poolUpdateError;
-      }
-
+      
       // Success Message
       setError(""); // Clear any previous errors
     } catch (err) {
@@ -316,7 +302,7 @@ function LaunchToken() {
         chainId={chainId}
       />
       <div>
-        <h1 className="titlefactory">Launch your new ERC20 token</h1>
+        <h1 className="titlelaunch">Launch your new ERC20 token</h1>
         <h3 className="subtitlefactory">
           Vortex provides liquidity lending to launch tokens, directly on
           Uniswap.
@@ -324,7 +310,7 @@ function LaunchToken() {
       </div>
       <div className="center-container">
         <div className="factory-container">
-          <h2 className="createerc">Create Your New Token</h2>
+          
           <form onSubmit={deployTokenAndAddLiquidity} className="token-form">
             {/* Image Upload */}
             <div className="custom-file-input">
@@ -390,7 +376,7 @@ function LaunchToken() {
             {/* Amount to Buy ETH */}
             <input
               type="number"
-              step="0.00001"
+              step="0.000001"
               value={amountToBuy}
               onChange={(e) => setAmountToBuy(e.target.value)}
               placeholder="Buy Tokens (ETH)"

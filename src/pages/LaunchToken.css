@@ -27,16 +27,17 @@ body {
 }
 
 
+
+
 .factory-container:hover {
     transform: scale(1.02);
 }
 
-.titlefactory {
-    font-family: 'Technoma', sans-serif; /* Use Technoma for the title */
-    font-size: 2.5rem;
-    color: #fff; /* White color for the title */
-    margin-bottom: 10px; /* Space between title and subtitle */
+.titlelaunch {
+    margin: 30px auto;
+    text-align: center;
 }
+
 
 .subtitlefactory {
     font-family: 'Luciole', sans-serif; /* Use Luciole for the subtitle */
@@ -44,6 +45,7 @@ body {
     font-size: 1.2rem;
     color: #fff; /* White color for subtitle */
     margin-bottom: 20px; /* Space below subtitle */
+    margin-top:-3px;
 }
 
 .input {
