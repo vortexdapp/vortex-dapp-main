@@ -150,7 +150,7 @@ function LaunchToken() {
     }
 
     try {
-      const factoryAddress = "0x447D107F1D3D984B13603c3cF44f7BcD75aaB5eD"; // Use the factory address from networkConfig
+      const factoryAddress = factoryChainAddress; // Use the factory address from networkConfig
       const lockerAddress = "0xaD1d41a47b0Faf28cba5FA0291A85df6eB1561e5"; // Replace with your locker contract address
 
       // Initialize provider and signer
@@ -376,7 +376,7 @@ function LaunchToken() {
             {/* Amount to Buy ETH */}
             <input
               type="number"
-              step="0.000001"
+              step="0.0000001"
               value={amountToBuy}
               onChange={(e) => setAmountToBuy(e.target.value)}
               placeholder="Buy Tokens (ETH)"
