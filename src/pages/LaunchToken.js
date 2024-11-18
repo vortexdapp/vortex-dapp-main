@@ -90,6 +90,8 @@ function LaunchToken() {
   const [isInitialized, setIsInitialized] = useState(false);
   const [amountToBuy, setAmountToBuy] = useState("");
   const [txHash, setTxHash] = useState("");
+  const [showLiquidity, setShowLiquidity] = useState(false);
+  const [liquidityAmount, setLiquidityAmount] = useState(0);
 
   // Use VortexConnectContext
   const {
@@ -314,7 +316,7 @@ function LaunchToken() {
           <form onSubmit={deployTokenAndAddLiquidity} className="token-form">
             {/* Image Upload */}
             <div className="custom-file-input">
-              <span>Add image here</span>
+              {tokenImage ? null : <span>Add image here</span>}
               <input
                 type="file"
                 id="tokenImage"
@@ -323,74 +325,103 @@ function LaunchToken() {
                 className="input"
               />
               {tokenImage && (
-                <div>
+                <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
                   <img
                     src={URL.createObjectURL(tokenImage)}
                     alt="Token Preview"
-                    style={{ maxWidth: "100px", maxHeight: "100px" }}
+                    style={{
+                      width: "100px",
+                      height: "100px",
+                      borderRadius: "50%",
+                      objectFit: "cover",
+                    }}
                   />
                 </div>
               )}
             </div>
 
-            {/* Token Name */}
-            <input
-              type="text"
-              value={tokenName}
-              onChange={(e) => setTokenName(e.target.value)}
-              placeholder="Token Name"
-              className="input"
-              required
-            />
-            <br />
+            {/* Input Fields in Two Columns */}
+            <div className="input-container">
+              {/* Token Name */}
+              <input
+                type="text"
+                value={tokenName}
+                onChange={(e) => setTokenName(e.target.value)}
+                placeholder="Token Name"
+                className="input"
+                required
+              />
+              
+              {/* Token Symbol */}
+              <input
+                type="text"
+                value={tokenSymbol}
+                onChange={(e) => setTokenSymbol(e.target.value)}
+                placeholder="Token Symbol"
+                className="input"
+                required
+              />
+              
+              {/* Token Supply */}
+              <input
+                type="number"
+                value={tokenSupply}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  // Only allow positive integers
+                  if (/^\d*$/.test(value)) {
+                    setTokenSupply(value);
+                  }
+                }}
+                placeholder="Total Supply"
+                className="input"
+                required
+                min="1"
+              />
+              
+              {/* Amount to Buy ETH */}
+              <input
+                type="number"
+                step="0.0000001"
+                value={amountToBuy}
+                onChange={(e) => setAmountToBuy(e.target.value)}
+                placeholder="Buy Tokens (ETH)"
+                className="input"
+                required
+                min="0"
+              />
+            </div>
 
-            {/* Token Symbol */}
-            <input
-              type="text"
-              value={tokenSymbol}
-              onChange={(e) => setTokenSymbol(e.target.value)}
-              placeholder="Token Symbol"
-              className="input"
-              required
-            />
-            <br />
+            {/* Clickable Box for Adding Liquidity */}
+            <div
+              onClick={() => setShowLiquidity(!showLiquidity)} // Toggle visibility
+              className="liquidity-toggle" // Add a class for the clickable box
+            >
+              {showLiquidity ? "Hide Liquidity Options" : "Would you like to add your own liquidity?"}
+            </div>
 
-            {/* Token Supply */}
-            <input
-              type="number"
-              value={tokenSupply}
-              onChange={(e) => {
-                const value = e.target.value;
-                // Only allow positive integers
-                if (/^\d*$/.test(value)) {
-                  setTokenSupply(value);
-                }
-              }}
-              placeholder="Total Supply"
-              className="input"
-              required
-              min="1"
-            />
-            <br />
-
-            {/* Amount to Buy ETH */}
-            <input
-              type="number"
-              step="0.0000001"
-              value={amountToBuy}
-              onChange={(e) => setAmountToBuy(e.target.value)}
-              placeholder="Buy Tokens (ETH)"
-              className="input"
-              required
-              min="0"
-            />
-            <br />
+            {/* Liquidity Section */}
+            {showLiquidity && (
+              <div className="liquidity-section"> {/* Add a class for the liquidity section */}
+                <label className="liquidity-label">Select Liquidity Amount: {liquidityAmount} ETH</label>
+                <input
+                  type="range"
+                  min="0"
+                  max="30"
+                  step="0.1"
+                  value={liquidityAmount}
+                  onChange={(e) => setLiquidityAmount(e.target.value)}
+                  className="liquidity-slider" // Add a class for the slider
+                />
+              </div>
+            )}
 
             {/* Submit Button */}
             {!deployedContractAddress && (
               <button
                 type="submit"
                 className="deploy-button"
+                style={{ marginTop: "50px" }} // Add margin-top of 50px
                 disabled={isLoading}
               >
                 {isLoading ? "Processing..." : "Launch Token"}

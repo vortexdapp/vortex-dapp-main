@@ -136,22 +136,22 @@ html, body {
 input[type="text"],
 input[type="number"] {
     width: 100%;
-    padding: 8px;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 30px;
+    padding: 15px;
+    font-size: 18px;
+    border-radius: 10px;
     box-sizing: border-box;
-    font-family: "Space Grotesk", sans-serif;
+    text-align: center;
+    font-family: 'Technoma', sans-serif; /* Use Technoma font */
 }
 
 input[type="text"]:focus,
 input[type="number"]:focus {
     outline: none;
-    border-color: #007bff;
+    border-color: #bd41d6;
 }
 
 .input {
-    margin-bottom: 13px;
+    margin-bottom: 8px;
 }
 
 

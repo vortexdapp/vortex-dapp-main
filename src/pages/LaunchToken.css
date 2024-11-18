@@ -4,6 +4,7 @@ body {
     padding: 0;
 }
 
+
 .center-container {
     display: flex;
     justify-content: center;
@@ -15,10 +16,12 @@ body {
 }
 
 .factory-container {
-    background: rgba(255, 255, 255, 0.1); /* Slightly transparent background */
-    border-radius: 12px; /* Increased border radius for more rounded corners */
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); /* Soft shadow for depth */
-    padding: 10px 1px 10px 1px;
+    background: linear-gradient(135deg, #000000, #073b62, #bd41d6);
+    
+    border-radius: 40px; /* Increased border radius for more rounded corners */
+  
+    padding: 20px 30px 20px 30px;
+    border:0px;
     width: 100%;
     max-width: 500px;
     text-align: center;
@@ -29,9 +32,6 @@ body {
 
 
 
-.factory-container:hover {
-    transform: scale(1.02);
-}
 
 .titlelaunch {
     margin: 30px auto;
@@ -70,12 +70,18 @@ body {
 }
 
 .custom-file-input {
-    margin: 20px 0;
-    padding: 10px 20px; /* Increased padding for the file input */
+    margin: 30px 0px 0px 0px; /* Increased margin for more space */
+    padding: 20px 50px; /* Increased padding for a more prominent look */
     background: rgba(255, 255, 255, 0.2); /* Slightly transparent background */
-    border-radius: 6px; /* Rounded corners */
+    border-radius: 2s0px; /* More pronounced rounded corners */
     color: #fff; /* White for file input label */
     text-align: left; /* Align text to the left */
+    border: 0px solid #fff; /* Add a solid white border */
+    transition: border-color 0.3s; /* Smooth transition for border color */
+}
+
+.custom-file-input:hover {
+    border-color: #bd41d6; /* Change border color on hover */
 }
 
 .custom-file-input span {
@@ -112,4 +118,68 @@ body {
 .pool_address_message a:hover {
     text-decoration: none;
     color: #fff; /* Change color on hover */
+}
+
+.deploy-button {
+   /* Add margin-top of 50px */
+    margin-bottom:20px;
+    background-color: #1d00aa; /* Set background color */
+    color: #fff; /* Set text color to white */
+    border: none; /* Remove default border */
+    padding: 10px 20px; /* Add padding for better appearance */
+    border-radius: 10px; /* Optional: Add border radius */
+    cursor: pointer; /* Change cursor to pointer */
+    transition: background-color 0.3s; /* Smooth transition for background color */
+}
+
+.deploy-button:hover {
+    background-color: #ffffff; /* Optional: Darker shade on hover */
+}
+
+.input-container {
+    display: flex;
+    flex-wrap: wrap; /* Allow items to wrap to the next line */
+    justify-content: space-between; /* Space between columns */
+    margin-top: 10px; /* Space above the input container */
+}
+
+.input-container .input {
+    width: 48%; /* Set width to 48% for two columns */
+    margin-bottom: 10px; /* Space below each input */
+}
+
+.liquidity-toggle {
+  font-family: 'Technoma', sans-serif;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.2); /* Background color */
+  border-radius: 10px;
+  padding: 10px; /* Increased padding for better appearance */
+  text-align: center;
+  margin-top: 10px;
+  color: #fff;
+  transition: background-color 0.3s; /* Smooth transition for hover effect */
+}
+
+.liquidity-toggle:hover {
+  background: rgba(255, 255, 255, 0.3); /* Change background on hover */
+}
+
+.liquidity-section {
+  margin-top: 10px;
+  text-align: center;
+}
+
+.liquidity-label {
+  color: #fff; /* Label color */
+}
+
+.liquidity-slider {
+  width: 100%; /* Full width for the slider */
+}
+
+/* Media query for mobile devices */
+@media (max-width: 768px) { /* Adjust the max-width as needed */
+    .input-container .input {
+        width: 100%; /* Set width to 100% for single column on mobile */
+    }
 }
