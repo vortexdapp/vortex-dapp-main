@@ -44,11 +44,11 @@ body {
 
 .subtitlefactory {
     font-family: 'Luciole', sans-serif; /* Use Luciole for the subtitle */
-    font-weight: bold; /* Bold subtitle */
-    font-size: 1.2rem;
+    font-size: 18px;
     color: #fff; /* White color for subtitle */
     margin-bottom: 20px; /* Space below subtitle */
     margin-top:-3px;
+    font-weight: 300;
 }
 
 .input {
@@ -56,7 +56,7 @@ body {
     padding: 8px; /* Reduced padding for a more compact look */
     margin: 10px 0; /* Keep vertical margin */
     border-radius: 6px; /* 6px border radius */
-    background: rgba(255, 255, 255, 0.2); /* Slightly transparent background */
+    background: rgba(255, 255, 255, 0.466); /* Slightly transparent background */
    
     border: none; /* Remove border color */
     transition: background-color 0.3s;
@@ -75,7 +75,7 @@ body {
 .custom-file-input {
     margin: 30px 0px 0px 0px; /* Increased margin for more space */
     padding: 20px 50px; /* Increased padding for a more prominent look */
-    background: rgba(255, 255, 255, 0.2); /* Slightly transparent background */
+    background: rgba(255, 255, 255, 0.466); /* Slightly transparent background */
     border-radius: 10px; /* More pronounced rounded corners */
     color: #ffffffaf;
     text-align: left; /* Align text to the left */
@@ -137,6 +137,7 @@ body {
     border-radius: 10px; /* Optional: Add border radius */
     cursor: pointer; /* Change cursor to pointer */
     transition: background-color 0.3s; /* Smooth transition for background color */
+    font-size:22px;
 }
 
 .deploy-button:hover {

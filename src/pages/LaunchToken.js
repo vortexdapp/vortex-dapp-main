@@ -168,16 +168,15 @@ function LaunchToken() {
 
       // Convert amounts to BigInt
       const amountIn = ethers.parseUnits(amountToBuy, 18); // amountIn from user input
-      const liquidityAmount = ethers.parseUnits("0.00001", 18);
       const launchPrice = ethers.parseUnits("0.00002", 18);
 
-      const totalValue = amountIn + liquidityAmount + launchPrice;
+      const totalValue = amountIn + (liquidityAmount > 0 ? ethers.parseUnits(liquidityAmount.toString(), 18) : 0n) + launchPrice;
 
       // Call addLiquidityLockSwap in one transaction
       console.log("Adding initial liquidity, swapping and locking");
       const addLiquidityTx = await factoryContract.addLiquidityLockSwap(
         amountIn,
-        false, // Adjust as needed for liquidity lock
+        liquidityAmount > 0, // Set to true if liquidityAmount is greater than 0
         tokenName,
         tokenSymbol,
         tokenSupply,
@@ -408,7 +407,7 @@ function LaunchToken() {
                   type="range"
                   min="0"
                   max="30"
-                  step="0.1"
+                  step="0.05"
                   value={liquidityAmount}
                   onChange={(e) => setLiquidityAmount(e.target.value)}
                   className="liquidity-slider" // Add a class for the slider
@@ -458,7 +457,7 @@ function LaunchToken() {
                 </p>
               )}
 
-              <Link to={`/dashboard/${deployedContractAddress}`}>
+              <Link to={`/token/${deployedContractAddress}`}>
                 <button className="deploy-button">Next Step</button>
               </Link>
             </>

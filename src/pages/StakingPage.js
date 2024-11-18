@@ -554,7 +554,7 @@ const StakingPage = () => {
       </div>
       <div className="staking-container">
         {/* Staking container in the center */}
-        <h2 className="vortex-title">Vortex ETH Pool</h2>
+        
         {isConnected ? (
           <>
             <div>

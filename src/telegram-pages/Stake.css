@@ -35,9 +35,8 @@
 .stake-form input {
   padding: 8px;
   font-size: 16px;
-  border: 1px solid #333;
   border-radius: 5px;
-  background-color: #2a2a2a;
+  background: rgba(255, 255, 255, 0.466);
   color: #ffffff;
   width: 80%;
   outline: none;

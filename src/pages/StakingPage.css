@@ -1,8 +1,8 @@
 h5 {
   text-align: center;
   color: white;
-  margin-bottom: 10px; /* Adjusted for better spacing */
   font-size: 16px;
+  font-weight: 300px;
 }
 
 .texthome2 {
@@ -13,11 +13,23 @@ h5 {
 }
 
 .staking-container {
+
+  background: linear-gradient(135deg, #000000, #073b62, #bd41d6);
+    
+  border-radius: 40px; /* Increased border radius for more rounded corners */
+
+  padding: 20px 30px 20px 30px;
+  border:0px;
+  width: 100%;
+  max-width: 500px;
+  text-align: center;
+  transition: transform 0.3s;
+  margin-top: 10px; /* Add margin to separate from subtitle */
   max-width: 600px;
 
   padding: 20px; /* Reduced padding */
   margin: 50px auto; /* Center horizontally */
-  border: 1px solid #cccccc81;
+  
   border-radius: 30px;
   background-color: #0000006c;
   color: white;
@@ -28,11 +40,10 @@ h5 {
   text-align: center;
 }
 
-.vortex-title {
-  margin-bottom: 5px; /* Reduced margin to decrease distance */
-}
+
 .apy-title {
   margin-top: 10; /* Remove top margin to decrease distance */
+  font-size: 24px;
 }
 .info-container {
   max-width: 600px; /* Match the staking container */
@@ -77,18 +88,13 @@ h5 {
   }
 
   .titlestake {
-    margin-bottom: 10px;
+   
     text-align: center;
     color: white;
     font-size: 23px;
   }
 
-  .titlestake {
-    text-align: center;
-    color: white;
-    font-size: 18px;
-  }
-
+ 
   .texthome2 {
     text-align: center;
     color: white;
@@ -117,18 +123,10 @@ h5 {
 }
 
 
-
-
-.titlestake {
-  margin-bottom: 20px;
-  text-align: center;
-  color: white;
-}
-
 .stake-button,
 .unstake-button {
   margin-top:10px;
-  font-size: 16px; /* Adjust font size if needed */
+  font-size: 20px; /* Adjust font size if needed */
   border-radius: 6px; /* Keep existing border radius */
   background-color: #6c42a4; /* Example background color */
   color: white; /* Text color */
