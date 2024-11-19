@@ -417,8 +417,7 @@ const StakingPage = () => {
       setCanUnstake(availableForUnstake > 0n);
     } catch (error) {
       console.error("Error updating staking state:", error);
-      setErrorMessage("An error occurred while updating staking state.");
-    }
+     }
   };
 
   const calculateMaxUnstakable = (stakedAmount, pendingUnstake) => {
@@ -569,7 +568,8 @@ const StakingPage = () => {
               )}
               <p>{stakedMessage}</p>
               <input
-                type="text"
+                type="number"
+                className="input"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder="Enter amount (ETH)"
