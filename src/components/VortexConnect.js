@@ -91,8 +91,14 @@ const VortexConnect = () => {
 
     // Detect if the DApp is accessed via a wallet's in-app browser
     if (isMobile) {
-      // Customize these checks based on the wallets you support
-      if (window.ethereum?.isMetaMask || window.ethereum?.isTrust || window.phantom?.ethereum || window.ethereum?.isCoinbaseWallet || window.ethereum?.isRabby) {
+      // Enhanced detection using userAgent
+      const isMetaMask = window.ethereum?.isMetaMask || /MetaMask/i.test(userAgent);
+      const isTrustWallet = window.ethereum?.isTrust || /TrustWallet/i.test(userAgent);
+      const isPhantom = window.phantom?.ethereum || /Phantom/i.test(userAgent);
+      const isCoinbase = window.ethereum?.isCoinbaseWallet || /CoinbaseWallet/i.test(userAgent);
+      const isRabby = window.ethereum?.isRabby || /Rabby/i.test(userAgent);
+
+      if (isMetaMask || isTrustWallet || isPhantom || isCoinbase || isRabby) {
         setIsInWalletBrowser(true);
       } else {
         setIsInWalletBrowser(false);
@@ -103,7 +109,7 @@ const VortexConnect = () => {
       reconnectWallet();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [address]);
+  }, [address, isMobile]);
 
   // Close modal when clicking outside of it
   useEffect(() => {
@@ -154,7 +160,7 @@ const VortexConnect = () => {
       if (walletType === 'MetaMask' && window.ethereum?.isMetaMask) {
         tempProvider = new ethers.BrowserProvider(window.ethereum);
         walletFound = true;
-      } else if (walletType === 'TrustWallet' && window.ethereum?.isTrust) {
+      } else if (walletType === 'TrustWallet' && (window.ethereum?.isTrust || /TrustWallet/i.test(navigator.userAgent))) {
         tempProvider = new ethers.BrowserProvider(window.ethereum);
         walletFound = true;
       } else if (walletType === 'Phantom' && window.phantom?.ethereum) {
