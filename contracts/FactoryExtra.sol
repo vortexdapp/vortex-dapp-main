@@ -203,15 +203,14 @@ function sqrt(uint256 y) internal pure returns (uint256 z) {
     function getTWAPPrice(address poolAddress, uint32 twapInterval) public view returns (uint256 price) {
     IUniswapV3Pool pool = IUniswapV3Pool(poolAddress);
 
-    // Get the current timestamp and timestamp twapInterval seconds ago
-    uint32[] memory secondsAgos;
+    // Allocate memory for the array with two elements
+uint32[] memory secondsAgos;
 
     secondsAgos[0] = twapInterval;  // Time period over which TWAP is calculated (e.g., 1800 seconds = 30 minutes)
     secondsAgos[1] = 0;  // Current time
 
     // Fetch the tick cumulative values at these timestamps
     (int56[] memory tickCumulatives, ) = pool.observe(secondsAgos);
-
     // Calculate the time-weighted average tick over the twapInterval
     int56 timeWeightedAverageTick = (tickCumulatives[1] - tickCumulatives[0]) / int56(int32(twapInterval));
 

@@ -602,13 +602,39 @@ function sqrt(uint256 y) internal pure returns (uint256 z) {
     function removeLiquidity(uint256 tokenId, uint128 liquidityToRemove) internal returns (uint256 collectedAmount0, uint256 collectedAmount1) {
 
         uint256 index = tokenIndex[tokenId]; 
-        //require(!allTokens[index].liquidityRemoved, "Liquidity already removed");
+        require(!allTokens[index].liquidityRemoved, "Liquidity already removed");
 
         // Collect the tokens from the position
-        (collectedAmount0, collectedAmount1) = factoryHelper.removeLiquidity(tokenId, liquidityToRemove);
+        //(collectedAmount0, collectedAmount1) = factoryHelper.removeLiquidity(tokenId, liquidityToRemove);
+
+        // Decrease liquidity
+        positionManager.decreaseLiquidity(
+            INonfungiblePositionManager.DecreaseLiquidityParams({
+                tokenId: tokenId,
+                liquidity: liquidityToRemove,
+                amount0Min: 0,
+                amount1Min: 0,
+                deadline: block.timestamp
+            })
+        );
+
+        // Collect the tokens from the position
+        (collectedAmount0, collectedAmount1) = positionManager.collect(
+            INonfungiblePositionManager.CollectParams({
+                tokenId: tokenId,
+                recipient: address(this),
+                amount0Max: type(uint128).max,
+                amount1Max: type(uint128).max
+            })
+        );
 
         allTokens[index].liquidityRemoved = true; // Update the liquidity removed status
-        emit LiquidityRemoved(msg.sender, tokenId, collectedAmount0, collectedAmount1);
+        emit LiquidityRemoved(
+            msg.sender,
+            tokenId,
+            collectedAmount0,
+            collectedAmount1
+        );
 
         tryToSendFunds();
         return (collectedAmount0, collectedAmount1);
@@ -623,8 +649,8 @@ function sqrt(uint256 y) internal pure returns (uint256 z) {
         // only the token creator can remove liquidity
         require(msg.sender == tokenOwner, "Caller is not the token creator");
 
-        // currentTime = block.timestamp;
-        //require( currentTime > allTokens[index].unlockTime, "Please wait for unlockTime");
+        uint256 currentTime = block.timestamp;
+        require( currentTime > allTokens[index].unlockTime, "Please wait for unlockTime");
 
         // If 7 days have passed since launch unlock the liquidity
         ILiquidityLocker lockerContract = ILiquidityLocker(lockerAddress);
@@ -661,17 +687,17 @@ function sqrt(uint256 y) internal pure returns (uint256 z) {
         address poolAddress = uniswapFactory.getPool(token0, token1, fee);
 
         /* // Use the TWAP to calculate the price
-        uint32 twapInterval = 1800;  // Set TWAP period (e.g., 30 minutes)
+        uint32 twapInterval = 3;  // Set TWAP period (e.g., 30 minutes)
         uint256 price = factoryHelper.getTWAPPrice(poolAddress, twapInterval);  */
 
-        // Fetch pool state (price, liquidity, etc.)
+         // Fetch pool state (price, liquidity, etc.)
         IUniswapV3Pool poolContract = IUniswapV3Pool(poolAddress);
         (uint160 sqrtPriceX96,,,,,,) = poolContract.slot0();
         uint256 price = (uint256(sqrtPriceX96) ** 2 * 10 ** 18) / (2 ** 192);
 
         // Calculate the corresponding amount of tokens to remove
         uint256 tokensToRemove = (wethAmountToRemove * 10 ** 18) / price;
-        
+
         // Calculate the liquidity to remove 
         uint128 liquidityToRemove = uint128(sqrt(wethAmountToRemove * tokensToRemove));
 

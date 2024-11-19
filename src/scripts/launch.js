@@ -43,8 +43,8 @@ async function main() {
 
   // Replace this with the address of the deployed factory contract
 
-  const lockerAddress = "0x588Cb9490BB5F0FB5e77888531b89022E3a91949";
-  const factoryAddress = "0x0855F1A3228dE7935868A0DE1E0a471Fa9aeA5AE";
+  const lockerAddress = "0x2Ffa4F40da4A350677aA328b8883bbeb68D327d5";
+  const factoryAddress = "0x2103A1E4afb8D760AA32eE33Bc1cafF27E3b7b39";
 
   // Connect to the factory contract using its ABI and address
   const Factory = await ethers.getContractFactory("MyFactory");
@@ -73,7 +73,7 @@ async function main() {
   console.log("Adding initial liquidity, swapping and locking");
   const txtest = await factory.addLiquidityLockSwap(
     amountIn,
-    false,
+    true,
     tokenName,
     tokenSymbol,
     tokenSupply,
