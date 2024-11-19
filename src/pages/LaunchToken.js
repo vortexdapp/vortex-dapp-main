@@ -251,6 +251,7 @@ function LaunchToken() {
           pool: poolAddress,
           token_id: tokenId,
           lock_id: lockID,
+          liquidity_amount:liquidityAmount,
         },
       ]);
 
