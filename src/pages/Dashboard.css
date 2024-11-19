@@ -1,0 +1,29 @@
+.three-column-layout {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 20px;
+  }
+  
+  .dashboard-column {
+    flex: 1;
+    padding: 30px;
+    
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.167);
+ 
+
+  }
+  
+  .dashboard-column h2 {
+    margin-bottom: 10px;
+  }
+  
+  .wallet-points-display {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+  }
+  

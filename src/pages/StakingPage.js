@@ -119,8 +119,8 @@ const StakingPage = () => {
       setTotalStaked(formattedTotalStaked);
       setTotalRewards(formattedTotalRewards);
     } catch (error) {
-      console.error("Error fetching statistics:", error);
-      setErrorMessage("Failed to fetch statistics.");
+      // console.error("Error fetching statistics:", error);
+      // setErrorMessage("Failed to fetch statistics.");
     }
   };
 

@@ -12,7 +12,9 @@ import VortexConnectPage from "./pages/VortexConnectPage";
 import Trading from "./pages/Trading";
 import { VortexConnectProvider } from "./VortexConnectContext"; // Import context provider
 import Header from "./components/Header";
+import Dashboard from "./pages/Dashboard";
 import LaunchToken from "./pages/LaunchToken";
+import TokenManagement from "./pages/TokenManagement";
 
 function App() {
   return (
@@ -30,6 +32,9 @@ function App() {
           <Route path="/token/:contractAddress" element={<AfterLaunch />} />
           <Route path="/trading/:chain/:contractAddress" element={<Trading />} />
           <Route path="/staking" element={<StakingPage />} />
+          <Route path="/dashboard" element={<Dashboard/>}/>
+          <Route path="/token-management/:tokenAddress" element={<TokenManagement />} />
+      
         </Routes>
       </Router>
     </VortexConnectProvider>

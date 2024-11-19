@@ -548,6 +548,8 @@ const VortexConnect = () => {
 
                 {address && (
                   <>
+                    <button onClick={() => window.location.href = '/dashboard'} className="wallet-button">Dashboard</button>
+                   
                     <button onClick={() => setIsSwitchingChains(true)} className="wallet-button">Switch Chains</button>
                     <button onClick={changeWallet} className="wallet-button">Change Account</button>
                     <button onClick={disconnectWallet} className="disconnect-button">Disconnect</button>
