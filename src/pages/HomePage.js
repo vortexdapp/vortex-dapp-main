@@ -40,9 +40,7 @@ function HomePage() {
 
       <div className="container">
         <TokensList/>
-        <Link to="/tokens">
-          <button>View All</button>
-        </Link>
+       
       </div>
 
       <HowItWorks />
