@@ -5,13 +5,14 @@
 }
 
 .tokens-grid {
+    margin-top:40px;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 20px;
 }
 
 .icon-link2 {
-    margin-right: 10px; 
+    margin-right:   10px; 
     margin-left:10px;/* Adjust space between icons */
     
     display: inline-block; /* Ensures margin applies correctly */
@@ -59,10 +60,10 @@ margin-bottom:50px;}
 
 .trade-button {
     background-color: #1ec7de;
-    color: white;
+    color: rgb(0, 0, 0);
     border: none;
     padding: 10px 20px;
-    font-size: 16px;
+    font-size: 18px;
     cursor: pointer;
     margin-top: 10px;
     transition: background-color 0.3s ease;
