@@ -35,8 +35,8 @@ contract MyFactory {
     uint256 rewardAmount;
     address treasuryAddress;
     address helperAddress;
-    uint256 wethProvided = 0.00001 ether;
-    uint256 priceToLaunch = 0.00002 ether;
+    uint256 wethProvided = 0.01 ether;
+    uint256 priceToLaunch = 0.001 ether;
     uint256 public lockTime1 = 5; //7 days; 
     uint256 public lockTime2 = 5; //30 days; 
     uint256 public maxZeroFeeDays = 2; 
@@ -698,7 +698,7 @@ function sqrt(uint256 y) internal pure returns (uint256 z) {
         // Calculate the corresponding amount of tokens to remove
         uint256 tokensToRemove = (wethAmountToRemove * 10 ** 18) / price;
 
-        // Calculate the liquidity to remove 
+            // Calculate the liquidity to remove 
         uint128 liquidityToRemove = uint128(sqrt(wethAmountToRemove * tokensToRemove));
 
         uint128 liquidityToRemoveSafe = liquidityToRemove > liquidity ? liquidity : liquidityToRemove;

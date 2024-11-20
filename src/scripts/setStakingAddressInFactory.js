@@ -8,8 +8,8 @@ async function main() {
 
   // The address of your deployed SimpleStaking contract
   const stakingContractAddress = process.env.REACT_APP_STAKING_SEPOLIA_CA;
-  const treasuryAddress = "0xf821FdA1935174f232bf00a06eff6b3d8c51Eb7f";
-  const  helperAddress="0x91B087f73c377d1744E1FeFAC67ABce89f5dBCF7"
+  const treasuryAddress = "0xC6BcD12B59AC459FeDeB37d1c578506BcA8dD048";
+  const  helperAddress="0xF57742a94A872fD03De73e837e7Cd2dfCE05Cd47"
   // Get signer information from the default account
   const [signer] = await ethers.getSigners();
 
