@@ -10,6 +10,7 @@ import { supabase } from "../supabaseClient";
 import { VortexConnectContext } from "../VortexConnectContext";
 import factoryABI from "../abis/FactoryABI.json";
 import lockerABI from "../abis/LockerABI.json";
+import image_placeholder from "../assets/image_placeholder.png"
 
 async function getLatestEvent(token, eventName) {
   // Get the filter for the TokenDeployed event
@@ -117,6 +118,18 @@ function LaunchToken() {
   }, [chainId, isInitialized, factoryChainAddress]);
 
   const chainName = CHAIN_NAMES[chainId] || `Unknown Chain (${chainId})`;
+
+  // Helper function to format number with commas
+const formatNumberWithCommas = (value) => {
+  if (!value) return "";
+  return value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+};
+
+// Helper function to remove commas from a formatted number
+const removeCommas = (value) => {
+  return value.replace(/,/g, "");
+};
+
 
   // Function to deploy token and add liquidity in one transaction
   async function deployTokenAndAddLiquidity(e) {
@@ -321,7 +334,6 @@ function LaunchToken() {
           <form onSubmit={deployTokenAndAddLiquidity} className="token-form">
             {/* Image Upload */}
             <div className="custom-file-input">
-              {tokenImage ? null : <span>Add image here</span>}
               <input
                 type="file"
                 id="tokenImage"
@@ -329,7 +341,7 @@ function LaunchToken() {
                 onChange={(e) => setTokenImage(e.target.files[0])}
                 className="input"
               />
-              {tokenImage && (
+              {tokenImage ? (
                 <div
                   style={{
                     display: "flex",
@@ -340,6 +352,25 @@ function LaunchToken() {
                   <img
                     src={URL.createObjectURL(tokenImage)}
                     alt="Token Preview"
+                    style={{
+                      width: "100px",
+                      height: "100px",
+                      borderRadius: "50%",
+                      objectFit: "cover",
+                    }}
+                  />
+                </div>
+              ) : (
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <img
+                    src={image_placeholder}
+                    alt="Placeholder"
                     style={{
                       width: "100px",
                       height: "100px",
@@ -374,32 +405,33 @@ function LaunchToken() {
               />
 
               {/* Token Supply */}
-              <input
-                type="number"
-                value={tokenSupply}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  // Only allow positive integers
-                  if (/^\d*$/.test(value)) {
-                    setTokenSupply(value);
-                  }
-                }}
-                placeholder="Total Supply"
-                className="input"
-                required
-                min="1"
-              />
+          {/* Token Supply Input */}
+<input
+  type="text"
+  value={formatNumberWithCommas(tokenSupply)}
+  onChange={(e) => {
+    const rawValue = removeCommas(e.target.value);
+    // Allow only digits
+    if (/^\d*$/.test(rawValue)) {
+      setTokenSupply(rawValue);
+    }
+  }}
+  placeholder="Total Supply"
+  className="input"
+  required
+/>
 
               {/* Amount to Buy ETH */}
               <input
                 type="number"
-                step="0.0000001"
+                step="0.0001"
                 value={amountToBuy}
                 onChange={(e) => setAmountToBuy(e.target.value)}
                 placeholder="Buy Tokens (ETH)"
                 className="input"
                 required
                 min="0"
+                max="0.0019"
               />
             </div>
 
@@ -424,7 +456,7 @@ function LaunchToken() {
                 <input
                   type="range"
                   min="0"
-                  max="1"
+                  max="10"
                   step="0.001"
                   value={liquidityAmount}
                   onChange={(e) => setLiquidityAmount(e.target.value)}

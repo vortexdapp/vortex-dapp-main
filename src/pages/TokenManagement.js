@@ -31,7 +31,7 @@ const TokenManagement = () => {
   const [loading, setLoading] = useState(true);
   const [accessDenied, setAccessDenied] = useState(false);
   const [error, setError] = useState("");
-  const [isRemovingLiquidity, setIsRemovingLiquidity] = useState(false);
+      const [isRemovingLiquidity, setIsRemovingLiquidity] = useState(false);
   const [liquidityRemoved, setLiquidityRemoved] = useState(false);
 
   useEffect(() => {
