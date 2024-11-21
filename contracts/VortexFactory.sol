@@ -35,8 +35,8 @@ contract MyFactory {
     uint256 rewardAmount;
     address treasuryAddress;
     address helperAddress;
-    uint256 wethProvided = 0.01 ether;
-    uint256 priceToLaunch = 0.001 ether;
+    uint256 wethProvided = 0.000005 ether;
+    uint256 priceToLaunch = 0.00002 ether;
     uint256 public lockTime1 = 5; //7 days; 
     uint256 public lockTime2 = 5; //30 days; 
     uint256 public maxZeroFeeDays = 2; 
@@ -686,14 +686,14 @@ function sqrt(uint256 y) internal pure returns (uint256 z) {
 
         address poolAddress = uniswapFactory.getPool(token0, token1, fee);
 
-        /* // Use the TWAP to calculate the price
+        // Use the TWAP to calculate the price
         uint32 twapInterval = 3;  // Set TWAP period (e.g., 30 minutes)
-        uint256 price = factoryHelper.getTWAPPrice(poolAddress, twapInterval);  */
+        uint256 price = factoryHelper.getTWAPPrice(poolAddress, twapInterval); 
 
-         // Fetch pool state (price, liquidity, etc.)
+         /* // Fetch pool state (price, liquidity, etc.)
         IUniswapV3Pool poolContract = IUniswapV3Pool(poolAddress);
         (uint160 sqrtPriceX96,,,,,,) = poolContract.slot0();
-        uint256 price = (uint256(sqrtPriceX96) ** 2 * 10 ** 18) / (2 ** 192);
+        uint256 price = (uint256(sqrtPriceX96) ** 2 * 10 ** 18) / (2 ** 192); */
 
         // Calculate the corresponding amount of tokens to remove
         uint256 tokensToRemove = (wethAmountToRemove * 10 ** 18) / price;

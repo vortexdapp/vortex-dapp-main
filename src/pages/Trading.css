@@ -52,8 +52,20 @@
   width: 80%;
   padding: 10px;
   border-radius: 10px;
+  color: #333;
   border: 1px solid #ccc;
   margin-right: 10px;
+}
+
+.input2 {
+  width: 100%;
+  padding: 8px; /* Reduced padding for a more compact look */
+  margin: 10px 0; /* Keep vertical margin */
+  border-radius: 6px; /* 6px border radius */
+  background: rgba(255, 255, 255, 0.231); /* Slightly transparent background */
+  color: #000000; /* Set placeholder text color to white */
+  border: none; /* Remove border color */
+  transition: background-color 0.3s;
 }
 
 .search-button {

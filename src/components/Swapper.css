@@ -1,0 +1,90 @@
+.swap-container {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 20px;
+  color: #333;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  font-family: "Arial", sans-serif;
+}
+.swap-container h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #dfdfdf;
+  font-weight: bold;
+}
+
+.balance-display {
+  margin-bottom: 20px;
+  font-size: 16px;
+  color: #e1e1e1;
+}
+
+.swap-input {
+  margin-bottom: 20px;
+  color: #ffffff;
+}
+
+.swap-input label {
+  display: block;
+  font-size: 14px;
+  color: #d9d9d9;
+  margin-bottom: 8px;
+  text-align: left;
+}
+
+.swap-container p {
+  font-size: 14px;
+  color: #dcdcdc;
+  margin-top: 10px;
+}
+
+.input3 {
+  width: 100%;
+  padding: 8px; /* Reduced padding for a more compact look */
+  margin: 10px 0; /* Keep vertical margin */
+  border-radius: 6px; /* 6px border radius */
+  background: rgba(255, 255, 255, 0.231); /* Slightly transparent background */
+  color: #000000; /* Set placeholder text color to white */
+  border: none; /* Remove border color */
+  transition: background-color 0.3s;
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  color: #fff;
+  background-color: #4a90e2;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-bottom: 10px;
+}
+
+button:hover {
+  background-color: #357ab9;
+}
+
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.swap-container button + button {
+  margin-top: 10px;
+}
+
+.swap-container button.switch-direction {
+  background-color: #f4f4f4;
+  color: #4a90e2;
+  border: 1px solid #4a90e2;
+}
+
+.swap-container button.switch-direction:hover {
+  background-color: #4a90e2;
+  color: #fff;
+}

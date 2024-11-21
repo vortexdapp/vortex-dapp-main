@@ -4,10 +4,12 @@ import { supabase } from "../supabaseClient"; // Import your Supabase client
 import Footer from "../components/Footer";
 import "./Trading.css";
 import Header from "../components/Header.js";
+import Swapper from "../components/Swapper.js";
 import { FaTelegramPlane, FaTwitter, FaGlobe } from "react-icons/fa";
 
 function Trading() {
-  const { chain: initialChain, contractAddress: initialContractAddress } = useParams();
+  const { chain: initialChain, contractAddress: initialContractAddress } =
+    useParams();
   let chain = initialChain.toLowerCase();
 
   // Update chain if it is sepolia
@@ -15,7 +17,9 @@ function Trading() {
     chain = "sepolia-testnet";
   }
 
-  const [contractAddress, setContractAddress] = useState(initialContractAddress);
+  const [contractAddress, setContractAddress] = useState(
+    initialContractAddress
+  );
   const [pool, setPool] = useState(""); // New state for pool address
   const [searchValue, setSearchValue] = useState(initialContractAddress);
   const [tokenName, setTokenName] = useState("");
@@ -25,6 +29,20 @@ function Trading() {
   const [twitter, setTwitter] = useState("");
   const [showInfo, setShowInfo] = useState(false);
   const navigate = useNavigate();
+
+  // State for wallet connection
+  const [signer, setSigner] = useState(null);
+  const [provider, setProvider] = useState(null);
+  const [chainId, setChainId] = useState(null);
+
+  useEffect(() => {
+    // Log the signer, provider, and chainId whenever they are updated
+    if (signer || provider || chainId) {
+      console.log("Signer:", signer);
+      console.log("Provider:", provider);
+      console.log("Chain ID:", chainId);
+    }
+  }, [signer, provider, chainId]);
 
   useEffect(() => {
     // Fetch token data (using Supabase)
@@ -62,6 +80,24 @@ function Trading() {
     fetchTokenData();
   }, [contractAddress]);
 
+  const handleWalletConnect = async ({ signer, provider }) => {
+    try {
+      // Explicitly fetch the network details from the provider
+      const network = await provider.getNetwork();
+      const chainId = network.chainId;
+
+      console.log("Wallet connected:", { signer, provider, chainId });
+
+      // Set states
+      setSigner(signer);
+      setProvider(provider);
+      setChainId(chainId);
+    } catch (error) {
+      console.error("Error fetching chainId:", error);
+      setChainId(null); // Reset if there's an error
+    }
+  };
+
   const handleSearchChange = (e) => {
     setSearchValue(e.target.value);
   };
@@ -74,7 +110,11 @@ function Trading() {
 
   return (
     <div>
-      <Header />
+      <Header
+        onWalletConnect={({ signer, provider }) => {
+          handleWalletConnect({ signer, provider });
+        }}
+      />
       <div style={{ textAlign: "center", marginTop: "20px", color: "#ffffff" }}>
         {imageUrl && (
           <img
@@ -147,7 +187,9 @@ function Trading() {
           )}
           {telegram && (
             <a
-              href={telegram.startsWith("http") ? telegram : `https://${telegram}`}
+              href={
+                telegram.startsWith("http") ? telegram : `https://${telegram}`
+              }
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -169,6 +211,7 @@ function Trading() {
       <div style={{ padding: "20px", textAlign: "center" }}>
         <form onSubmit={handleSearchSubmit}>
           <input
+            className="input2"
             type="text"
             value={searchValue}
             onChange={handleSearchChange}
@@ -243,20 +286,13 @@ function Trading() {
           </div>
         </div>
 
-        {/* Right Section (Uniswap) */}
-        <div style={{ flex: "0 0 30%", marginLeft: "10px" }}>
-          <iframe
-            title="Swap"
-            src={`https://app.uniswap.org/swap?chain=${chain}&theme=dark&inputCurrency=eth&outputCurrency=${contractAddress}&forceNetwork=${chain}`}
-            height="660px"
-            width="100%"
-            style={{
-              border: "0",
-              display: "block",
-              borderRadius: "10px",
-            }}
-          />
-        </div>
+        {/* Right Section (Swapper) */}
+        <Swapper
+          signer={signer}
+          provider={provider}
+          tokenAddress={contractAddress}
+          chainId={chainId}
+        />
       </div>
 
       <Footer />

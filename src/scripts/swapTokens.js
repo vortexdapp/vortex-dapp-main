@@ -7,7 +7,7 @@ async function main() {
   );
 
   // Replace this with the address of the deployed factory contract
-  const factoryAddress = "0x2103A1E4afb8D760AA32eE33Bc1cafF27E3b7b39";
+  const factoryAddress = "0x68547a2Edde5b4177Dd89e1Df08b34031bfe0610";
 
   const tokenAddress = "0xec08Ae6AEFcB3cEd7261B5957dfD70bd3be701c4";
 
@@ -46,7 +46,7 @@ async function main() {
   //-----------------------------------------------------------------------------------------
 
   console.log("Retrieving user provided liquidity...");
-  tx10 = await factory.removeUserLiquidity(26429, 0);
+  tx10 = await factory.removeUserLiquidity(26620, 0);
   receipt = await tx10.wait();
   console.log("Liquidity retrieved successfully!");
 

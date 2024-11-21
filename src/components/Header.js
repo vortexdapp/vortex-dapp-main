@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import "./Header.css";
 import VortexConnect from "./VortexConnect"; // Import VortexConnect
 
-function Header() {
+const Header = ({ onWalletConnect }) => {
   return (
     <header>
       <div className="header-content">
@@ -24,17 +24,23 @@ function Header() {
             <Link to="/factory">Launch</Link>
             <Link to="/staking">Stake</Link>
             <Link to="/tokens">Trade</Link>
-            <a href="https://docs.vortexdapp.com" target="_blank" rel="noopener noreferrer">Docs</a>
+            <a
+              href="https://docs.vortexdapp.com"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Docs
+            </a>
           </nav>
         </div>
-        
+
         {/* Render VortexConnect here instead of custom connect button */}
         <div className="div-button">
-          <VortexConnect />
+          <VortexConnect onConnect={onWalletConnect} />
         </div>
       </div>
     </header>
   );
-}
+};
 
 export default Header;

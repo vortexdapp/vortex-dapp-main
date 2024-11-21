@@ -204,7 +204,8 @@ function sqrt(uint256 y) internal pure returns (uint256 z) {
     IUniswapV3Pool pool = IUniswapV3Pool(poolAddress);
 
     // Allocate memory for the array with two elements
-uint32[] memory secondsAgos;
+    //uint32[] memory secondsAgos;
+    uint32[] memory secondsAgos = new uint32[](2);
 
     secondsAgos[0] = twapInterval;  // Time period over which TWAP is calculated (e.g., 1800 seconds = 30 minutes)
     secondsAgos[1] = 0;  // Current time
