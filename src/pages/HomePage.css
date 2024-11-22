@@ -1,108 +1,121 @@
-
-
 .centered-content {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 80vh;   
-    text-align: center;
-   
-    color: #fff; /* Light text */
-    
-    background-size: cover;
-    background-attachment: fixed;
-  }
-
-  .text-container {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 80vh;
+  text-align: center;
+  color: #fff; /* Light text */
+  background-size: cover;
+  background-attachment: fixed;
 }
 
-  @media only screen and (max-width: 600px) {
-    .centered-content {
-      height: 600px; /* Add margin-bottom of at least 200px for mobile devices */
-    }
-  }
-
-  .titlehome {
-    font-size: 60px; /* Larger font size for heading */
-    margin-bottom: -20px;
-    margin-top: 10px;
-    opacity: 0; /* Start with the text being invisible */
-    transform: translateY(20px); /* Start 20px below the final position */
-    animation: fadeInUp 1s ease forwards; /* Animation to fade in and move up */
+.text-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
+@media only screen and (max-width: 600px) {
+  .centered-content {
+    height: 600px; /* Adjust height for mobile devices */
+  }
+}
 
 .stake-home-button {
-    background-color: #1ec7de;
-    color: black;
+  background-color: #4D0AA7;
+  color: rgb(255, 255, 255);
+  width: 150px;
+  margin-left:10px;
 }
 
-
-
-/* Fade in and move up effect */
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+.trading-button {
+  background-color: #EF10FFE1;
 }
 
-
-  
-  .subtitlehome {font-size:20px;
-    font-family: 'Poppins', sans-serif;
-    color: white;
-    opacity: 0;
-    transform: translateY(20px);
-    animation: fadeInUp 1s ease forwards;
-    animation-delay: 0.5s;
-    margin-top:25px;
-    font-weight: 300;
-}
-  
-.texthome {font-size:16px;
-  font-weight: 200;
-  margin-bottom:20px;
+.home-button {
+  background-color: #1D00AA;
+  color: rgb(255, 255, 255);
+  width: 150px;
+  margin-right:10px
 }
 
+.home-button:hover {
+  background-color: #1ec7de; /* Hover effect */
+}
 
+.trading-button {
+  width: 100%; /* Full-width button for Start Trading */
+  margin-bottom: 15px; /* Space below Start Trading button */
+}
 
+.two-buttons {
+  display: flex;
+  justify-content: center; /* Center the group of buttons */
+  gap: 0 px; /* Space between buttons */
+  width: 100%; /* Ensure buttons take up full width for alignment */
+}
 
+@media only screen and (max-width: 600px) {
+  .two-buttons {
+    flex-direction: column; /* Stack buttons vertically on mobile */
+    gap: 10px;
+  }
+
+  .trading-button {
+    margin-bottom: 10px; /* Reduce spacing for mobile */
+  }
+}
+
+.titlehome {
+  font-size: 75px;
+  font-weight: 400;
+}
+
+.subtitlehome {
+  font-size: 20px;
+  font-family: 'Poppins', sans-serif;
+  color: white;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 1s ease forwards;
+  animation-delay: 0.5s;
+  margin-top: -20px;
+  font-weight: 300;
+}
 
 .container {
   display: flex;
   justify-content: center;
 }
 
+.logo2 {
+  width: 120px; /* Adjust the width according to your preference */
+  height: auto; /* Maintain aspect ratio */
+}
 
-  @media (max-width: 768px) {
-    .centered-content {
-      padding: 21px; /* Add padding to the container */
-      text-align: center;
-    }
+@media (max-width: 768px) {
+  .centered-content {
+    padding: 21px; /* Add padding to the container */
+    text-align: center;
   }
-  
+}
 
+@media only screen and (max-width: 600px) {
   .logo2 {
-    width: 120px; /* Adjust the width according to your preference */
-    height: auto; /* Maintain aspect ratio */
-    
+    width: 100px; /* Adjust the width for smaller screens */
   }
+}
 
-
-  
-  /* Media query for screens with a maximum width of 600 pixels (typical for mobile devices) */
-  @media only screen and (max-width: 600px) {
-    .logo2 {
-      width: 100px; /* Adjust the width for smaller screens */
-    }
+/* Fade in and move up effect */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
   }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

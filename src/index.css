@@ -32,17 +32,19 @@ code {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Technoma', sans-serif;
-  letter-spacing: 0.09em; /* Adjust the value as needed */
+  letter-spacing: 1 px; /* Adjust the value as needed */
+  font-weight: 400;
+  line-height: 0.9 em;
+
 }
 
 button {
   font-family: 'Technoma', sans-serif;
   color: white;
-  background-color: #6c42a4;
+  background-color: #EF10FFE1;
   padding: 10px 54px;
   font-size: 20px;
-  margin-right: 10px;
-  margin-left: 10px;
+
   border-radius: 6px;
   border: none;
   cursor: pointer;

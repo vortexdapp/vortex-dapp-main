@@ -544,7 +544,7 @@ const StakingPage = () => {
     <div style={{ position: "relative", textAlign: "center" }}>
       <Header />
       <div>
-        <h1 className="titlestake">
+        <h1 className="titlelaunch">
           Earn from every token deployed through Vortex
         </h1>
         <h5 className="subtitlefactory">
