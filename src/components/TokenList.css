@@ -5,34 +5,52 @@
 }
 
 .tokens-grid {
-    margin-top:40px;
+    margin-top: 40px;
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, 1fr); /* 3 columns for larger screens */
     gap: 20px;
 }
 
+.subtitletokens {
+    margin-top: 0px;
+    margin-bottom: 20px;
+    text-align: center; /* Center the subtitle text horizontally */
+    font-size:18px;
+    font-family: 'Luciole', sans-serif; 
+   
+}
+
+/* Media query for small screens (phones) */
+@media (max-width: 768px) {
+    .tokens-grid {
+        grid-template-columns: 1fr; /* Single column on smaller screens */
+    }
+}
+
 .icon-link2 {
-    margin-right:   10px; 
-    margin-left:10px;/* Adjust space between icons */
-    
+    margin-right: 10px;
+    margin-left: 10px; /* Adjust space between icons */
     display: inline-block; /* Ensures margin applies correctly */
     vertical-align: middle; /* Aligns icons nicely if text is also in line */
-  }
-  
-  .icon2 {
-    font-size: 18 px; /* Adjusts the size of the icons */
-    color: #ffffff; /* Example to set the color, adjust as needed */
-    margin-top:15px;
-  }
+}
 
+.icon2 {
+    font-size: 18px; /* Adjusts the size of the icons */
+    color: #ffffff; /* Example to set the color, adjust as needed */
+    margin-top: 15px;
+}
 
 .deployedtokenstitle {
-  margin-bottom:10px;
-    font-size:24px;}
+    margin-bottom: 10px;
+    font-size: 24px;
+}
 
-    
-.subtitletokens{margin-top:10px;
-margin-bottom:50px;}
+.subtitletokens {
+    margin-top: 0px;
+    margin-bottom: 30px;
+    text-align: center; /* Center the subtitle text horizontally */
+   
+}
 
 
 .token-card {
@@ -40,23 +58,22 @@ margin-bottom:50px;}
     border: 1px solid #ddd;
     border-radius: 24px; /* Increased border radius for more rounded corners */
     overflow: hidden;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
     align-items: center; /* Centers children horizontally */
     justify-content: center; /* Centers children vertically */
-    text-align: center; 
+    text-align: center;
 }
 
 .token-image {
-    width: 150px;  /* Set width */
+    width: 150px; /* Set width */
     height: 150px; /* Set height equal to width to make it square */
     object-fit: cover; /* Covers the area without stretching the image */
     display: block; /* Removes any extra space below the image in an inline-block context */
     margin-top: 15px; /* Centers the image horizontally if the parent container is wider */
-    border-radius:360px;
+    border-radius: 360px;
 }
-
 
 .trade-button {
     background-color: #1ec7de;
@@ -67,8 +84,7 @@ margin-bottom:50px;}
     cursor: pointer;
     margin-top: 10px;
     transition: background-color 0.3s ease;
-  }
-
+}
 
 .token-info {
     padding: 15px;
@@ -77,7 +93,7 @@ margin-bottom:50px;}
 .token-title {
     margin: 10px 0 5px;
     color: #ffffff;
-    font-size:18px;
+    font-size: 18px;
 }
 
 .token-deployer {

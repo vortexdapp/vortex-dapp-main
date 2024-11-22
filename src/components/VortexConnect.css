@@ -45,6 +45,7 @@
 }
 h2{margin-top:20px;}
 /* Hover effect for buttons */
+
 .wallet-button:hover, .cancel-button:hover, .disconnect-button:hover {
     background-color: #1EC7DE;
     color: rgb(255, 255, 255);

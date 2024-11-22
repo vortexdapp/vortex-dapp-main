@@ -1,19 +1,18 @@
-import React, { useState, useEffect } from "react";
+// src/pages/AfterLaunch.js
+
+import React, { useState, useEffect, useContext } from "react";
 import { Link, useParams } from "react-router-dom";
-import { doc, updateDoc, getDoc } from "firebase/firestore";
-import { firestore } from "../components/firebaseConfig";
 import Header from "../components/Header.js";
 import Footer from "../components/Footer.js";
-import { useWeb3Modal, useWeb3ModalAccount } from "@web3modal/ethers/react";
 import { ethers } from "ethers";
-import LiquidityLockerJson from "../contracts/LiquidityLocker.json";
-import MyFactoryJson from "../contracts/MyFactory.json";
+import { supabase } from "../supabaseClient";
+import { VortexConnectContext } from "../VortexConnectContext";
 
 const networkConfig = {
   // Example Chain IDs for Base and Sepolia
   8453: {
-    // Mainnet (as an example; replace with the correct ID for "base")
-    factoryAddress: "0x4301B64C8b4239EfBEb5818F968d1cccf4a640E0", //deprecated - deploy new one one base
+    // Base Network
+    factoryAddress: "0x4301B64C8b4239EfBEb5818F968d1cccf4a640E0", // Update if needed
     WETH_address: "0x4200000000000000000000000000000000000006",
     explorerUrl: "https://basescan.org",
     nftAddress: "0x03a520b32C04BF3bEEf7BEb72E919cf822Ed34f1",
@@ -22,7 +21,7 @@ const networkConfig = {
   },
   11155111: {
     // Sepolia Testnet Chain ID
-    factoryAddress: "process.env.REACT_APP_FACTORY_SEPOLIA_CA",
+    factoryAddress: process.env.REACT_APP_FACTORY_SEPOLIA_CA,
     lockerAddress: "0x618dc0F2cf41C3feDA52D614D13CEcf5Bcd0C43E",
     WETH_address: "0xfff9976782d46cc05630d1f6ebab18b2324d6b14",
     explorerUrl: "https://sepolia.etherscan.io",
@@ -32,13 +31,6 @@ const networkConfig = {
 };
 
 function AfterLaunch() {
-  const {
-    address: connectedWallet,
-    chainId,
-    isConnected,
-  } = useWeb3ModalAccount();
-
-  const { open } = useWeb3Modal();
   const { contractAddress } = useParams();
   const [tokenDetails, setTokenDetails] = useState({
     website: "",
@@ -48,8 +40,16 @@ function AfterLaunch() {
   const [isLoading, setIsLoading] = useState(false);
   const [deployer, setDeployer] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
-
   const [isLoaded, setIsLoaded] = useState(false);
+
+  // Use VortexConnectContext
+  const {
+    address: connectedWallet,
+    chainId,
+    isConnected,
+    connectMetaMask: connectWallet,
+  } = useContext(VortexConnectContext);
+
   const factoryChainAddress =
     networkConfig[chainId]?.factoryAddress || "DefaultFactoryAddress";
   const lockerChainAddress =
@@ -62,33 +62,33 @@ function AfterLaunch() {
     const fetchTokenDetails = async () => {
       if (!contractAddress) return;
 
-      const tokenDocRef = doc(firestore, "tokens", contractAddress);
-      const docSnap = await getDoc(tokenDocRef);
+      const { data, error } = await supabase
+        .from("tokens")
+        .select("*")
+        .eq("address", contractAddress)
+        .single();
 
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        setTokenDetails(data);
+      if (error) {
+        console.error("Error fetching token details:", error);
+      } else if (data) {
+        setTokenDetails({
+          website: data.website || "",
+          twitter: data.twitter || "",
+          telegram: data.telegram || "",
+        });
         setIsLoaded(true);
         setDeployer(data.deployer);
 
         // Assuming you need the tokenId for further processing
-        const tokenId = data.tokenId; // Here's where you retrieve the tokenId
+        const tokenId = data.token_id; // Assuming the column is 'token_id'
         console.log("Token ID:", tokenId); // Log or use the tokenId as needed
       } else {
-        console.log("No such document!");
+        console.log("No such token!");
       }
     };
 
     fetchTokenDetails();
   }, [contractAddress]);
-
-  const connectWallet = async () => {
-    try {
-      await open();
-    } catch (error) {
-      console.error("Failed to connect wallet:", error);
-    }
-  };
 
   // Ensure URLs do not include www. or any protocol
   const formatWebsite = (url) =>
@@ -130,15 +130,29 @@ function AfterLaunch() {
 
   const handleUpdate = async (e) => {
     e.preventDefault();
-    if (connectedWallet !== deployer) {
+    if (connectedWallet?.toLowerCase() !== deployer?.toLowerCase()) {
       setErrorMessage("Only the deployer can update the token details.");
       return;
     }
     setIsLoading(true);
-    const tokenDoc = doc(firestore, "tokens", contractAddress);
-    await updateDoc(tokenDoc, tokenDetails);
+
+    const { error } = await supabase
+      .from("tokens")
+      .update({
+        website: tokenDetails.website,
+        twitter: tokenDetails.twitter,
+        telegram: tokenDetails.telegram,
+      })
+      .eq("address", contractAddress);
+
+    if (error) {
+      console.error("Error updating token details:", error);
+      setErrorMessage("Failed to update token details.");
+    } else {
+      setErrorMessage("");
+      window.location.href = `/trading/${chain}/${contractAddress}`;
+    }
     setIsLoading(false);
-    window.location.href = `/trading/${chain}/${contractAddress}`;
   };
 
   return (
