@@ -30,6 +30,16 @@
 /* Title styling */
 
 
+.connect-button{
+
+    background-color: #1EC7DE;
+}
+
+.connect-button:hover{
+
+    background-color: #EF10FFE1;
+    color:white;
+}
 /* Common button styles */
 .wallet-button, .cancel-button, .disconnect-button {
     background-color: #ffffff;
