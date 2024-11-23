@@ -545,8 +545,7 @@ const VortexConnect = ({ onConnect }) => {
           Connect
         </button>
       )}
-      {error && <p className="error-message">{error}</p>}
-
+      
       {isModalOpen && (
         <div className="modal">
           <div className="modal-content" ref={modalRef}>

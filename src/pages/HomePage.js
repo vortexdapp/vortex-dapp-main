@@ -2,7 +2,6 @@ import React, { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import "./HomePage.css";
 import Header from "../components/Header";
-import HowItWorks from "../components/HowItWorks";
 import Footer from "../components/Footer";
 import { VortexConnectContext } from "../VortexConnectContext";
 import TokensList from "../components/TokenList";
