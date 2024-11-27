@@ -1,9 +1,7 @@
-// src/pages/HomePage.js
 import React, { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import "./HomePage.css";
 import Header from "../components/Header";
-import HowItWorks from "../components/HowItWorks";
 import Footer from "../components/Footer";
 import { VortexConnectContext } from "../VortexConnectContext";
 import TokensList from "../components/TokenList";
@@ -15,8 +13,6 @@ function HomePage() {
   return (
     <div>
       <Header connectWallet={connect} isConnected={isConnected} chainId={chainId} />
-     
-     
 
       <div className="centered-content">
         <img src="logo512.png" alt="Logo" className="logo2" />
@@ -25,25 +21,30 @@ function HomePage() {
           Trade, launch and earn.
           <br />
         </h1>
-        <h4 className="subtitlehome">A new way to launch tokens without liquidity</h4>
+        <h4 className="subtitlehome">
+          Earn trading, launching tokens, staking and achieving milestones.
+        </h4>
 
-        <div>
-          <Link to="/factory">
-            <button className="home-button">Launch</button>
+        {/* Buttons */}
+        <div className="button-container">
+          <Link to="/tokens">
+            <button className="trading-button">Start Trading</button>
           </Link>
-
-          <Link to="/staking">
-            <button className="stake-home-button">Stake</button>
-          </Link>
+          <div>
+            <Link to="/factory">
+              <button className="home-button">Launch</button>
+            </Link>
+            <Link to="/staking">
+              <button className="stake-home-button">Stake</button>
+            </Link>
+          </div>
         </div>
       </div>
 
       <div className="container">
-        <TokensList/>
-       
+        <TokensList />
       </div>
 
-      <HowItWorks />
 
       {/* Display an error message if wallet connection fails */}
       {error && <p className="error-message">{error}</p>}

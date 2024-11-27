@@ -36,9 +36,10 @@ body {
 
 
 .titlelaunch {
-    margin: 30px auto;
+    margin: 0px auto;
     text-align: center;
-    font-size: 400px;
+    font-size: 40px;
+    font-weight: 400;
 }
 
 
@@ -113,7 +114,7 @@ body {
     color: #fff; /* White text color */
 }
 
-.titlelaunch{align-items: center; font-size: 30px; text-align: center; margin: auto;}
+
 .token_address_message a,
 .pool_address_message a {
     color: #fff; /* White for links */

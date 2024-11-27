@@ -141,14 +141,11 @@ function TokensListTable({ limit }) {
   const copyToClipboard = (address) => {
     navigator.clipboard
       .writeText(address)
-      .then(() => {
-        alert("Contract address copied to clipboard!");
-      })
       .catch((err) => {
         console.error("Failed to copy: ", err);
       });
   };
-
+  
   if (loading)
     return (
       <div className="loading-container">
@@ -173,7 +170,7 @@ function TokensListTable({ limit }) {
 
   return (
     <div className="tokens-container">
-      <h3 className="deployedtokenstitle">Deployed Tokens</h3>
+      <h3 className="titlelaunch">Deployed Tokens</h3>
       <h5 className="subtitletokens">Choose a token and start trading</h5>
       <div className="sort-container">
         <button
@@ -272,14 +269,15 @@ function TokensListTable({ limit }) {
                 {token.name} ({token.symbol})
               </td>
               <td className="address-cell">
-                <span>{token.address}</span>{" "}
-                <button
-                  className="copy-button"
-                  onClick={() => copyToClipboard(token.address)}
-                >
-                  Copy
-                </button>
-              </td>
+  <span>{`${token.address.slice(0, 6)}...${token.address.slice(-4)}`}</span>{" "}
+  <button
+    className="copy-button"
+    onClick={() => copyToClipboard(token.address)}
+  >
+    Copy
+  </button>
+</td>
+
               <td>{token.chain || "N/A"}</td>
               <td>
                 {token.timestamp

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { ethers } from "ethers";
-import Header2 from "../components/Header2.js";
+import Header from "../components/Header.js";
 import Footer from "../components/Footer.js";
 import "./TokenBuyTrackerPage.css";
 // Remove unused imports
@@ -189,7 +189,7 @@ const TokenBuyTrackerPage = () => {
 
   return (
     <div>
-      <Header2
+      <Header
         connectWallet={connectWallet}
         isConnected={isConnected}
         chainId={chainId}
