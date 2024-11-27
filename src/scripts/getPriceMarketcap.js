@@ -16,10 +16,6 @@ async function main() {
 
   const [deployer] = await ethers.getSigners();
 
-  const swapRouter = process.env.SEPOLIA_SWAP_ROUTER;
-
-  const WETH_address = process.env.SEPOLIA_WETH;
-
   const swapperAddress = "0x5a41e64efAe1E4A1A68DB84993bB79ef2090d8C6";
 
   const tokenAddress = "0xfFA476B26874ec2428FB84F8f817d34B6575cA4e"; // Replace with your token
@@ -47,8 +43,6 @@ async function main() {
     "event Swap(address indexed sender, address indexed recipient, int256 amount0, int256 amount1, uint160 sqrtPriceX96, uint128 liquidity, int24 tick)",
   ];
 
-  const amountIn = ethers.parseUnits("0.0001", 18); // Amount of ETH to swap
-
   const provider = new ethers.JsonRpcProvider(
     process.env.ALCHEMY_SEPOLIA_ENDPOINT
   );
@@ -63,14 +57,6 @@ async function main() {
     mySwapperABI,
     provider
   );
-
-  const twapInterval = 30;
-
-  // Call the getTWAPPrice function
-  const price = await swapperContract.getTWAPPrice(tokenPool, twapInterval);
-
-  // Convert the price to a human-readable format if needed
-  console.log("TWAP Price:", price);
 
   // Uniswap V3 factory address (mainnet)
   const UNISWAP_V3_FACTORY = "0x1F98431c8aD98523631AE4a59f267346ea31F984";
@@ -115,44 +101,28 @@ async function main() {
     1 / (Number(sqrtPriceX96 ** BigInt(2) / Q96 ** BigInt(2)) / 1e12);
   console.log("ETH/USD Price:", price_ETH_USDC);
 
-  // Connect to the swapper contract using its ABI and address
-  const Swapper = await ethers.getContractFactory("VortexSwapper");
-  const swapper = await Swapper.attach(swapperAddress);
+  const twapInterval = 30;
+
+  // Call the getTWAPPrice function
+  const tokenPrice = await swapperContract.getTWAPPrice(
+    tokenPool,
+    twapInterval
+  );
+
+  // Convert the price to a human-readable format if needed
+  console.log("TWAP Price:", tokenPrice);
 
   const tokenContract = new ethers.Contract(tokenAddress, ERC20ABI, deployer);
 
+  // Fetch total supply (We can also fetch from supabase)
   const totalSupply = await tokenContract.totalSupply();
-  console.log("Total Supply:", ethers.formatUnits(totalSupply, 18)); // Assuming 18 decimals
-
-  //-----------------------------------------------------------------------------------------
-
-  /* console.log("Buying with swapper function...");
-    tx2 = await swapper.swapWETHforTokens(amountIn, tokenAddress, {
-      value: amountIn,
-      gasLimit: 3000000,
-    });
-    receipt = await tx2.wait();
-    console.log("Swap performed successfully!"); */
-
-  //-----------------------------------------------------------------------------------------
-
-  const tokenSwappedEvent = await getLatestEvent(swapper, "SwapEvent");
-
-  const tokenPrice = tokenSwappedEvent.args[1];
-  console.log("Token Price: ", tokenPrice);
+  console.log("Total Supply:", ethers.formatUnits(totalSupply, 18));
 
   const priceUSD = (1 / Number(tokenPrice)) * price_ETH_USDC;
   const marketcap = (Number(totalSupply) * priceUSD) / 1000000000000000000;
 
   console.log("Price in USD: ", priceUSD);
   console.log("MarketCap: ", marketcap);
-
-  const newPriceUSD = (1 / Number(price)) * price_ETH_USDC;
-  const newMarketcap =
-    (Number(totalSupply) * newPriceUSD) / 1000000000000000000;
-
-  console.log("Price in USD: ", newPriceUSD);
-  console.log("MarketCap: ", newMarketcap);
 }
 
 main().catch((error) => {
