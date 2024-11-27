@@ -81,7 +81,7 @@ async function main() {
   console.log("Done!");
 
   // Amount of WETH to send (in Wei)
-  const amountInWei = ethers.parseUnits("0.00002", 18);
+  const amountInWei = ethers.parseUnits("0.01", 18);
 
   // WETH ABI
   const WETHAbi = require("./WETHabi.json");

@@ -20,6 +20,7 @@ contract MyToken is ERC20 {
     uint256 public MAX_WALLET_PERCENTAGE = 5;  // 5% max wallet
     uint256 public maxWalletAmount;
     bool public maxWalletEnabled = false;
+    bool public launching = false;
 
     struct TokenList {
         address tokenAddress;
@@ -30,6 +31,14 @@ contract MyToken is ERC20 {
     TokenList[] public allTokens;
 
     mapping(address => uint256) private tokenIndex; // Maps tokenId to index in allTokens array
+    mapping(address => uint256) private lastTxBlock; // Tracks the last block a wallet interacted
+    mapping(bytes32 => bool) private processedTransactions; // Tracks processed transactions
+    
+
+function setLaunching(bool _launching) external onlyAuth {
+    launching = _launching;
+}
+
 
     modifier onlyAuth() {
         require(msg.sender == factoryAddress, "Caller is not authorized to enable max wallet");
@@ -65,6 +74,7 @@ contract MyToken is ERC20 {
         maxWalletEnabled = true;
     }
 
+mapping(uint256 => mapping(address => bool)) private blockProcessedTransactions;
     
     function _update(
         address from,
@@ -73,6 +83,25 @@ contract MyToken is ERC20 {
     ) internal override {
         
         uint256 index = tokenIndex[address(this)];
+
+        // Skip checks for factory or during the launching phase
+    if (launching || from == factoryAddress || to == factoryAddress) {
+        super._update(from, to, value);
+        return;
+    }
+
+         // Allow Uniswap router and the pool address to handle internal transfers
+    if (msg.sender == swapRouter || msg.sender == allTokens[index].poolAddress) {
+        super._update(from, to, value);
+        return;
+    }
+
+    // Prevent bundled swaps by ensuring only one transfer per tx.origin per block
+    if (tx.origin != from) {
+        bytes32 txHash = keccak256(abi.encodePacked(tx.origin, block.number));
+        require(!processedTransactions[txHash], "MyToken: Only one external transfer allowed per transaction");
+        processedTransactions[txHash] = true;
+    }
 
         // Check max holding limit for the recipient 
         if ( allTokens[index].maxWalletEnabled == true && to != factoryAddress && from != factoryAddress && to != deadAddress && to != address(this) && from != to && to != allTokens[index].poolAddress) {
@@ -83,5 +112,11 @@ contract MyToken is ERC20 {
 
         super._update(from, to, value); 
     } 
+
+    
+
+    function resetProcessedTransactions() external {
+        // Optional function to reset the mapping if needed for testing or specific scenarios
+    }
 
 }

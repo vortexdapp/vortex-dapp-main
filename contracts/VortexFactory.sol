@@ -35,7 +35,7 @@ contract MyFactory {
     uint256 rewardAmount;
     address treasuryAddress;
     address helperAddress;
-    uint256 wethProvided = 0.000005 ether;
+    uint256 wethProvided = 0.005 ether;
     uint256 priceToLaunch = 0.00002 ether;
     uint256 public lockTime1 = 5; //7 days; 
     uint256 public lockTime2 = 5; //30 days; 
@@ -219,7 +219,7 @@ contract MyFactory {
 }
 
     
-    function swapETHforTokens(uint256 amountIn, address tokenAddress) internal returns (uint256 amountOut) {
+    function swapETHforTokens(uint256 amountIn, address tokenAddress) public returns (uint256 amountOut) {
         // Wrap ETH to WETH
 
     uint256 estimatedAmountOut = getEstimatedAmountOut(weth, tokenAddress, amountIn);
@@ -288,6 +288,9 @@ function swapTokensForWETH(uint256 amountIn, address tokenAddress) internal retu
     if(userProvidedLiquidity == true) {
 
     require(msg.value > 0, "Must send ETH to convert");
+
+    // Enable the launching flag
+    MyToken(tokenAddress).setLaunching(true);
 
     providedLiquidity = msg.value - amountToBuy - priceToLaunch;
 
@@ -394,6 +397,9 @@ function swapTokensForWETH(uint256 amountIn, address tokenAddress) internal retu
     }
 
     emit TokenLaunched(poolAddress, tokenAddress, tokenId, lockID);
+
+    // Disable the launching flag after completing the process
+    MyToken(tokenAddress).setLaunching(false);
 
     return (poolAddress, tokenAddress, tokenId, lockID);
     }
