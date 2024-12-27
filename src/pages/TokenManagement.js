@@ -202,7 +202,7 @@ const TokenManagement = () => {
         <h2>{tokenData.name}</h2>
 
         <p>
-          <strong>Token Address:</strong> {tokenData.address}
+          <strong>Address:</strong> {tokenData.address}
         </p>
         <p>
           <strong>Chain:</strong> {tokenData.chain}
