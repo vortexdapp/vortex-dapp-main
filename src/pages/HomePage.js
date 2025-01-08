@@ -22,7 +22,7 @@ function HomePage() {
           <br />
         </h1>
         <h4 className="subtitlehome">
-          Launch great ideas, earn trading, staking and achieving milestones.
+          Launch great ideas, earn trading, staking and achieving goals
         </h4>
 
         {/* Buttons */}
